@@ -1,0 +1,11 @@
+Monkeysign
+OpenPGP Key Exchange
+
+Version: 0.1
+License: GPLv3 or later
+
+Requirements:
+* qrencode python bindings (http://pypi.python.org/pypi/qrencode/1.01)
+* python-gtk2
+* python-pyme
+* python-zbarpygtk
