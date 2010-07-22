@@ -21,6 +21,8 @@ class MonkeysignGen(gtk.Window):
 		<menu action="File">
 			<menuitem action="Save as..."/>
 			<separator name="FileSeparator1"/>
+			<menuitem action="Print"/>
+			<separator name="FileSeparator2"/>
 			<menuitem action="Quit"/>
 		</menu>
 		<menu action="Edit">
@@ -41,6 +43,9 @@ class MonkeysignGen(gtk.Window):
 		# Keep ultimately trusted keys in memory
 		self.ultimate_keys = self.list_ultimate_keys()
 
+		# Initialise print settings
+		self.printsettings = None
+
 		# Set up main window
 		self.set_title("Monkeysign (generate)")
 		self.set_position(gtk.WIN_POS_CENTER)
@@ -56,6 +61,7 @@ class MonkeysignGen(gtk.Window):
 		actiongroup.add_actions([
 															('File', None, '_File'),
 															('Save as...', gtk.STOCK_SAVE, '_Save as...', None, None, self.save_qrcode),
+															('Print', gtk.STOCK_PRINT, '_Print', None, None, self.print_op),
 															('Quit', gtk.STOCK_QUIT, '_Quit', None, None, self.destroy),
 															('Edit', None, '_Edit'),
 															('Copy', gtk.STOCK_COPY, '_Copy', None, 'Copy image to clipboard', self.clip_qrcode),
@@ -89,6 +95,10 @@ class MonkeysignGen(gtk.Window):
 		save = gtk.Button(stock=gtk.STOCK_SAVE)
 		save.connect("clicked", self.save_qrcode);
 
+		# Print button
+		printbtn = gtk.Button(stock=gtk.STOCK_PRINT)
+		printbtn.connect("clicked", self.print_op);
+
 		# Clipboard
 		self.clip = gtk.Clipboard()
 
@@ -101,8 +111,11 @@ class MonkeysignGen(gtk.Window):
 		self.swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.swin.add_with_viewport(self.qrcode)
 		vbox.pack_start(self.swin, True, True, 0)
+		hbox_btns = gtk.HBox(False, 2)
+		hbox_btns.pack_start(save, False, False, 3)
+		hbox_btns.pack_start(printbtn, False, False, 3)
 		halign = gtk.Alignment(0.5, 0, 0, 0)
-		halign.add(save)
+		halign.add(hbox_btns)
 		vbox.pack_start(halign, False, False, 3)
 		hbox.pack_start(vbox, True, True, 10)
 		mainvbox.pack_start(menubar, False)
@@ -124,7 +137,7 @@ class MonkeysignGen(gtk.Window):
 
 	def key_changed(self, widget=None):
 		"""When another key is chosen, generate new QR code"""
-		i = widget.get_active_iter()
+		i = self.cb.get_active_iter()
 		fpr = self.cb.get_model().get_value(i, 1)
 		self.pixbuf = self.image_to_pixbuf(self.make_qrcode(fpr))
 		self.qrcode.set_from_pixbuf(self.pixbuf)
@@ -169,6 +182,21 @@ class MonkeysignGen(gtk.Window):
 
 	def clip_qrcode(self, widget=None):
 		self.clip.set_image(self.pixbuf)
+
+	def print_op(self, widget=None):
+		keyid = self.ultimate_keys[self.cb.get_active()].subkeys[0].keyid[8:]
+		print_op = gtk.PrintOperation()
+		print_op.set_job_name('Monkeysign-'+keyid)
+		print_op.set_n_pages(1)
+		print_op.connect("draw_page", self.print_qrcode)
+		res = print_op.run(gtk.PRINT_OPERATION_ACTION_PRINT_DIALOG, self)
+
+	def print_qrcode(self, operation=None, context=None, page_nr=None):
+		ctx = context.get_cairo_context()
+		ctx.set_source_pixbuf(self.pixbuf, 0, 0)
+		ctx.paint()
+		ctx.restore()
+		return
 
 	def image_to_pixbuf(self, image):
 		"""Utility function to convert a PIL image instance to Pixbuf"""
