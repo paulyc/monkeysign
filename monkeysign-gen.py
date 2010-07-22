@@ -71,7 +71,9 @@ class MonkeysignGen(gtk.Window):
 		vbox.pack_start(halign, False, False, 3)
 		self.add(vbox)
 
+		# Start the show
 		self.show_all()
+		self.last_allocation = self.get_allocation()
 
 		# Select first key
 		self.cb.set_active(0)
