@@ -23,6 +23,9 @@ class MonkeysignGen(gtk.Window):
 			<separator name="FileSeparator1"/>
 			<menuitem action="Quit"/>
 		</menu>
+		<menu action="Edit">
+			<menuitem action="Copy"/>
+		</menu>
 	</menubar>
 	</ui>'''
 
@@ -52,8 +55,10 @@ class MonkeysignGen(gtk.Window):
 		actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
 		actiongroup.add_actions([
 															('File', None, '_File'),
-															('Save as...', gtk.STOCK_SAVE, '_Save as...', 'S', None, self.save_qrcode),
-															('Quit', gtk.STOCK_QUIT, '_Quit', 'Q', None, self.destroy),
+															('Save as...', gtk.STOCK_SAVE, '_Save as...', None, None, self.save_qrcode),
+															('Quit', gtk.STOCK_QUIT, '_Quit', None, None, self.destroy),
+															('Edit', None, '_Edit'),
+															('Copy', gtk.STOCK_COPY, '_Copy', None, 'Copy image to clipboard', self.clip_qrcode),
 														])
 		uimanager.insert_action_group(actiongroup, 0)
 		uimanager.add_ui_from_string(self.ui)
@@ -84,6 +89,9 @@ class MonkeysignGen(gtk.Window):
 		save = gtk.Button(stock=gtk.STOCK_SAVE)
 		save.connect("clicked", self.save_qrcode);
 
+		# Clipboard
+		self.clip = gtk.Clipboard()
+
 		# Setup window layout
 		mainvbox = gtk.VBox()
 		hbox = gtk.HBox(False, 2)
@@ -112,14 +120,14 @@ class MonkeysignGen(gtk.Window):
 		"""When window is resized, regenerate the QR code"""
 		if self.get_allocation() != self.last_allocation:
 			self.last_allocation = self.get_allocation()
-			self.key_changed(self.cb)
+			self.key_changed()
 
-	def key_changed(self, widget):
+	def key_changed(self, widget=None):
 		"""When another key is chosen, generate new QR code"""
 		i = widget.get_active_iter()
 		fpr = self.cb.get_model().get_value(i, 1)
-		pixbuf = self.image_to_pixbuf(self.make_qrcode(fpr))
-		self.qrcode.set_from_pixbuf(pixbuf)
+		self.pixbuf = self.image_to_pixbuf(self.make_qrcode(fpr))
+		self.qrcode.set_from_pixbuf(self.pixbuf)
 
 	def list_ultimate_keys(self):
 		"""Retrieve list of keys for which the user might want a QR code"""
@@ -158,6 +166,9 @@ class MonkeysignGen(gtk.Window):
 				pass
 		dialog.destroy()
 		return
+
+	def clip_qrcode(self, widget=None):
+		self.clip.set_image(self.pixbuf)
 
 	def image_to_pixbuf(self, image):
 		"""Utility function to convert a PIL image instance to Pixbuf"""
