@@ -16,6 +16,16 @@ from qrencode import encode_scaled as _qrencode_scaled
 
 class MonkeysignGen(gtk.Window):
 
+	ui = '''<ui>
+	<menubar name="MenuBar">
+		<menu action="File">
+			<menuitem action="Save as..."/>
+			<separator name="FileSeparator1"/>
+			<menuitem action="Quit"/>
+		</menu>
+	</menubar>
+	</ui>'''
+
 	def __init__(self):
 		super(MonkeysignGen, self).__init__()
 
@@ -25,10 +35,23 @@ class MonkeysignGen(gtk.Window):
 		# Set up main window
 		self.set_title("Monkeysign (generate)")
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_default_size(350,475)
-		self.set_border_width(10)
+		self.set_default_size(350,460)
 		self.connect("destroy", gtk.main_quit)
 		self.connect("expose-event", self.expose_event)
+
+		# Menu
+		uimanager = gtk.UIManager()
+		accelgroup = uimanager.get_accel_group()
+		self.add_accel_group(accelgroup)
+		actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
+		actiongroup.add_actions([
+															('File', None, '_File'),
+															('Save as...', gtk.STOCK_SAVE, '_Save as...', 'S', None, self.save_qrcode),
+															('Quit', gtk.STOCK_QUIT, '_Quit', 'Q', None, self.destroy),
+														])
+		uimanager.insert_action_group(actiongroup, 0)
+		uimanager.add_ui_from_string(self.ui)
+		menubar = uimanager.get_widget('/MenuBar')
 
 		# Ultimate keys list
 		cell = gtk.CellRendererText()
@@ -55,26 +78,22 @@ class MonkeysignGen(gtk.Window):
 		save = gtk.Button(stock=gtk.STOCK_SAVE)
 		save.connect("clicked", self.save_qrcode);
 
-		# Close button
-		close = gtk.Button(stock=gtk.STOCK_CLOSE)
-		close.connect("clicked", self.destroy);
-
 		# Setup window layout
-		vbox = gtk.VBox(False, 5)
+		mainvbox = gtk.VBox()
+		hbox = gtk.HBox(False, 2)
+		vbox = gtk.VBox(False, 2)
 		vbox.pack_start(self.cb, False, False, 3)
-
 		self.swin = gtk.ScrolledWindow()
 		self.swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.swin.add_with_viewport(self.qrcode)
 		vbox.pack_start(self.swin, True, True, 0)
-
 		halign = gtk.Alignment(0.5, 0, 0, 0)
 		halign.add(save)
 		vbox.pack_start(halign, False, False, 3)
-		halign = gtk.Alignment(0.5, 0, 0, 0)
-		halign.add(close)
-		vbox.pack_start(halign, False, False, 3)
-		self.add(vbox)
+		hbox.pack_start(vbox, True, True, 10)
+		mainvbox.pack_start(menubar, False)
+		mainvbox.pack_start(hbox, True, True, 10)
+		self.add(mainvbox)
 
 		# Start the show
 		self.show_all()
@@ -117,7 +136,7 @@ class MonkeysignGen(gtk.Window):
 		version, width, image = _qrencode_scaled('openpgp4fpr:'+fingerprint,size,0,1,2,True)
 		return image
 
-	def save_qrcode(self, widget):
+	def save_qrcode(self, widget=None):
 		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
 		key = self.ultimate_keys[self.cb.get_active()]
 		image = self.make_qrcode(key.subkeys[0].fpr)
