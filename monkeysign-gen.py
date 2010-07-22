@@ -29,8 +29,14 @@ class MonkeysignGen(gtk.Window):
 	def __init__(self):
 		super(MonkeysignGen, self).__init__()
 
-		self.ultimate_keys = self.list_ultimate_keys()
+		# Hold QR code in pixbuf
+		self.pixbuf = None
+
+		# Remember last allocation when resizing
 		self.last_allocation = gtk.gdk.Rectangle()
+
+		# Keep ultimately trusted keys in memory
+		self.ultimate_keys = self.list_ultimate_keys()
 
 		# Set up main window
 		self.set_title("Monkeysign (generate)")
