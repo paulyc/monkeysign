@@ -25,7 +25,7 @@ class MonkeysignGen(gtk.Window):
 		# Set up main window
 		self.set_title("Monkeysign (generate)")
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_default_size(350,400)
+		self.set_default_size(350,475)
 		self.set_border_width(10)
 		self.connect("destroy", gtk.main_quit)
 		self.connect("expose-event", self.expose_event)
@@ -62,7 +62,12 @@ class MonkeysignGen(gtk.Window):
 		# Setup window layout
 		vbox = gtk.VBox(False, 5)
 		vbox.pack_start(self.cb, False, False, 3)
-		vbox.pack_start(self.qrcode, False, False, 3)
+
+		self.swin = gtk.ScrolledWindow()
+		self.swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.swin.add_with_viewport(self.qrcode)
+		vbox.pack_start(self.swin, True, True, 0)
+
 		halign = gtk.Alignment(0.5, 0, 0, 0)
 		halign.add(save)
 		vbox.pack_start(halign, False, False, 3)
@@ -104,7 +109,12 @@ class MonkeysignGen(gtk.Window):
 
 	def make_qrcode(self, fingerprint):
 		"""Given a fingerprint, generate a QR code with appropriate prefix"""
-		version, width, image = _qrencode_scaled('openpgp4fpr:'+fingerprint,self.get_size()[0] - 20,0,1,2,True)
+		rect = self.swin.get_allocation()
+		if rect.width < rect.height:
+			size = rect.width - 15
+		else:
+			size = rect.height - 15
+		version, width, image = _qrencode_scaled('openpgp4fpr:'+fingerprint,size,0,1,2,True)
 		return image
 
 	def save_qrcode(self, widget):
