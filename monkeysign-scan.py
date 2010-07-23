@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 
-import subprocess
-import pygtk; pygtk.require('2.0')
-import gtk
+import sys, os, stat, gobject, subprocess
+import gtk, pygtk; pygtk.require('2.0')
+import pango
+import re
 
 from pyme import callbacks, core, errors
 from pyme.core import Data, Context, pubkey_algo_name
@@ -11,9 +12,21 @@ from pyme.constants import validity, protocol
 from pyme.constants.keylist import mode
 
 import Image, StringIO
-import zbar
+import zbar, zbarpygtk
+
+# threads *must* be properly initialized to use zbarpygtk
+gtk.gdk.threads_init()
+gtk.gdk.threads_enter()
 
 class MonkeysignScan(gtk.Window):
+
+	ui = '''<ui>
+	<menubar name="MenuBar">
+		<menu action="File">
+			<menuitem action="Quit"/>
+		</menu>
+	</menubar>
+	</ui>'''
 
 	def __init__(self):
 		super(MonkeysignScan, self).__init__()
@@ -21,165 +34,147 @@ class MonkeysignScan(gtk.Window):
 		# Set up main window
 		self.set_title("Monkeysign (scan)")
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_default_size(350,400)
-		self.set_border_width(10)
 		self.connect("destroy", gtk.main_quit)
 
-		# QR code thumbnail
-		self.thumbnail = gtk.Image()
+		# Menu
+		uimanager = gtk.UIManager()
+		accelgroup = uimanager.get_accel_group()
+		self.add_accel_group(accelgroup)
+		actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
+		actiongroup.add_actions([
+															('File', None, '_File'),
+															('Quit', gtk.STOCK_QUIT, '_Quit', None, None, self.destroy),
+														])
+		uimanager.insert_action_group(actiongroup, 0)
+		uimanager.add_ui_from_string(self.ui)
+		menubar = uimanager.get_widget('/MenuBar')
 
-		# Import button
-		importimg = gtk.Button("Import image")
-		importimg.connect("clicked", self.import_image)
-
-		# Detected keys list
-		self.ls = gtk.ListStore(str)
-		self.treeview = gtk.TreeView(self.ls)
-		self.treeview.set_rules_hint(True)
+		# Video device list combo box
+		video_found = False
 		cell = gtk.CellRendererText()
-		column = gtk.TreeViewColumn("Fingerprint", cell, text=0)
-		self.treeview.append_column(column)
+		cell.props.ellipsize = pango.ELLIPSIZE_END
+		self.video_ls = gtk.ListStore(str)
+		self.video_cb = gtk.ComboBox(self.video_ls)
+		self.video_cb.pack_start(cell, True)
+		self.video_cb.add_attribute(cell, 'text', 0)
+		for (root, dirs, files) in os.walk("/dev"):
+				for dev in files:
+						path = os.path.join(root, dev)
+						if not os.access(path, os.F_OK):
+							continue
+						info = os.stat(path)
+						if stat.S_ISCHR(info.st_mode) and os.major(info.st_rdev) == 81:
+							video_found = True
+							self.video_ls.append([path])
+		self.video_cb.connect("changed", self.video_changed)
 
-		# Retrieve keys button
-		self.retrieve = gtk.Button("Retrieve keys")
-		self.retrieve.connect("clicked", self.retrieve_keys_btn);
-
-		# Close button
-		close = gtk.Button(stock=gtk.STOCK_CLOSE)
-		close.connect("clicked", self.destroy);
+		# Webcam preview display
+		if video_found == True:
+			self.zbar = zbarpygtk.Gtk()
+			self.zbar.connect("decoded-text", self.decoded)
+			camframe = gtk.Frame()
+			camframe.add(self.zbar)
+			self.video_cb.set_active(0)
+		else:
+			camframe = gtk.Frame()
+			error_icon = gtk.Image()
+			error_icon.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
+			vbox = gtk.VBox()
+			error_icon_bottom = gtk.Alignment(0, 1, 1, 0)
+			error_icon_bottom.add(error_icon)
+			error_label_top = gtk.Alignment(0, 0, 1, 0)
+			error_label_top.add(gtk.Label("No video device detected."))
+			vbox.pack_start(error_icon_bottom)
+			vbox.pack_start(error_label_top)
+			vbox.set_size_request(320, 320)
+			camframe.add(vbox)
 
 		# Setup window layout
-		vbox = gtk.VBox(False, 5)
-		vbox.pack_start(self.thumbnail, False, False, 3)
-		halign1 = gtk.Alignment(0.5, 0, 0, 0)
-		halign1.add(importimg)
-		vbox.pack_start(halign1, False, False, 3)
-		vbox.pack_start(self.treeview, False, False, 3)
-		halign2 = gtk.Alignment(0.5, 0, 0, 0)
-		halign2.add(self.retrieve)
-		vbox.pack_start(halign2, False, False, 3)
-		halign3 = gtk.Alignment(0.5, 0, 0, 0)
-		halign3.add(close)
-		vbox.pack_start(halign3, False, False, 3)
-		self.add(vbox)
+		mainvbox = gtk.VBox()
+		mainhbox = gtk.HBox()
+		lvbox = gtk.VBox()
+		lvbox.pack_start(self.video_cb, False, False)
+		lvbox.pack_start(camframe, False, False, 5)
+		mainhbox.pack_start(lvbox, False, False, 10)
+		mainvbox.pack_start(menubar, False, False)
+		mainvbox.pack_start(mainhbox, False, False, 10)
+		self.add(mainvbox)
 
-		importimg.show()
-		close.show()
-		halign1.show()
-		halign2.show()
-		halign3.show()
-		vbox.show()
-		self.show()
+		# Start the show
+		self.show_all()
 
-	def import_image(self, widget):
-		"""Use a file chooser dialog to import an image containing a QR code"""
-		dialog = gtk.FileChooserDialog("Open QR code image", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-		dialog.set_default_response(gtk.RESPONSE_OK)
-		dialog.show()
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-				self.filename = dialog.get_filename()
-				self.image = Image.open(self.filename)
-				pixbuf = gtk.gdk.pixbuf_new_from_file(self.filename)
-				self.thumbnail.set_from_pixbuf(self.scale_pixbuf(pixbuf))
-				self.thumbnail.show()
-				self.scan_image()
-		elif response == gtk.RESPONSE_CANCEL:
-				pass
-		dialog.destroy()
-		return
-
-	def scale_ratio(self, src_width, src_height, dest_width, dest_height):
-		"""Return a size fitting into dest preserving src's aspect ratio."""
-		if src_height > dest_height:
-			if src_width > dest_width:
-				ratio = min(float(dest_width) / src_width, float(dest_height) / src_height)
-			else:
-				ratio = float(dest_height) / src_height
-		elif src_width > dest_width:
-				ratio = float(dest_width) / src_width
-		else:
-				ratio = 1
-		return int(ratio * src_width), int(ratio * src_height)
-
-	def scale_pixbuf(self, pixbuf):
-		"""Scale pixbuf according to window size"""
-		allocation = self.get_allocation()
-		target_width, target_height = self.scale_ratio(pixbuf.get_width(), pixbuf.get_height(), allocation.width, allocation.height)
-		pixbuf = pixbuf.scale_simple(target_width, target_height, gtk.gdk.INTERP_HYPER)
-		return pixbuf
-
-	def scan_image(self):
-		"""Scan an image for QR codes"""
-		# create a reader
-		scanner = zbar.ImageScanner()
-
-		# configure the reader
-		scanner.parse_config('enable')
-
-		# obtain image data
-		pil = self.image.convert('L')
-		width, height = pil.size
-		raw = pil.tostring()
-
-		# wrap image data
-		image = zbar.Image(width, height, 'Y800', raw)
-
-		# scan the image for barcodes
-		scanner.scan(image)
-
-		# extract results
-		for symbol in image:
-			if symbol.data.startswith('openpgp4fpr:'):
-				fpr = symbol.data.split(':')[1]
-				# Add to treeview if not already there
-				try: (f for f in self.get_fpr_list() if fpr in f).next()
-				except StopIteration:
-					self.ls.append([fpr])
-					# Activate treeview and retrieve key button
-					if self.treeview.flags() ^ gtk.VISIBLE:
-						self.treeview.show()
-					if self.retrieve.flags() ^ gtk.VISIBLE:
-						self.retrieve.show()
-
-		# clean up
-		del(image)
-
-	def get_fpr_list(self):
-		"""Extract a list of fingerprints from the treeview component"""
-		fpr = []
-		i = self.treeview.get_model().get_iter_first()
+	def video_changed(self, widget=None):
+		"""callback invoked when a new video device is selected from the
+		drop-down list.  sets the new device for the zbar widget,
+		which will eventually cause it to be opened and enabled
+		"""
+		i = self.video_cb.get_active_iter()
 		if i:
-			fpr.append(self.treeview.get_model().get_value(i,0))
-			while self.treeview.get_model().iter_next(i):
-				i = self.treeview.get_model().iter_next(i)
-				fpr.append(self.treeview.get_model().get_value(i,0))
-		return fpr
+			dev = self.video_cb.get_model().get_value(i, 0)
+			self.zbar.set_video_device(dev)
+		else:
+			self.zbar.set_video_enabled(False)
 
-	def retrieve_keys_btn(self, widget):
-		"""Wrapper for button"""
-		self.retrieve_keys()
-		return
+	def decoded(self, zbar, data):
+		"""callback invoked when a barcode is decoded by the zbar widget.
+		displays the decoded data in the text box
+		"""
+		def update_progress_callback(*args):
+			if self.keep_pulsing:
+				self.progressbar.pulse()
+				return True
+			else:
+				return False
+		def watch_out_callback(pid, condition):
+			"""callback invoked when gpg key download is finished
+			"""
+			self.keep_pulsing=False
+			self.dialog.destroy()
+			if condition == 0:
+				command = ["/usr/bin/gpg", '--no-default-keyring', '--keyring', '/tmp/monkeysign.gpg', '--with-colons', '--list-keys', fpr]
+				proc = subprocess.Popen(command, stdout=subprocess.PIPE)
+				(stdout, stderr) = proc.communicate()
+				stdout = stdout.split("\n")
+				for line in stdout:
+					if line.startswith("pub"):
+						uid = line.split(":")[9]
+						md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "The key with fingerprint :\n" + fpr + "\n belongs to : " + uid + "\n\nIs this correct?")
+						gtk.gdk.threads_enter()
+						md.run()
+						md.destroy()
+						gtk.gdk.threads_leave()
+			else:
+				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key not found.")
+				gtk.gdk.threads_enter()
+				md.run()
+				md.destroy()
+				gtk.gdk.threads_leave()
 
-	def retrieve_keys(self):
-		"""Retrieve detected keys and add them to local keyring"""
-		for fpr in self.get_fpr_list():
-			havekey = False
-			c = core.Context()
-			c.set_protocol(protocol.OpenPGP)
-			c.set_keylist_mode(mode.LOCAL)
-			# Check if we don't have it already
-			for key in c.op_keylist_all(fpr, False):
-				havekey = True
-				print "Already have that key."
-			if havekey == False:
-				# PyMe doesn't seem to support fetching keys from a keyserver...
-				retcode = subprocess.call(["/usr/bin/gpg", '--keyserver', 'pool.sks-keyservers.net', '--recv-keys', fpr])
-				if retcode == 0:
-					print "Success!"
-		return
+			return
+		m = re.search("OPENPGP4FPR:([0-9A-F]{40})", data)
+		if m != None:
+			fpr = m.group(1)
+			self.video_cb.set_active(-1)
+			command = ["/usr/bin/gpg", '--no-default-keyring', '--keyring', '/tmp/monkeysign.gpg', '--keyserver', 'pool.sks-keyservers.net', '--recv-keys', fpr]
+			self.dialog = gtk.Dialog(title="Found OpenPGP key fingerprint", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
+			self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
+			message = gtk.Label("Retrieving public key from server")
+			message.show()
+			self.progressbar = gtk.ProgressBar()
+			self.progressbar.show()
+			self.dialog.vbox.pack_start(message, True, True, 5)
+			self.dialog.vbox.pack_start(self.progressbar, False, False, 5)
+			self.dialog.set_size_request(250, 100)
+			self.keep_pulsing = True
+			proc = subprocess.Popen(command)
+			gobject.child_watch_add(proc.pid, watch_out_callback)
+			gobject.timeout_add(100, update_progress_callback)
+			if self.dialog.run() == gtk.RESPONSE_CANCEL:
+				proc.kill()
+			return
 
 	def destroy(self, widget, data=None):
+		self.zbar.set_video_active(False)
 		gtk.main_quit()
 
 	def main(self):
@@ -187,3 +182,4 @@ class MonkeysignScan(gtk.Window):
 
 MonkeysignScan()
 gtk.main()
+gtk.gdk.threads_leave()
