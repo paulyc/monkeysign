@@ -160,7 +160,7 @@ class MonkeysignGen(gtk.Window):
 			size = rect.width - 15
 		else:
 			size = rect.height - 15
-		version, width, image = _qrencode_scaled('openpgp4fpr:'+fingerprint,size,0,1,2,True)
+		version, width, image = _qrencode_scaled('OPENPGP4FPR:'+fingerprint,size,0,1,2,True)
 		return image
 
 	def save_qrcode(self, widget=None):
