@@ -72,8 +72,8 @@ class MonkeysignScan(gtk.Window):
 		if video_found == True:
 			self.zbar = zbarpygtk.Gtk()
 			self.zbar.connect("decoded-text", self.decoded)
-			camframe = gtk.Frame()
-			camframe.add(self.zbar)
+			self.zbarframe = gtk.Frame()
+			self.zbarframe.add(self.zbar)
 			self.video_cb.set_active(0)
 		else:
 			camframe = gtk.Frame()
@@ -94,7 +94,7 @@ class MonkeysignScan(gtk.Window):
 		mainhbox = gtk.HBox()
 		lvbox = gtk.VBox()
 		lvbox.pack_start(self.video_cb, False, False)
-		lvbox.pack_start(camframe, False, False, 5)
+		lvbox.pack_start(self.zbarframe, False, False, 5)
 		mainhbox.pack_start(lvbox, False, False, 10)
 		mainvbox.pack_start(menubar, False, False)
 		mainvbox.pack_start(mainhbox, False, False, 10)
@@ -117,14 +117,18 @@ class MonkeysignScan(gtk.Window):
 
 	def decoded(self, zbar, data):
 		"""callback invoked when a barcode is decoded by the zbar widget.
-		displays the decoded data in the text box
+		checks for an openpgp fingerprint
 		"""
+
 		def update_progress_callback(*args):
+			"""callback invoked for pulsating progressbar
+			"""
 			if self.keep_pulsing:
 				self.progressbar.pulse()
 				return True
 			else:
 				return False
+
 		def watch_out_callback(pid, condition):
 			"""callback invoked when gpg key download is finished
 			"""
@@ -138,23 +142,40 @@ class MonkeysignScan(gtk.Window):
 				for line in stdout:
 					if line.startswith("pub"):
 						uid = line.split(":")[9]
-						md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "The key with fingerprint :\n" + fpr + "\n belongs to : " + uid + "\n\nIs this correct?")
+						md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "Would you like to certify this key/userid pair ?\n\nFingerprint : " + fpr + "\nOwner : " + uid)
 						gtk.gdk.threads_enter()
 						md.run()
-						md.destroy()
 						gtk.gdk.threads_leave()
+						md.destroy()
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key not found.")
 				gtk.gdk.threads_enter()
 				md.run()
-				md.destroy()
 				gtk.gdk.threads_leave()
-
+				md.destroy()
 			return
+
+		# Look for prefix and hexadecimal 40-ascii-character fingerprint
 		m = re.search("OPENPGP4FPR:([0-9A-F]{40})", data)
+
 		if m != None:
+			# Found fingerprint
 			fpr = m.group(1)
-			self.video_cb.set_active(-1)
+
+			# Capture and display the video frame containing QR code
+			self.zbarframe.set_shadow_type(gtk.SHADOW_NONE)
+			alloc = self.zbarframe.allocation
+			pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, alloc.width, alloc.height)
+			pixbuf.get_from_drawable(self.zbarframe.window, self.zbarframe.window.get_colormap(),	alloc.x, alloc.y, 0, 0, alloc.width, alloc.height)
+			self.capture = gtk.Image()
+			self.capture.set_from_pixbuf(pixbuf)
+			self.capture.show()
+			self.zbarframe.remove(self.zbar)
+			self.zbarframe.add(self.capture)
+			self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+
+			# Disable video capture
+			self.zbar.set_video_enabled(False)
 			command = ["/usr/bin/gpg", '--no-default-keyring', '--keyring', '/tmp/monkeysign.gpg', '--keyserver', 'pool.sks-keyservers.net', '--recv-keys', fpr]
 			self.dialog = gtk.Dialog(title="Found OpenPGP key fingerprint", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
 			self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
