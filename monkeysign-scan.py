@@ -145,8 +145,10 @@ class MonkeysignScan(gtk.Window):
 						uid = line.split(":")[9]
 						md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "Would you like to certify this key/userid pair ?\n\nFingerprint : " + fpr + "\nOwner : " + uid)
 						gtk.gdk.threads_enter()
-						md.run()
+						response = md.run()
 						gtk.gdk.threads_leave()
+						if response == gtk.RESPONSE_NO:
+							self.resume_capture()
 						md.destroy()
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key not found.")
@@ -154,6 +156,7 @@ class MonkeysignScan(gtk.Window):
 				md.run()
 				gtk.gdk.threads_leave()
 				md.destroy()
+				self.resume_capture()
 			return
 
 		# Look for prefix and hexadecimal 40-ascii-character fingerprint
@@ -194,6 +197,12 @@ class MonkeysignScan(gtk.Window):
 			if self.dialog.run() == gtk.RESPONSE_CANCEL:
 				proc.kill()
 			return
+
+	def resume_capture(self):
+		self.zbarframe.remove(self.capture)
+		self.zbarframe.add(self.zbar)
+		self.zbar.set_video_enabled(True)
+		self.capture = None
 
 	def destroy(self, widget, data=None):
 		self.zbar.set_video_enabled(False)
