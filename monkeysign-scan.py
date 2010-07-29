@@ -6,12 +6,6 @@ import pango
 import re
 import tempfile, shutil
 
-from pyme import callbacks, core, errors
-from pyme.core import Data, Context, pubkey_algo_name
-from pyme import constants
-from pyme.constants import validity, protocol
-from pyme.constants.keylist import mode
-
 import Image, StringIO
 import zbar, zbarpygtk
 
