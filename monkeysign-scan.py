@@ -4,6 +4,7 @@ import sys, os, stat, gobject, subprocess
 import gtk, pygtk; pygtk.require('2.0')
 import pango
 import re
+import tempfile, shutil
 
 from pyme import callbacks, core, errors
 from pyme.core import Data, Context, pubkey_algo_name
@@ -28,13 +29,19 @@ class MonkeysignScan(gtk.Window):
 	</menubar>
 	</ui>'''
 
+	# Keyserver to use
+	keyserver = "pool.sks-keyservers.net"
+
+	# Create tempdir for gpg operations
+	tempdir = tempfile.mkdtemp(prefix="monkeysign-")
+
 	def __init__(self):
 		super(MonkeysignScan, self).__init__()
 
 		# Set up main window
 		self.set_title("Monkeysign (scan)")
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.connect("destroy", gtk.main_quit)
+		self.connect("destroy", self.destroy)
 
 		# Menu
 		uimanager = gtk.UIManager()
@@ -135,7 +142,7 @@ class MonkeysignScan(gtk.Window):
 			self.keep_pulsing=False
 			self.dialog.destroy()
 			if condition == 0:
-				command = ["/usr/bin/gpg", '--no-default-keyring', '--keyring', '/tmp/monkeysign.gpg', '--with-colons', '--list-keys', fpr]
+				command = ["/usr/bin/gpg", '--homedir', self.tempdir, '--with-colons', '--list-keys', fpr]
 				proc = subprocess.Popen(command, stdout=subprocess.PIPE)
 				(stdout, stderr) = proc.communicate()
 				stdout = stdout.split("\n")
@@ -176,10 +183,10 @@ class MonkeysignScan(gtk.Window):
 
 			# Disable video capture
 			self.zbar.set_video_enabled(False)
-			command = ["/usr/bin/gpg", '--no-default-keyring', '--keyring', '/tmp/monkeysign.gpg', '--keyserver', 'pool.sks-keyservers.net', '--recv-keys', fpr]
-			self.dialog = gtk.Dialog(title="Found OpenPGP key fingerprint", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
+			command = ["/usr/bin/gpg", '--homedir', self.tempdir, '--keyserver', self.keyserver, '--recv-keys', fpr]
+			self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
 			self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
-			message = gtk.Label("Retrieving public key from server")
+			message = gtk.Label("Retrieving public key from server...")
 			message.show()
 			self.progressbar = gtk.ProgressBar()
 			self.progressbar.show()
@@ -195,7 +202,8 @@ class MonkeysignScan(gtk.Window):
 			return
 
 	def destroy(self, widget, data=None):
-		self.zbar.set_video_active(False)
+		self.zbar.set_video_enabled(False)
+		shutil.rmtree(self.tempdir)
 		gtk.main_quit()
 
 	def main(self):
