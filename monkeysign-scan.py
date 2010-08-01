@@ -151,7 +151,7 @@ class MonkeysignScan(gtk.Window):
 							self.resume_capture()
 						md.destroy()
 			else:
-				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key not found.")
+				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key " + fpr + " not found.")
 				gtk.gdk.threads_enter()
 				md.run()
 				gtk.gdk.threads_leave()
