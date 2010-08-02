@@ -15,7 +15,7 @@ can build a little rogue's gallery of the people that you have met and
 exchanged keys with!
 
 Requirements:
-* qrencode python bindings (http://pypi.python.org/pypi/qrencode/1.01)
+* python-qrencode
 * python-gtk2
 * python-pyme
 * python-zbarpygtk
