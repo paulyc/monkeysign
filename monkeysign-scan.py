@@ -160,7 +160,7 @@ class MonkeysignScan(gtk.Window):
 			return
 
 		# Look for prefix and hexadecimal 40-ascii-character fingerprint
-		m = re.search("OPENPGP4FPR:([0-9A-F]{40})", data)
+		m = re.search("((?:[0-9A-F]{4}\s*){10})", data)
 
 		if m != None:
 			# Found fingerprint
