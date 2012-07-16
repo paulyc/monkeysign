@@ -26,6 +26,12 @@ class MonkeysignScan(gtk.Window):
 	# Keyserver to use
 	keyserver = "pool.sks-keyservers.net"
 
+        # secret keyring used to sign keys
+        secret_keyring = os.environ['HOME'] + '/.gnupg/secring.gpg'
+
+        # extra keyring to add, this should have the public key from the above keyring
+        keyring = os.environ['HOME'] + '/.gnupg/pubring.gpg'
+
 	# Create tempdir for gpg operations
 	tempdir = tempfile.mkdtemp(prefix="monkeysign-")
 
@@ -148,10 +154,7 @@ class MonkeysignScan(gtk.Window):
 						response = md.run()
 						gtk.gdk.threads_leave()
 						if response == gtk.RESPONSE_YES:
-                                                        # user has accepted, send the key to the keyserver
-                                                        # XXX: jrollins has idea on what to do next here
-                                                        print "we're supposed to sign the key here"
-                                                        print "here's the fingerprint " + fpr
+                                                        self.sign_key_and_forget(fpr)
                                                 self.resume_capture()
 						md.destroy()
 			else:
@@ -203,6 +206,17 @@ class MonkeysignScan(gtk.Window):
 			return
 		else:
                         print "ignoring found data: " + data
+
+        def sign_key_and_forget(self, fpr):
+                # command from caff: gpg-sign --local-user $local_user --homedir=$GNUPGHOME --secret-keyring $secret_keyring --no-auto-check-trustdb --trust-model=always --edit sign
+                command = ["/usr/bin/gpg", '--homedir', self.tempdir, '--keyring', self.keyring, '--status-fd', "1", '--command-fd', '0', '--no-tty', '--use-agent', '--secret-keyring', self.secret_keyring, '--sign-key', fpr]
+                proc = subprocess.Popen(command, 0, None, subprocess.PIPE)
+                proc.stdin.write("y\n")
+
+                command = ['gpg', '--homedir', self.tempdir, '--export', '--armor', fpr]
+                proc = subprocess.Popen(command)
+                key = proc.stdout.read()
+                return
 
 	def resume_capture(self):
 		self.zbarframe.remove(self.capture)
