@@ -197,6 +197,8 @@ class MonkeysignScan(gtk.Window):
 			if self.dialog.run() == gtk.RESPONSE_CANCEL:
 				proc.kill()
 			return
+		else:
+                        print "ignoring found data: " + data
 
 	def resume_capture(self):
 		self.zbarframe.remove(self.capture)
