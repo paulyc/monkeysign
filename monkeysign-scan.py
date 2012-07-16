@@ -147,8 +147,12 @@ class MonkeysignScan(gtk.Window):
 						gtk.gdk.threads_enter()
 						response = md.run()
 						gtk.gdk.threads_leave()
-						if response == gtk.RESPONSE_NO:
-							self.resume_capture()
+						if response == gtk.RESPONSE_YES:
+                                                        # user has accepted, send the key to the keyserver
+                                                        # XXX: jrollins has idea on what to do next here
+                                                        print "we're supposed to sign the key here"
+                                                        print "here's the fingerprint " + fpr
+                                                self.resume_capture()
 						md.destroy()
 			else:
 				md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key " + fpr + " not found.")
