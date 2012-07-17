@@ -225,9 +225,6 @@ class MonkeysignScan(gtk.Window):
                 shutil.rmtree(self.tempdir)
                 gtk.main_quit()
 
-        def main(self):
-                gtk.main()
-
 if __name__ == '__main__':
         # threads *must* be properly initialized to use zbarpygtk
         gtk.gdk.threads_init()
