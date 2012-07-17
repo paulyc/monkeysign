@@ -9,6 +9,34 @@ import tempfile, shutil
 import Image, StringIO
 import zbar, zbarpygtk
 
+class MonkeysignKeyring():
+
+        # secret keyring used to sign keys
+        secret_keyring = os.environ['HOME'] + '/.gnupg/secring.gpg'
+
+        # extra keyring to add, this should have the public key from the above keyring
+        keyring = os.environ['HOME'] + '/.gnupg/pubring.gpg'
+
+        # Create tempdir for gpg operations
+        homedir = tempfile.mkdtemp(prefix="monkeysign-")
+
+        def __init__(self):
+                return
+
+        def __del__(self):
+                shutil.rmtree(self.homedir)                
+
+        def sign_key_and_forget(self, fpr):
+                # command from caff: gpg-sign --local-user $local_user --homedir=$GNUPGHOME --secret-keyring $secret_keyring --no-auto-check-trustdb --trust-model=always --edit sign
+                command = ["/usr/bin/gpg", '--homedir', self.tmpkeyring.homedir, '--keyring', self.keyring, '--status-fd', "1", '--command-fd', '0', '--no-tty', '--use-agent', '--secret-keyring', self.secret_keyring, '--sign-key', fpr]
+                proc = subprocess.Popen(command, 0, None, subprocess.PIPE)
+                proc.stdin.write("y\n")
+
+                command = ['gpg', '--homedir', self.tmpkeyring.homedir, '--export', '--armor', fpr]
+                proc = subprocess.Popen(command)
+                key = proc.stdout.read()
+                return
+
 class MonkeysignScan(gtk.Window):
 
         ui = '''<ui>
@@ -22,14 +50,7 @@ class MonkeysignScan(gtk.Window):
         # Keyserver to use
         keyserver = "pool.sks-keyservers.net"
 
-        # secret keyring used to sign keys
-        secret_keyring = os.environ['HOME'] + '/.gnupg/secring.gpg'
-
-        # extra keyring to add, this should have the public key from the above keyring
-        keyring = os.environ['HOME'] + '/.gnupg/pubring.gpg'
-
-        # Create tempdir for gpg operations
-        tempdir = tempfile.mkdtemp(prefix="monkeysign-")
+        keyring = MonkeysignKeyring()
 
         def __init__(self):
                 super(MonkeysignScan, self).__init__()
@@ -138,7 +159,7 @@ class MonkeysignScan(gtk.Window):
                         self.keep_pulsing=False
                         self.dialog.destroy()
                         if condition == 0:
-                                command = ["/usr/bin/gpg", '--homedir', self.tempdir, '--with-colons', '--list-keys', fpr]
+                                command = ["/usr/bin/gpg", '--homedir', self.keyring.homedir, '--with-colons', '--list-keys', fpr]
                                 proc = subprocess.Popen(command, stdout=subprocess.PIPE)
                                 (stdout, stderr) = proc.communicate()
                                 stdout = stdout.split("\n")
@@ -150,7 +171,7 @@ class MonkeysignScan(gtk.Window):
                                                 response = md.run()
                                                 gtk.gdk.threads_leave()
                                                 if response == gtk.RESPONSE_YES:
-                                                        self.sign_key_and_forget(fpr)
+                                                        self.keyring.sign_key_and_forget(fpr)
                                                 self.resume_capture()
                                                 md.destroy()
                         else:
@@ -183,7 +204,7 @@ class MonkeysignScan(gtk.Window):
 
                         # Disable video capture
                         self.zbar.set_video_enabled(False)
-                        command = ["/usr/bin/gpg", '--homedir', self.tempdir, '--keyserver', self.keyserver, '--recv-keys', fpr]
+                        command = ["/usr/bin/gpg", '--homedir', self.keyring.homedir, '--keyserver', self.keyserver, '--recv-keys', fpr]
                         self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
                         self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
                         message = gtk.Label("Retrieving public key from server...")
@@ -203,17 +224,6 @@ class MonkeysignScan(gtk.Window):
                 else:
                         print "ignoring found data: " + data
 
-        def sign_key_and_forget(self, fpr):
-                # command from caff: gpg-sign --local-user $local_user --homedir=$GNUPGHOME --secret-keyring $secret_keyring --no-auto-check-trustdb --trust-model=always --edit sign
-                command = ["/usr/bin/gpg", '--homedir', self.tempdir, '--keyring', self.keyring, '--status-fd', "1", '--command-fd', '0', '--no-tty', '--use-agent', '--secret-keyring', self.secret_keyring, '--sign-key', fpr]
-                proc = subprocess.Popen(command, 0, None, subprocess.PIPE)
-                proc.stdin.write("y\n")
-
-                command = ['gpg', '--homedir', self.tempdir, '--export', '--armor', fpr]
-                proc = subprocess.Popen(command)
-                key = proc.stdout.read()
-                return
-
         def resume_capture(self):
                 self.zbarframe.remove(self.capture)
                 self.zbarframe.add(self.zbar)
@@ -222,7 +232,7 @@ class MonkeysignScan(gtk.Window):
 
         def destroy(self, widget, data=None):
                 self.zbar.set_video_enabled(False)
-                shutil.rmtree(self.tempdir)
+                del self.keyring
                 gtk.main_quit()
 
 if __name__ == '__main__':
