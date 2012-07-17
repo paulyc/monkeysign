@@ -9,10 +9,6 @@ import tempfile, shutil
 import Image, StringIO
 import zbar, zbarpygtk
 
-# threads *must* be properly initialized to use zbarpygtk
-gtk.gdk.threads_init()
-gtk.gdk.threads_enter()
-
 class MonkeysignScan(gtk.Window):
 
 	ui = '''<ui>
@@ -232,6 +228,11 @@ class MonkeysignScan(gtk.Window):
 	def main(self):
 		gtk.main()
 
-MonkeysignScan()
-gtk.main()
-gtk.gdk.threads_leave()
+if __name__ == '__main__':
+        # threads *must* be properly initialized to use zbarpygtk
+        gtk.gdk.threads_init()
+        gtk.gdk.threads_enter()
+
+        MonkeysignScan()
+        gtk.main()
+        gtk.gdk.threads_leave()
