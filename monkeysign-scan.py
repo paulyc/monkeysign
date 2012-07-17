@@ -45,9 +45,9 @@ class MonkeysignScan(gtk.Window):
 		self.add_accel_group(accelgroup)
 		actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
 		actiongroup.add_actions([
-															('File', None, '_File'),
-															('Quit', gtk.STOCK_QUIT, '_Quit', None, None, self.destroy),
-														])
+                                ('File', None, '_File'),
+                                ('Quit', gtk.STOCK_QUIT, '_Quit', None, None, self.destroy),
+                                ])
 		uimanager.insert_action_group(actiongroup, 0)
 		uimanager.add_ui_from_string(self.ui)
 		menubar = uimanager.get_widget('/MenuBar')
@@ -61,14 +61,14 @@ class MonkeysignScan(gtk.Window):
 		self.video_cb.pack_start(cell, True)
 		self.video_cb.add_attribute(cell, 'text', 0)
 		for (root, dirs, files) in os.walk("/dev"):
-				for dev in files:
-						path = os.path.join(root, dev)
-						if not os.access(path, os.F_OK):
-							continue
-						info = os.stat(path)
-						if stat.S_ISCHR(info.st_mode) and os.major(info.st_rdev) == 81:
-							video_found = True
-							self.video_ls.append([path])
+                        for dev in files:
+                                path = os.path.join(root, dev)
+                                if not os.access(path, os.F_OK):
+                                        continue
+                                info = os.stat(path)
+                                if stat.S_ISCHR(info.st_mode) and os.major(info.st_rdev) == 81:
+                                        video_found = True
+                                        self.video_ls.append([path])
 		self.video_cb.connect("changed", self.video_changed)
 
 		# Webcam preview display
