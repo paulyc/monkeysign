@@ -23,16 +23,29 @@ class MonkeysignScan(gtk.Window):
         # Keyserver to use
         keyserver = "pool.sks-keyservers.net"
 
-        tmpkeyring = monkeysign.GpgTemp()
-        pubkeyring = monkeysign.Gpg()
-
         # the current fingerprint being processed
         fpr = ''
 
-        signing_key = '7B75921E'
+        # the current signing key, guessed from secret key material for now
+        signing_key = ''
 
         def __init__(self):
                 super(MonkeysignScan, self).__init__()
+
+                self.tmpkeyring = monkeysign.GpgTemp()
+                self.pubkeyring = monkeysign.Gpg()
+
+                # get the list of secret keys and guess (the first valid one
+                #self.pubkeyring.debug = sys.stderr
+                keys = self.pubkeyring.get_keys(None, True)
+                print "keys: " + str(keys)
+                for fpr, key in keys.iteritems():
+                        if not key.invalid and not key.disabled and not key.expired and not key.revoked:
+                                self.signing_key = fpr
+                                break
+
+                if self.signing_key is None:
+                        print >>sys.stderr, 'no default secret key found, abort!'
 
                 # Set up main window
                 self.set_title("Monkeysign (scan)")
