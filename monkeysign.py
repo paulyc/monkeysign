@@ -200,6 +200,51 @@ class Gpg():
                 """
                 return self.call_command(['sign-key', fpr], "y\ny\n")
 
+        def expect(self, fd, pattern = '^\[GNUPG:\]'):
+                line = fd.readline()
+                while not re.search(pattern, line):
+                        if self.debug: print >>self.debug, "skipped:", line,
+                        line = fd.readline()
+                if self.debug: print >>self.debug, "FOUND:", line,
+
+        def expect_status(self, fd, name):
+                self.expect(fd, '^\[GNUPG:\] ' + name)
+
+        def sign_uid(self, uid):
+                """sign a specific uid on a key"""
+                self.unset_option('batch')
+                self.unset_option('quiet')
+
+                import sys
+
+                for fpr, key in self.get_keys(uid).iteritems():
+                        index = None
+                        for i in range(0, len(key.uidslist)):
+                                if key.uidslist[i].uid == uid:
+                                        index = i
+                        if self.debug:
+                                print >>self.debug, 'command:', self.build_command(['sign-key', key.fpr])
+                        proc = subprocess.Popen(self.build_command(['sign-key', key.fpr]), 0, None, subprocess.PIPE, subprocess.PIPE, sys.stderr)
+                        self.expect_status(proc.stdout, 'GET_BOOL keyedit.sign_all.okay')
+                        print >>proc.stdin, "n"
+                        self.expect_status(proc.stdout, 'GOT_IT')
+                        self.expect_status(proc.stdout, 'GET_LINE keyedit.prompt')
+                        print >>proc.stdin, str(index+1)
+                        self.expect_status(proc.stdout, 'GOT_IT')
+                        self.expect_status(proc.stdout, 'GET_LINE keyedit.prompt')
+                        print >>proc.stdin, "sign"
+                        self.expect_status(proc.stdout, 'GOT_IT')
+                        self.expect_status(proc.stdout, 'GET_BOOL sign_uid.okay')
+                        print >>proc.stdin, 'y'
+                        self.expect_status(proc.stdout, 'GOT_IT')
+                        self.expect_status(proc.stdout, 'GOOD_PASSPHRASE')
+                        self.expect_status(proc.stdout, 'GET_LINE keyedit.prompt')
+                        print >>proc.stdin, "save"
+                        self.expect_status(proc.stdout, 'GOT_IT')
+                        print >>sys.stderr, "final:", proc.communicate()
+                        return proc.wait() == 0
+                        #return self.call_command(['sign-key', key.fpr], "n\n%d\nsign\ny\nsave\n" % index, sys.stdout, sys.stderr)
+
 class GpgTemp(Gpg):
         def __init__(self):
                 """Override the parent class to generate a temporary
@@ -287,6 +332,7 @@ class OpenPGPkey():
                 return self.fpr[-l:]
 
         def parse_gpg_list(self, text):
+                uidslist = []
                 for block in text.split("\n"):
                         record = block.split(":")
                         #for block in record:
@@ -303,7 +349,9 @@ class OpenPGPkey():
                                         self.purpose[p] = p[0].lower() in purpose.lower()
                         elif rectype == 'uid':
                                 (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = record
-                                self.uids[uidhash] = OpenPGPuid(uid, trust, creation, expiry, uidhash)
+                                uid = OpenPGPuid(uid, trust, creation, expiry, uidhash)
+                                self.uids[uidhash] = uid
+                                uidslist.append(uid)
                         elif rectype == 'sub':
                                 subkey = OpenPGPkey()
                                 (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record
@@ -325,6 +373,7 @@ class OpenPGPkey():
                                 pass
                         else:
                                 raise NotImplementedError("record type '%s' not implemented" % rectype)
+                if uidslist: self.uidslist = uidslist
 
         def __str__(self):
                 ret = "pub    " + self.length + "R/" 
