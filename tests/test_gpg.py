@@ -154,14 +154,13 @@ class TestGpgCaff(unittest.TestCase):
 
     def test_sign_key_from_other(self):
         gpg = Gpg()
+        gpg.set_option('export-options', 'export-minimal')
         self.assertTrue(self.gpgtmp.import_data(gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E')))
-        self.assertTrue(self.gpgtmp.import_data(gpg.export_data('343CA353')))
-        secrets = gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E', True)
-        self.assertTrue(secrets)
-        self.assertTrue(self.gpgtmp.import_data(secrets))
-        self.assertTrue(self.gpgtmp.sign_key('343CA353'))
+        self.assertTrue(self.gpgtmp.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpgtmp.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpgtmp.sign_key('7B75921E'))
         self.gpgtmp.set_option('armor')
-        export = self.gpgtmp.export_data('343CA353')
+        export = self.gpgtmp.export_data('7B75921E')
         print export
         self.assertTrue(export)
         del gpg
