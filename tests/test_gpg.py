@@ -27,14 +27,14 @@ class TestGpgTmp(unittest.TestCase):
 class TestGpg(unittest.TestCase):
     # those need to match the options in the Gpg class
     options = { 'status-fd': 1,
-                    'command-fd': 0,
-                    'no-tty': None,
-                    'use-agent': None,
-                    'with-colons': None,
-                    'with-fingerprint': None,
-                    'fixed-list-mode': None,
-                    'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
-                    }
+                'command-fd': 0,
+                'no-tty': None,
+                'use-agent': None,
+                'with-colons': None,
+                'with-fingerprint': None,
+                'fixed-list-mode': None,
+                'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
+                }
 
     # ... and this is the rendered version of the above
     rendered_options = ['gpg', '--command-fd', '0', '--fixed-list-mode', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--use-agent', '--no-tty', '--with-colons', '--status-fd', '1' ]
