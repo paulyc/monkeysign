@@ -200,15 +200,26 @@ class Gpg():
                 """
                 return self.call_command(['sign-key', fpr], "y\ny\n")
 
-        def expect(self, fd, pattern = '^\[GNUPG:\]'):
+        def seek_pattern(self, fd, pattern):
                 line = fd.readline()
                 while not re.search(pattern, line):
                         if self.debug: print >>self.debug, "skipped:", line,
                         line = fd.readline()
                 if self.debug: print >>self.debug, "FOUND:", line,
 
-        def expect_status(self, fd, name):
-                self.expect(fd, '^\[GNUPG:\] ' + name)
+        def seek(self, fd, pattern):
+                return self.seek_pattern(fd, '^\[GNUPG:\] ' + pattern)
+
+        def expect_pattern(self, fd, pattern):
+                line = fd.readline()
+                if re.search(pattern, line):
+                        if self.debug: print >>self.debug, "FOUND:", line,
+                        return line
+                else:
+                        raise IOError("unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
+
+        def expect(self, fd, pattern):
+                return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
         def sign_uid(self, uid):
                 """sign a specific uid on a key"""
@@ -225,25 +236,24 @@ class Gpg():
                         if self.debug:
                                 print >>self.debug, 'command:', self.build_command(['sign-key', key.fpr])
                         proc = subprocess.Popen(self.build_command(['sign-key', key.fpr]), 0, None, subprocess.PIPE, subprocess.PIPE, sys.stderr)
-                        self.expect_status(proc.stdout, 'GET_BOOL keyedit.sign_all.okay')
+                        self.seek(proc.stdout, 'GET_BOOL keyedit.sign_all.okay')
                         print >>proc.stdin, "n"
-                        self.expect_status(proc.stdout, 'GOT_IT')
-                        self.expect_status(proc.stdout, 'GET_LINE keyedit.prompt')
+                        self.expect(proc.stdout, 'GOT_IT')
+                        self.expect(proc.stdout, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, str(index+1)
-                        self.expect_status(proc.stdout, 'GOT_IT')
-                        self.expect_status(proc.stdout, 'GET_LINE keyedit.prompt')
+                        self.expect(proc.stdout, 'GOT_IT')
+                        self.seek(proc.stdout, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, "sign"
-                        self.expect_status(proc.stdout, 'GOT_IT')
-                        self.expect_status(proc.stdout, 'GET_BOOL sign_uid.okay')
+                        self.expect(proc.stdout, 'GOT_IT')
+                        self.seek(proc.stdout, 'GET_BOOL sign_uid.okay')
                         print >>proc.stdin, 'y'
-                        self.expect_status(proc.stdout, 'GOT_IT')
-                        self.expect_status(proc.stdout, 'GOOD_PASSPHRASE')
-                        self.expect_status(proc.stdout, 'GET_LINE keyedit.prompt')
+                        self.expect(proc.stdout, 'GOT_IT')
+                        self.expect(proc.stdout, 'GOOD_PASSPHRASE')
+                        self.expect(proc.stdout, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, "save"
-                        self.expect_status(proc.stdout, 'GOT_IT')
-                        print >>sys.stderr, "final:", proc.communicate()
+                        self.expect(proc.stdout, 'GOT_IT')
+                        proc.communicate() # shouldn't be necessary
                         return proc.wait() == 0
-                        #return self.call_command(['sign-key', key.fpr], "n\n%d\nsign\ny\nsave\n" % index, sys.stdout, sys.stderr)
 
 class GpgTemp(Gpg):
         def __init__(self):
