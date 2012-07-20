@@ -66,14 +66,11 @@ class TestGpg(unittest.TestCase):
     def test_import(self):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
 
-    def test_import_again(self):
-        # shouldn't this fail to import the second time?
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-
     def test_import_fail(self):
         self.assertFalse(self.gpg.import_data(''))
 
     def test_export(self):
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         k1 = open(os.path.dirname(__file__) + '/7B75921E.asc').read()
         self.gpg.set_option('armor')
         self.gpg.set_option('export-options', 'export-minimal')
