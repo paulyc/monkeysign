@@ -5,7 +5,12 @@ sys.path.append(os.path.dirname(__file__) + '/..')
 
 from monkeysign import Gpg, GpgTemp
 
-class TestGpg(unittest.TestCase):
+class TestGpgPlain(unittest.TestCase):
+    def test_plain(self):
+        g = Gpg()
+        self.assertNotIn('homedir', g.options)
+
+class TestGpgTmp(unittest.TestCase):
     def setUp(self):
         self.gpg = Gpg('/tmp/gpg-home')
 

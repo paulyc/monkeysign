@@ -24,18 +24,19 @@ class Gpg():
         # a list of key => value commandline options
         #
         # to pass a flag without options, use None as the value
-        options = { 'status-fd': 1,
-                    'command-fd': 0,
-                    'no-tty': None,
-                    'use-agent': None,
-                    'with-colons': None,
-                    'with-fingerprint': None,
-                    'fixed-list-mode': None,
-                    'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
-                    }
+        options = {}
 
         def __init__(self, homedir=None):
                 """f"""
+                self.options = { 'status-fd': 1,
+                            'command-fd': 0,
+                            'no-tty': None,
+                            'use-agent': None,
+                            'with-colons': None,
+                            'with-fingerprint': None,
+                            'fixed-list-mode': None,
+                            'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
+                            }
                 if homedir is not None:
                         os.environ['GPG_HOME'] = homedir
 
