@@ -78,7 +78,8 @@ class TestGpg(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
 
     def test_import_fail(self):
-        self.assertFalse(self.gpg.import_data(''))
+        with self.assertRaises(IOError):
+            self.assertFalse(self.gpg.import_data(''))
 
     def test_export(self):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
