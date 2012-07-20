@@ -20,8 +20,8 @@ class TestGpgTemp(unittest.TestCase):
     rendered_options = ['gpg', '--command-fd', '0', '--no-tty', '--status-fd', '1', '--use-agent']
 
     def setUp(self):
-        # we test using the temporary keyring because it's too dangerous otherwise
         if 'GPG_HOME' in os.environ: del os.environ['GPG_HOME']
+        # we test using the temporary keyring because it's too dangerous otherwise
         self.gpg = GpgTemp()
 
     def test_set_option(self):
