@@ -88,7 +88,7 @@ class Gpg():
                                 options += [str(right)]
                 if type(command) is str:
                         command = [command]
-                if len(command) > 0:
+                if len(command) > 0 and command[0][0:2] != '--':
                         command[0] = '--' + command[0]
                 return [self.gpg_binary] + options + command
 
