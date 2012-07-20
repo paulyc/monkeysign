@@ -35,7 +35,7 @@ class TestGpgTemp(unittest.TestCase):
 
     def test_export(self):
         k1 = open(os.path.dirname(__file__) + '/7B75921E.asc').read()
-        self.gpg.add_option('--armor')
+        self.gpg.add_option(['--armor'])
         k2 = self.gpg.export_data('7B75921E')
         self.assertEqual(k1,k2)
 

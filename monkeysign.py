@@ -21,6 +21,8 @@ class Gpg():
         # the gpg binary to call
         gpg_binary = 'gpg'
 
+        options = ['--status-fd', '1', '--command-fd', '0', '--no-tty', '--use-agent']
+
         def __init__(self, homedir=None):
                 """f"""
                 if homedir is None:
@@ -29,13 +31,15 @@ class Gpg():
                 else:
                         os.environ['GPG_HOME'] = homedir
 
+        def add_option(self, option):
+                """half-assed. we need an associative array of options and use get/setters"""
+                self.options += option
+
         def build_command(self, command):
                 """internal wrapper around gpg command
 
                 this will add relevant arguments around the gpg binary"""
-                c = [self.gpg_binary, '--status-fd', '1', '--command-fd', '0', '--no-tty', '--use-agent']
-                c[len(c):] = command
-                return c
+                return [self.gpg_binary] + self.options + command
 
         def version(self, type='short'):
                 proc = subprocess.Popen(self.build_command(['--version']), stdout=subprocess.PIPE)
