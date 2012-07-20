@@ -137,7 +137,6 @@ class TestGpg(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.gpg.debug = sys.stderr
         self.assertTrue(self.gpg.sign_uid('Antoine Beaupré <anarcat@debian.org>'))
         self.assertNotEqual(self.gpg.stdout, '')
         self.gpg.call_command(['list-sigs', '7B75921E'])
