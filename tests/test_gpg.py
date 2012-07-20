@@ -72,5 +72,17 @@ class TestGpgTemp(unittest.TestCase):
     def tearDown(self):
         del self.gpg
 
+class TestGpgNetwork(unittest.TestCase):
+    """Seperate test cases for functions that hit the network"""
+
+    def setUp(self):
+        self.gpg = GpgTemp()
+
+    def test_fetch_keys(self):
+        self.assertTrue(self.gpg.fetch_keys('4023702F'))
+
+    def tearDown(self):
+        del self.gpg
+
 if __name__ == '__main__':
     unittest.main()
