@@ -35,6 +35,7 @@ class Gpg():
                 self.options = { 'status-fd': 1,
                                  'command-fd': 0,
                                  'no-tty': None,
+                                 'batch': None,
                                  'use-agent': None,
                                  'with-colons': None,
                                  'with-fingerprint': None,
