@@ -23,7 +23,8 @@ class MonkeysignScan(gtk.Window):
         # Keyserver to use
         keyserver = "pool.sks-keyservers.net"
 
-        keyring = monkeysign.Keyring()
+        tmpkeyring = monkeysign.GpgTemp()
+        pubkeyring = monkeysign.Gpg()
 
         def __init__(self):
                 super(MonkeysignScan, self).__init__()
@@ -132,19 +133,13 @@ class MonkeysignScan(gtk.Window):
                         self.keep_pulsing=False
                         self.dialog.destroy()
                         if condition == 0:
-                                command = ["/usr/bin/gpg", '--homedir', self.keyring.homedir, '--with-colons', '--list-keys', fpr]
-                                proc = subprocess.Popen(command, stdout=subprocess.PIPE)
-                                (stdout, stderr) = proc.communicate()
-                                stdout = stdout.split("\n")
-                                for line in stdout:
-                                        if line.startswith("pub"):
-                                                uid = line.split(":")[9]
-                                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "Would you like to certify this key/userid pair ?\n\nFingerprint : " + fpr + "\nOwner : " + uid)
+                                for fpr, key in self.tmpkeyring.get_keys(fpr).iteritems():
+                                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "Would you like to certify this key/userid pair ?\n\nFingerprint : " + fpr + "\nFull key : " + key)
                                                 gtk.gdk.threads_enter()
                                                 response = md.run()
                                                 gtk.gdk.threads_leave()
                                                 if response == gtk.RESPONSE_YES:
-                                                        self.keyring.sign_key_and_forget(fpr)
+                                                        self.tmpkeyring.sign_key(fpr)
                                                 self.resume_capture()
                                                 md.destroy()
                         else:
@@ -177,7 +172,8 @@ class MonkeysignScan(gtk.Window):
 
                         # Disable video capture
                         self.zbar.set_video_enabled(False)
-                        command = ["/usr/bin/gpg", '--homedir', self.keyring.homedir, '--keyserver', self.keyserver, '--recv-keys', fpr]
+                        self.tmpkeyring.set_option('keyserver', self.keyserver)
+                        command = self.tmpkeyring.build_command(['recv-keys', fpr])
                         self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
                         self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
                         message = gtk.Label("Retrieving public key from server...")
@@ -205,7 +201,7 @@ class MonkeysignScan(gtk.Window):
 
         def destroy(self, widget, data=None):
                 self.zbar.set_video_enabled(False)
-                self.keyring.__del__()
+                del self.tmpkeyring
                 gtk.main_quit()
 
 if __name__ == '__main__':
