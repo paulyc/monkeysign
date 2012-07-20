@@ -160,7 +160,7 @@ class Gpg():
                 self.call_command(['recv-keys', fpr])
                 return self.returncode == 0
 
-        def get_keys(self, pattern, secret = False, public = True):
+        def get_keys(self, pattern = None, secret = False, public = True):
                 """load keys matching a specific patterns
 
                 this uses the (rather poor) list-keys API to load keys
@@ -168,7 +168,9 @@ class Gpg():
                 """
                 keys = {}
                 if public:
-                        self.call_command(['list-keys', pattern])
+                        command = ['list-keys']
+                        if pattern: command += [pattern]
+                        self.call_command(command)
                         if self.returncode == 0:
                                 key = OpenPGPkey()
                                 key.parse_gpg_list(self.stdout)
@@ -178,7 +180,9 @@ class Gpg():
                         else:
                                 raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
                 if secret:
-                        self.call_command(['list-secret-keys', pattern])
+                        command = ['list-secret-keys']
+                        if pattern: command += [pattern]
+                        self.call_command(command)
                         if self.returncode == 0:
                                 key = OpenPGPkey()
                                 key.parse_gpg_list(self.stdout)
