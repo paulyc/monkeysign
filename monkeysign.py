@@ -234,16 +234,16 @@ class OpenPGPkey():
         Some of this datastructure is taken verbatim from GPGME.
         """
 
-        # the subkeys of this key, which are also OpenPGPkeys
-        subkey = []
-
         # the key has a revocation certificate
+        # @todo - not implemented
         revoked = False
 
         # the expiry date is set and it is passed
+        # @todo - not implemented
         expired = False
 
         # the key has been disabled
+        # @todo - not implemented
         disabled = False
 
         # ?
@@ -258,13 +258,14 @@ class OpenPGPkey():
 
         # This is true if the subkey can be used for qualified
         # signatures according to local government regulations.
+        # @todo - not implemented
         qualified = False
 
         # this key has also secret key material
         secret = False
 
         # This is the public key algorithm supported by this subkey.
-        algo = ''
+        algo = -1
 
         # This is the length of the subkey (in bits).
         length = None
