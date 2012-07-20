@@ -26,6 +26,10 @@ class Gpg():
         # to pass a flag without options, use None as the value
         options = {}
 
+        # whether to paste output here and there
+        # if not false, needs to be a file descriptor
+        debug = False
+
         def __init__(self, homedir=None):
                 """f"""
                 self.options = { 'status-fd': 1,
@@ -106,6 +110,9 @@ class Gpg():
                 proc = subprocess.Popen(self.build_command(command), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
                 (self.stdout, self.stderr) = proc.communicate(stdin)
                 self.returncode = proc.returncode
+                if self.debug:
+                        print >>self.debug, 'command:', self.build_command(command)
+                        print >>self.debug, 'ret:', self.returncode, 'stdout:', self.stdout, 'stderr:', self.stderr
                 return proc.returncode == 0
 
         def version(self, type='short'):
