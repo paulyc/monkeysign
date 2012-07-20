@@ -32,7 +32,7 @@ class Gpg():
 
         def __init__(self, homedir=None):
                 """f"""
-                self.options = { 'status-fd': 1,
+                self.options = { 'status-fd': 2,
                                  'command-fd': 0,
                                  'no-tty': None,
                                  'quiet': None,
@@ -239,23 +239,23 @@ class Gpg():
                                         index = i
                         if self.debug:
                                 print >>self.debug, 'command:', self.build_command(['sign-key', key.fpr])
-                        proc = subprocess.Popen(self.build_command(['sign-key', key.fpr]), 0, None, subprocess.PIPE, subprocess.PIPE, sys.stderr)
-                        self.seek(proc.stdout, 'GET_BOOL keyedit.sign_all.okay')
+                        proc = subprocess.Popen(self.build_command(['sign-key', key.fpr]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+                        self.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
                         print >>proc.stdin, "n"
-                        self.expect(proc.stdout, 'GOT_IT')
-                        self.expect(proc.stdout, 'GET_LINE keyedit.prompt')
+                        self.expect(proc.stderr, 'GOT_IT')
+                        self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, str(index+1)
-                        self.expect(proc.stdout, 'GOT_IT')
-                        self.seek(proc.stdout, 'GET_LINE keyedit.prompt')
+                        self.expect(proc.stderr, 'GOT_IT')
+                        self.seek(proc.stderr, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, "sign"
-                        self.expect(proc.stdout, 'GOT_IT')
-                        self.seek(proc.stdout, 'GET_BOOL sign_uid.okay')
+                        self.expect(proc.stderr, 'GOT_IT')
+                        self.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
                         print >>proc.stdin, 'y'
-                        self.expect(proc.stdout, 'GOT_IT')
-                        self.expect(proc.stdout, 'GOOD_PASSPHRASE')
-                        self.expect(proc.stdout, 'GET_LINE keyedit.prompt')
+                        self.expect(proc.stderr, 'GOT_IT')
+                        self.expect(proc.stderr, 'GOOD_PASSPHRASE')
+                        self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, "save"
-                        self.expect(proc.stdout, 'GOT_IT')
+                        self.expect(proc.stderr, 'GOT_IT')
                         proc.communicate() # shouldn't be necessary
                         return proc.wait() == 0
 

@@ -29,7 +29,7 @@ class TestGpgTmp(unittest.TestCase):
 
 class TestGpg(unittest.TestCase):
     # those need to match the options in the Gpg class
-    options = { 'status-fd': 1,
+    options = { 'status-fd': 2,
                 'command-fd': 0,
                 'no-tty': None,
                 'batch': None,
@@ -42,7 +42,7 @@ class TestGpg(unittest.TestCase):
                 }
 
     # ... and this is the rendered version of the above
-    rendered_options = ['gpg', '--command-fd', '0', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--batch', '--fixed-list-mode', '--no-tty', '--with-colons', '--use-agent', '--status-fd', '1', '--quiet' ]
+    rendered_options = ['gpg', '--command-fd', '0', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--batch', '--fixed-list-mode', '--no-tty', '--with-colons', '--use-agent', '--status-fd', '2', '--quiet' ]
 
     def setUp(self):
         # we test using the temporary keyring because it's too dangerous otherwise
