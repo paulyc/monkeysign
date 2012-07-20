@@ -77,6 +77,14 @@ class TestGpgTemp(unittest.TestCase):
         k2 = self.gpg.export_data('7B75921E')
         self.assertEqual(k1,k2)
 
+    def test_get_keys(self):
+        #k1 = OpenPGPKey()
+        #k1.fingerprint = '8DC901CE64146C048AD50FBB792152527B75921E'
+        #k1.secret = False
+        # just a cute display for now
+        for fpr, key in self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E').iteritems():
+            print >>sys.stderr, key
+
     def tearDown(self):
         del self.gpg
 

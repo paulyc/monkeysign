@@ -149,6 +149,52 @@ class Gpg():
                         self.set_option('keyserver', keyserver)
                 self.call_command(['recv-keys', fpr])
                 return self.returncode == 0
+
+        def get_keys(self, pattern, secret = False, public = True):
+                keys = {}
+                if public:
+                        self.call_command(['list-keys', pattern])
+                        if self.returncode == 0:
+                                key = OpenPGPkey()
+                                for line in self.stdout.split("\n"):
+                                        blocks = line.split(":")
+                                        #for block in blocks:
+                                        #        print >>sys.stderr, block, "|\t",
+                                        #print >>sys.stderr, "\n"
+                                        rectype = blocks[0]
+                                        if rectype == 'tru':
+                                                (rectype, trust, keylen, algo, keyid, creation, expiry, serial) = blocks
+                                        elif rectype == 'fpr':
+                                                key.fpr = blocks[9]
+                                        elif rectype == 'pub':
+                                                (null, trust, key.length, key.algo, keyid, key.creation, key.expiry, serial, trust, uid, sigclass, purpose, smime) = blocks
+                                                for p in key.purpose:
+                                                        key.purpose[p] = p[0].lower() in purpose.lower()
+                                        elif rectype == 'uid':
+                                                (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = blocks
+                                                key.uids.append(OpenPGPuid(uid, trust, creation, expiry, uidhash))
+                                        elif rectype == 'sub':
+                                                subkey = OpenPGPkey()
+                                                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = blocks
+                                                for p in subkey.purpose:
+                                                        subkey.purpose[p] = p[0].lower() in purpose.lower()
+                                                key.subkeys.append(subkey)
+                                        elif rectype == '':
+                                                pass
+                                keys[key.fpr] = key
+                        elif self.returncode == 2:
+                                return None
+                        else:
+                                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
+                if secret:
+                        self.call_command(['list-secret-keys', pattern])
+                        if self.returncode == 0:
+                                raise NotImplementedError("secret key listing is not implemented yet")
+                        elif self.returncode == 2:
+                                return None
+                        else:
+                                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
+                return keys
                 
         def sign_key_and_forget(self, fpr, sign_key, local = False):
                 "Sign key using sign_key. Signature is exportable if local is False"
@@ -198,3 +244,91 @@ class GpgTemp(Gpg):
         def __del__(self):
                 shutil.rmtree(os.environ['GPG_HOME'])
 
+class OpenPGPkey():
+        """An OpenPGP key.
+
+        Some of this datastructure is taken verbatim from GPGME.
+        """
+
+        # the subkeys of this key, which are also OpenPGPkeys
+        subkey = []
+
+        # the key has a revocation certificate
+        revoked = False
+
+        # the expiry date is set and it is passed
+        expired = False
+
+        # the key has been disabled
+        disabled = False
+
+        # ?
+        invalid = False
+
+        # the various flags on this key
+        purpose = { 'encrypt': True, # if the public key part can be used to encrypt data
+                    'sign': True,    # if the private key part can be used to sign data
+                    'certify': True, # if the private key part can be used to sign other keys
+                    'authenticate': True, # if this key can be used for authentication purposes
+                    }
+
+        # This is true if the subkey can be used for qualified
+        # signatures according to local government regulations.
+        qualified = False
+
+        # this key has also secret key material
+        secret = True
+
+        # This is the public key algorithm supported by this subkey.
+        algo = ''
+
+        # This is the length of the subkey (in bits).
+        length = None
+
+        # The key fingerprint (a string representation)
+        fpr = None
+
+        # The key id (a string representation), only if the fingerprint is unavailable
+        # use keyid() instead of this field to find the keyid
+        _keyid = None
+
+        # This is the creation timestamp of the subkey.  This is -1 if
+        # the timestamp is invalid, and 0 if it is not available.
+        creation = 0
+
+        # This is the expiration timestamp of the subkey, or 0 if the
+        # subkey does not expire.
+        expiry = 0
+
+        # the list of OpenPGPuids associated with this key
+        uids = []
+
+        # the list of subkeys associated with this key
+        subkeys = []
+
+        def keyid(self, l=8):
+                if self.fpr is None:
+                        assert(self._keyid is not None)
+                        return self._keyid[-l:]
+                return self.fpr[-l:]
+
+        def __str__(self):
+                ret = "pub    " + self.length + "R/" + self.keyid(8) + " " + self.creation
+                if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
+                ret += "\n"
+                ret += '    Fingerprint = ' + self.fpr + "\n"
+                for uid in self.uids:
+                        ret += "uid      [ " + uid.trust + " ] " + uid.uid + "\n"
+                for subkey in self.subkeys:
+                        ret += "sub   " + subkey.length + "R/" + subkey.keyid(8) + " " + subkey.creation
+                        if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
+                        ret += "\n"
+                return ret
+
+class OpenPGPuid():
+        def __init__(self, uid, trust, creation = 0, expire = None, uidhash = ''):
+                self.uid = uid
+                self.trust = trust
+                self.creation = creation
+                self.expire = expire
+                self.uidhash = uidhash
