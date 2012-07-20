@@ -44,6 +44,11 @@ class Gpg():
                 m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', stdout)
                 return m.group(1)
 
+        def import_data(self, data):
+                proc = subprocess.Popen(self.build_command(['--import']), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+                (stdout, stderr) = proc.communicate(data)
+                return (proc.returncode == 0)
+
         def fetch_keys(self, fpr, keyserver = None):
                 """Get keys from a keyserver"""
                 command = ['--recv-keys', fpr]

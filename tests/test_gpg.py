@@ -30,6 +30,9 @@ class TestGpgTemp(unittest.TestCase):
     def test_version(self):
         self.assertTrue(self.gpg.version())
 
+    def test_import(self):
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+
     def tearDown(self):
         del self.gpg
 
