@@ -224,11 +224,7 @@ class OpenPGPkey():
         invalid = False
 
         # the various flags on this key
-        purpose = { 'encrypt': True, # if the public key part can be used to encrypt data
-                    'sign': True,    # if the private key part can be used to sign data
-                    'certify': True, # if the private key part can be used to sign other keys
-                    'authenticate': True, # if this key can be used for authentication purposes
-                    }
+        purpose = {}
 
         # This is true if the subkey can be used for qualified
         # signatures according to local government regulations.
@@ -264,6 +260,15 @@ class OpenPGPkey():
 
         # the list of subkeys associated with this key
         subkeys = {}
+
+        def __init__(self):
+                self.purpose = { 'encrypt': True, # if the public key part can be used to encrypt data
+                                 'sign': True,    # if the private key part can be used to sign data
+                                 'certify': True, # if the private key part can be used to sign other keys
+                                 'authenticate': True, # if this key can be used for authentication purposes
+                                 }
+                self.uids = {}
+                self.subkeys = {}
 
         def keyid(self, l=8):
                 if self.fpr is None:

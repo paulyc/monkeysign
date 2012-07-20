@@ -4,7 +4,7 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign import Gpg, GpgTemp
+from monkeysign import Gpg, GpgTemp, OpenPGPkey, OpenPGPuid
 
 class TestGpgPlain(unittest.TestCase):
     def test_plain(self):
@@ -134,6 +134,15 @@ class TestGpgCaff(unittest.TestCase):
 
     def tearDown(self):
         del self.gpgtmp
+
+class TestOpenPGPkey(unittest.TestCase):
+    def setUp(self):
+        self.key = OpenPGPkey()
+
+    def test_no_dupe_uids(self):
+        self.key.uids[''] = OpenPGPuid('foo@example.com', 'u')
+        key = OpenPGPkey()
+        self.assertEqual(key.uids, {})
 
 class TestGpgNetwork(unittest.TestCase):
     """Seperate test cases for functions that hit the network"""
