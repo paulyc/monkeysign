@@ -1,4 +1,4 @@
-import os, tempfile, shutil, subprocess
+import os, tempfile, shutil, subprocess, re
 
 class KeyNotFound(Exception):
         def __init__(self, msg=None):
@@ -34,10 +34,15 @@ class Gpg():
 
                 this will add relevant arguments around the gpg binary"""
                 c = [self.gpg_binary, '--status-fd', '1', '--command-fd', '0', '--no-tty', '--use-agent']
-                if self.homedir:
-                        c[len(command):] = ['--homedir', self.homedir]
-                c[len(command):] = command
+                c[len(c):] = command
                 return c
+
+        def version(self, type='short'):
+                proc = subprocess.Popen(self.build_command(['--version']), stdout=subprocess.PIPE)
+                (stdout, stderr) = proc.communicate()
+                if type is not 'short': raise TypeError('invalid type')
+                m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', stdout)
+                return m.group(1)
 
         def fetch_keys(self, fpr, keyserver = None):
                 """Get keys from a keyserver"""

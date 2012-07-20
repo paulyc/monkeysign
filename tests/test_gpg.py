@@ -13,6 +13,15 @@ class TestGpg(unittest.TestCase):
         self.gpg = Gpg('/tmp/gpg-home')
         self.assertEqual(os.environ['GPG_HOME'], '/tmp/gpg-home')
 
+    def test_command(self):
+        c = self.gpg.build_command([])
+        c.append('--version')
+        c2 = self.gpg.build_command(['--version'])
+        self.assertEqual(c, c2)
+
+    def test_version(self):
+        self.assertTrue(self.gpg.version())
+
 class TestGpgTemp(unittest.TestCase):
 
     def setUp(self):
