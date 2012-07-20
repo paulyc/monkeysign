@@ -36,10 +36,7 @@ class Gpg():
 
         def __init__(self, homedir=None):
                 """f"""
-                if homedir is None:
-                        if 'GPG_HOME' in os.environ:
-                                self.homedir = os.environ['GPG_HOME']
-                else:
+                if homedir is not None:
                         os.environ['GPG_HOME'] = homedir
 
         def set_option(self, option, value = None):
