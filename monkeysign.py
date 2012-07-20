@@ -264,7 +264,7 @@ class OpenPGPkey():
         qualified = False
 
         # this key has also secret key material
-        secret = True
+        secret = False
 
         # This is the public key algorithm supported by this subkey.
         algo = ''
