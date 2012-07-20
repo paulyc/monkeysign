@@ -180,42 +180,13 @@ class Gpg():
                         else:
                                 raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
                 return keys
-                
-        def sign_key_and_forget(self, fpr, sign_key, local = False):
-                "Sign key using sign_key. Signature is exportable if local is False"
-                # Values copied from <gpg-error.h>
-                GPG_ERR_CONFLICT = 70
-                GPG_ERR_UNUSABLE_PUBKEY = 53
-                val_dict = self.common_dict.copy()
-                val_dict.update({
-                                "start keyedit.prompt": ("sign", (local and "lsign") or "sign"),
-                                "sign keyedit.sign_all.okay": ("sign", "Y"),
-                                "sign sign_uid.expire": ("sign", "Y"),
-                                "sign sign_uid.class": ("sign", "0"),
-                                "sign sign_uid.okay": ("okay", "Y"),
-                                "okay keyedit.prompt": ("quit", "quit"),
-                                "error ALREADY_SIGNED": GPG_ERR_CONFLICT,
-                                "error sign keyedit.prompt": GPG_ERR_UNUSABLE_PUBKEY
-                                })
-                out = Data()
-                #self.context.signers_clear()
-                #self.context.signers_add(sign_key)
-                key = self.context.get_key(fpr, 0)
-                # XXX: bug: this will yield a pyme.errors.GPGMEError: Unspecified source: General error (0,1) if the key is already signed
-                self.context.op_edit(key, self.editor_func, val_dict, out)
 
-        def sign_key_and_forget_manual(self, fpr):
-                """sign a key already present in the temporary keyring"""
-                # command from caff: gpg-sign --local-user $local_user --homedir=$GNUPGHOME --secret-keyring $secret_keyring --no-auto-check-trustdb --trust-model=always --edit sign
-                command = ['--keyring', self.keyring, '--secret-keyring', self.secret_keyring, '--sign-key', fpr]
-                proc = subprocess.Popen(command, 0, None, subprocess.PIPE)
-                proc.stdin.write("y\n")
+        def sign_key(self, fpr):
+                """sign a key already present in the temporary keyring
 
-                command = ['gpg', '--homedir', self.homedir, '--export', '--armor', fpr]
-                proc = subprocess.Popen(command)
-                key = proc.stdout.read()
-                return
-
+                use set_option('local-user', key) to choose a signing key
+                """
+                return self.call_command(['sign-key', fpr], "y\n")
 
 class GpgTemp(Gpg):
         def __init__(self):
