@@ -108,8 +108,36 @@ class TestGpg(unittest.TestCase):
         this is also a test of exporting an empty keyring"""
         self.assertEqual(self.gpg.export_data(), '')
 
-    def test_sign_key(self):
+    def test_sign_key_wrong_user(self):
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.gpg.set_option('local-user', '0000000F')
+        self.assertFalse(self.gpg.sign_key('7B75921E'))
+        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+            print key
+
+    def test_sign_key(self):
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.sign_key('7B75921E'))
+        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+            print key
+
+    def test_sign_key_missing_key(self):
+        """try to sign a missing key
+
+        this should fail because we don't have the public key material for the requested key"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertFalse(self.gpg.sign_key('7B75921E'))
+
+    def test_sign_key_as_user(self):
+        """normal signature with a signing user specified"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.gpg.set_option('local-user', '96F47C6A')
         self.assertTrue(self.gpg.sign_key('7B75921E'))
 
     def test_gen_key(self):
