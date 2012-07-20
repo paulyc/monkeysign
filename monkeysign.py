@@ -112,10 +112,24 @@ class Gpg():
                 return m.group(1)
 
         def import_data(self, data):
+                """Import OpenPGP data blocks into the keyring.
+
+                This takes actual OpenPGP data, ascii-armored or not,
+                gpg will gladly take it. This can be signatures,
+                public, private keys, etc.
+
+                You may need to set import-flags to import
+                non-exportable signatures, however.
+                """
                 self.call_command(['import'], data)
                 return self.returncode == 0
 
         def export_data(self, fpr):
+                """Export OpenPGP data blocks from the keyring.
+
+                This exports actual OpenPGP data, by default in binary
+                format, but can also be exported asci-armored by
+                setting the 'armor' option."""
                 self.call_command(['export', fpr])
                 return self.stdout
 
