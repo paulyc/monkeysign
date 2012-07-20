@@ -27,7 +27,12 @@ class Gpg():
         options = { 'status-fd': 1,
                     'command-fd': 0,
                     'no-tty': None,
-                    'use-agent': None }
+                    'use-agent': None,
+                    'with-colons': None,
+                    'with-fingerprint': None,
+                    'fixed-list-mode': None,
+                    'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
+                    }
 
         def __init__(self, homedir=None):
                 """f"""

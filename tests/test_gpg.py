@@ -14,10 +14,18 @@ class TestGpg(unittest.TestCase):
 
 class TestGpgTemp(unittest.TestCase):
     # those need to match the options in the Gpg class
-    options = { 'status-fd': 1, 'command-fd': 0, 'no-tty': None, 'use-agent': None }
+    options = { 'status-fd': 1,
+                    'command-fd': 0,
+                    'no-tty': None,
+                    'use-agent': None,
+                    'with-colons': None,
+                    'with-fingerprint': None,
+                    'fixed-list-mode': None,
+                    'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
+                    }
 
     # ... and this is the rendered version of the above
-    rendered_options = ['gpg', '--command-fd', '0', '--no-tty', '--status-fd', '1', '--use-agent']
+    rendered_options = ['gpg', '--command-fd', '0', '--fixed-list-mode', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--use-agent', '--no-tty', '--with-colons', '--status-fd', '1' ]
 
     def setUp(self):
         if 'GPG_HOME' in os.environ: del os.environ['GPG_HOME']
@@ -33,7 +41,7 @@ class TestGpgTemp(unittest.TestCase):
     def test_build_command(self):
         # reset options to a known setting
         self.gpg.options = dict(self.options) # work on a copy
-        self.assertEqual(self.gpg.build_command(['list-keys', 'foo']), self.rendered_options + ['--list-keys', 'foo'])
+        self.assertItemsEqual(self.gpg.build_command(['list-keys', 'foo']), self.rendered_options + ['--list-keys', 'foo'])
 
     def test_env(self):
         self.assertTrue(os.path.exists(os.environ['GPG_HOME']))
