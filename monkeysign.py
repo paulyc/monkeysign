@@ -127,15 +127,16 @@ class Gpg():
                 self.call_command(['import'], data)
                 return self.returncode == 0
 
-        def export_data(self, fpr, secret = False):
+        def export_data(self, fpr = None, secret = False):
                 """Export OpenPGP data blocks from the keyring.
 
                 This exports actual OpenPGP data, by default in binary
                 format, but can also be exported asci-armored by
                 setting the 'armor' option."""
-                if secret: command = 'export-secret-keys'
-                else: command = 'export'
-                self.call_command([command, fpr])
+                if secret: command = ['export-secret-keys']
+                else: command = ['export']
+                if fpr: command += [fpr]
+                self.call_command(command)
                 return self.stdout
 
         def fetch_keys(self, fpr, keyserver = None):

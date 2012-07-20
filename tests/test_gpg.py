@@ -102,6 +102,12 @@ class TestGpg(unittest.TestCase):
         self.secret = self.gpg.export_data('96F47C6A', True)
         self.assertTrue(self.secret)
 
+    def test_empty_keyring(self):
+        """a test should work on an empty keyring
+
+        this is also a test of exporting an empty keyring"""
+        self.assertEqual(self.gpg.export_data(), '')
+
     def test_sign_key(self):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.assertTrue(self.gpg.sign_key('7B75921E'))
