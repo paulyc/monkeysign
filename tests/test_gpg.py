@@ -13,7 +13,13 @@ class TestGpgPlain(unittest.TestCase):
 
 class TestGpgTmp(unittest.TestCase):
     def setUp(self):
-        self.gpg = Gpg('/tmp/gpg-home')
+        self.tmp = tempfile.mkdtemp(prefix="monkeysign-")
+        self.gpgtmp = Gpg(self.tmp)
+        self.assertEqual(self.gpgtmp.options['homedir'], self.tmp)
+
+    def test_home(self):
+        self.gpgtmp.export_data('') # dummy call to make gpg populate his directory
+        self.assertTrue(open(self.tmp + '/pubring.gpg'))
 
     def tearDown(self):
         shutil.rmtree(self.tmp)
