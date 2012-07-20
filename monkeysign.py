@@ -1,90 +1,52 @@
 import os, tempfile, shutil, subprocess
 
-from pyme.core import Context, Data
-
 class KeyNotFound(Exception):
         def __init__(self, msg=None):
                 self.msg = msg
         def __repr__(self):
                 return self.msg
 
-class Keyring():
-        # secret keyring used to sign keys
-        secret_keyring = os.environ['HOME'] + '/.gnupg/secring.gpg'
+class Gpg():
+        """Python wrapper for GnuPG
 
-        # extra keyring to add, this should have the public key from the above keyring
-        keyring = os.environ['HOME'] + '/.gnupg/pubring.gpg'
+        This wrapper allows for a simpler interface than GPGME or PyME
+        to GPG, and bypasses completely GPGME to interoperate directly
+        with GPG as a process.
 
-        # the GPG_HOME we are operating on, initialized to a temporary
-        # directory if not provided in the constructor
-        homedir = None
+        It uses the gpg-agent to prompt for passphrases and
+        communicates with GPG over the stdin for commnads
+        (--command-fd) and stdout for status (--status-fd).
+        """
 
-        # if homedir is set to a temporary directory, this is a copy
-        # of homedir, so that we can safely delete it on destruction
-        tmpdir = None
-
-        # the default GPGME context we operate with, set to use the homedir defined above
-        context = Context()
-
-        # default settings to communicate with GPG --edit-key
-        # taken from /usr/share/doc/python-pyme-doc/examples/pygpa.py
-        common_dict = {
-                "state": "start",
-                "quit keyedit.save.okay": ("save", "Y"),
-                "ignore NEED_PASSPHRASE": None,
-                "ignore NEED_PASSPHRASE_SYM": None,
-                "ignore BAD_PASSPHRASE": None,
-                "ignore USERID_HINT": None
-        }  
+        # the gpg binary to call
+        gpg_binary = 'gpg'
 
         def __init__(self, homedir=None):
-                """Initialize the keyring object. This will yield undefined results if homedir is set to your regular GPG_HOME, so be careful."""
-                self.homedir = homedir
-                if self.homedir is None:
-                        # Create tempdir for gpg operations
-                        self.tmpdir = tempfile.mkdtemp(prefix="monkeysign-")
-                        self.homedir = self.tmpdir
-                # initialize the context to use the provided GPG_HOME
-                self.context.set_engine_info(0, None, self.homedir)
-                return
-
-        def __del__(self):
-                if self.tmpdir:
-                        shutil.rmtree(self.tmpdir)
-
-        # editing function, action depends on the val_dict
-        # taken from /usr/share/doc/python-pyme-doc/examples/pygpa.py
-        def editor_func(status, args, val_dict):
-                prompt = "%s %s" % (val_dict["state"], args)
-                if val_dict.has_key(prompt):
-                        val_dict["state"] = val_dict[prompt][0]
-                        return val_dict[prompt][1]
-                elif args and not val_dict.has_key("ignore %s" % status2str[status]):
-                        for error in ["error %s" % status2str[status], "error %s" % prompt]:
-                                if val_dict.has_key(error):
-                                        raise errors.GPGMEError(val_dict[error])
-                        sys.stderr.write(_("Unexpected status and prompt in editor_func: " +
-                                           "%s %s\n") % (status2str[status], prompt))
-                        raise EOFError()
-                return ""
-
-        def fetch_key_from_keyring(self, fpr):
-                """try to get the key from the user's keyring"""
-                # temporary context that will actually look in the normal keyring
-                c = Context()
-                export_keys = Data()
-                c.op_export(fpr, 0, export_keys)
-                export_keys.seek(0,0)
-
-                status = self.context.op_import(export_keys)
-                if status:
-                        # need better error reporting here - exception?
-                        raise KeyNotFound(status)
+                """f"""
+                if homedir is None:
+                        if 'GPG_HOME' in os.environ:
+                                self.homedir = os.environ['GPG_HOME']
                 else:
-                        result = self.context.op_import_result()
-                        if result.considered == 0:
-                                raise KeyNotFound("no keys found")
+                        os.environ['GPG_HOME'] = homedir
 
+        def build_command(self, command):
+                """internal wrapper around gpg command
+
+                this will add relevant arguments around the gpg binary"""
+                c = [self.gpg_binary, '--status-fd', '1', '--command-fd', '0', '--no-tty', '--use-agent']
+                if self.homedir:
+                        c[len(command):] = ['--homedir', self.homedir]
+                c[len(command):] = command
+                return c
+
+        def fetch_keys(self, fpr, keyserver = None):
+                """Get keys from a keyserver"""
+                command = ['--recv-keys', fpr]
+                if keyserver:
+                        command[len(command):] = ['--keyserver', keyserver]
+                proc = subprocess.Popen(self.build_command(command))
+                # needs error handling
+                
         def sign_key_and_forget(self, fpr, sign_key, local = False):
                 "Sign key using sign_key. Signature is exportable if local is False"
                 # Values copied from <gpg-error.h>
@@ -111,7 +73,7 @@ class Keyring():
         def sign_key_and_forget_manual(self, fpr):
                 """sign a key already present in the temporary keyring"""
                 # command from caff: gpg-sign --local-user $local_user --homedir=$GNUPGHOME --secret-keyring $secret_keyring --no-auto-check-trustdb --trust-model=always --edit sign
-                command = ["/usr/bin/gpg", '--homedir', self.homedir, '--keyring', self.keyring, '--status-fd', "1", '--command-fd', '0', '--no-tty', '--use-agent', '--secret-keyring', self.secret_keyring, '--sign-key', fpr]
+                command = ['--keyring', self.keyring, '--secret-keyring', self.secret_keyring, '--sign-key', fpr]
                 proc = subprocess.Popen(command, 0, None, subprocess.PIPE)
                 proc.stdin.write("y\n")
 
@@ -119,4 +81,17 @@ class Keyring():
                 proc = subprocess.Popen(command)
                 key = proc.stdout.read()
                 return
+
+
+class GpgTemp(Gpg):
+        def __init__(self):
+                """Override the parent class to generate a temporary
+                GPG home that gets destroyed at the end of
+                operations."""
+
+                # Create tempdir for gpg operations
+                Gpg.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
+
+        def __del__(self):
+                shutil.rmtree(os.environ['GPG_HOME'])
 
