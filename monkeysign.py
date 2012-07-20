@@ -44,7 +44,7 @@ class Gpg():
         def call_command(self, command, data=None):
                 """internal wrapper to call a GPG pipe"""
                 proc = subprocess.Popen(self.build_command(command), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-                (self.stdout, self.stderr) = proc.communicate(data) # XXX: yield?
+                (self.stdout, self.stderr) = proc.communicate(data)
                 self.returncode = proc.returncode
                 return proc.returncode == 0
 
