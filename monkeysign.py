@@ -106,11 +106,11 @@ class Gpg():
                 return m.group(1)
 
         def import_data(self, data):
-                self.call_command(['--import'], data)
+                self.call_command(['import'], data)
                 return self.returncode
 
         def export_data(self, fpr):
-                self.call_command(['--export', fpr])
+                self.call_command(['export', fpr])
                 return self.stdout
 
         def fetch_keys(self, fpr, keyserver = None):
