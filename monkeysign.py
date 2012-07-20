@@ -170,7 +170,13 @@ class Gpg():
                 if secret:
                         self.call_command(['list-secret-keys', pattern])
                         if self.returncode == 0:
-                                raise NotImplementedError("secret key listing is not implemented yet")
+                                key = OpenPGPkey()
+                                key.parse_gpg_list(self.stdout)
+                                if key.fpr in keys:
+                                        keys[key.fpr].parse_gpg_list(self.stdout)
+                                        del key
+                                else:
+                                        keys[key.fpr] = key
                         elif self.returncode == 2:
                                 return None
                         else:
@@ -282,10 +288,10 @@ class OpenPGPkey():
         expiry = 0
 
         # the list of OpenPGPuids associated with this key
-        uids = []
+        uids = {}
 
         # the list of subkeys associated with this key
-        subkeys = []
+        subkeys = {}
 
         def keyid(self, l=8):
                 if self.fpr is None:
@@ -310,24 +316,38 @@ class OpenPGPkey():
                                         self.purpose[p] = p[0].lower() in purpose.lower()
                         elif rectype == 'uid':
                                 (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = record
-                                self.uids.append(OpenPGPuid(uid, trust, creation, expiry, uidhash))
+                                self.uids[uidhash] = OpenPGPuid(uid, trust, creation, expiry, uidhash)
                         elif rectype == 'sub':
                                 subkey = OpenPGPkey()
                                 (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record
                                 for p in subkey.purpose:
                                         subkey.purpose[p] = p[0].lower() in purpose.lower()
-                                self.subkeys.append(subkey)
+                                self.subkeys[subkey._keyid] = subkey
+                        elif rectype == 'sec':
+                                (null, trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
+                                self.secret = True
+                        elif rectype == 'ssb':
+                                subkey = OpenPGPkey()
+                                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
+                                if subkey._keyid in self.subkeys:
+                                        # XXX: nothing else to add here?
+                                        self.subkeys[subkey._keyid].secret = True
+                                else:
+                                        self.subkeys[subkey._keyid] = subkey
                         elif rectype == '':
                                 pass
+                        else:
+                                raise NotImplementedError("record type '%s' not implemented" % rectype)
 
         def __str__(self):
-                ret = "pub    " + self.length + "R/" + self.keyid(8) + " " + self.creation
+                ret = "pub    " + self.length + "R/" 
+                ret += self.keyid(8) + " " + self.creation
                 if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
                 ret += "\n"
                 ret += '    Fingerprint = ' + self.fpr + "\n"
-                for uid in self.uids:
+                for uid in self.uids.values():
                         ret += "uid      [ " + uid.trust + " ] " + uid.uid + "\n"
-                for subkey in self.subkeys:
+                for subkey in self.subkeys.values():
                         ret += "sub   " + subkey.length + "R/" + subkey.keyid(8) + " " + subkey.creation
                         if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
                         ret += "\n"
