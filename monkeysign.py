@@ -113,7 +113,7 @@ class Gpg():
 
         def import_data(self, data):
                 self.call_command(['import'], data)
-                return self.returncode
+                return self.returncode == 0
 
         def export_data(self, fpr):
                 self.call_command(['export', fpr])
