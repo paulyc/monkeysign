@@ -58,6 +58,12 @@ class Gpg():
                 this will add relevant arguments around the gpg
                 binary.
 
+                like the options arguments, the command is expected to
+                be a regular gpg command with the -- stripped. the --
+                are added before being called. this is to make the
+                code more readable, and eventually support other
+                backends that actually make more sense.
+
                 this uses build_command to create a commandline out of
                 the 'options' dictionnary, and appends the provided
                 command at the end. this is because order of certain
