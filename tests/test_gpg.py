@@ -122,8 +122,11 @@ class TestGpg(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.assertTrue(self.gpg.sign_key('7B75921E'))
+        self.assertNotEqual(self.gpg.stdout, '')
         for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
             print key
+        self.gpg.call_command(['list-sigs', '7B75921E'])
+        self.assertRegexpMatches(self.gpg.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
 
     def test_sign_key_missing_key(self):
         """try to sign a missing key
