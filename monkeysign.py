@@ -156,26 +156,26 @@ class Gpg():
                         self.call_command(['list-keys', pattern])
                         if self.returncode == 0:
                                 key = OpenPGPkey()
-                                for line in self.stdout.split("\n"):
-                                        blocks = line.split(":")
-                                        #for block in blocks:
+                                for block in self.stdout.split("\n"):
+                                        record = block.split(":")
+                                        #for block in record:
                                         #        print >>sys.stderr, block, "|\t",
                                         #print >>sys.stderr, "\n"
-                                        rectype = blocks[0]
+                                        rectype = record[0]
                                         if rectype == 'tru':
-                                                (rectype, trust, keylen, algo, keyid, creation, expiry, serial) = blocks
+                                                (rectype, trust, keylen, algo, keyid, creation, expiry, serial) = record
                                         elif rectype == 'fpr':
-                                                key.fpr = blocks[9]
+                                                key.fpr = record[9]
                                         elif rectype == 'pub':
-                                                (null, trust, key.length, key.algo, keyid, key.creation, key.expiry, serial, trust, uid, sigclass, purpose, smime) = blocks
+                                                (null, trust, key.length, key.algo, keyid, key.creation, key.expiry, serial, trust, uid, sigclass, purpose, smime) = record
                                                 for p in key.purpose:
                                                         key.purpose[p] = p[0].lower() in purpose.lower()
                                         elif rectype == 'uid':
-                                                (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = blocks
+                                                (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = record
                                                 key.uids.append(OpenPGPuid(uid, trust, creation, expiry, uidhash))
                                         elif rectype == 'sub':
                                                 subkey = OpenPGPkey()
-                                                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = blocks
+                                                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record
                                                 for p in subkey.purpose:
                                                         subkey.purpose[p] = p[0].lower() in purpose.lower()
                                                 key.subkeys.append(subkey)
