@@ -97,9 +97,15 @@ class TestGpg(unittest.TestCase):
         # this shouldn't show anything, as this is just a public key blob
         self.assertFalse(self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E', True, False))
 
+    def test_export_secret(self):
+        self.fpr = self.gpg.gen_key()
+        self.assertTrue(self.fpr)
+        self.secret = self.gpg.export_data(self.fpr, True)
+        self.assertTrue(self.secret)
+
     def test_sign_key(self):
-        #self.assertTrue(self.gpg.sign_key('343CA353'))            
-        pass
+        self.assertTrue(self.gpg.import_data(self.secret))
+        self.assertTrue(self.gpg.sign_key('7B75921E', self.fpr))
 
     def tearDown(self):
         del self.gpg
