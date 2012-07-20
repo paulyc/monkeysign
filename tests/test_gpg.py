@@ -101,20 +101,29 @@ class TestGpg(unittest.TestCase):
         #self.assertTrue(self.gpg.sign_key('343CA353'))            
         pass
 
-    def test_sign_key_from_other(self):
-        gpg = Gpg()
-        gpgtmp = Gpg(tempfile.mkdtemp(prefix="monkeysign-"))
-        data = gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E')
-        self.assertTrue(data)
-        self.assertTrue(gpgtmp.import_data(data))
-        self.assertTrue(gpgtmp.import_data(gpg.export_data('343CA353')))
-        gpg.set_option('export-secret-keys')
-        gpgtmp.import_data(gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E'))
-        gpgtmp.sign_key('343CA353')
-        print self.gpg.export_data('343CA353')
-
     def tearDown(self):
         del self.gpg
+
+class TestGpgCaff(unittest.TestCase):
+    def setUp(self):
+        self.gpgtmp = GpgTemp()
+
+    def test_sign_key_from_other(self):
+        gpg = Gpg()
+        self.assertTrue(self.gpgtmp.import_data(gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E')))
+        self.assertTrue(self.gpgtmp.import_data(gpg.export_data('343CA353')))
+        secrets = gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E', True)
+        self.assertTrue(secrets)
+        self.assertTrue(self.gpgtmp.import_data(secrets))
+        self.assertTrue(self.gpgtmp.sign_key('343CA353'))
+        self.gpgtmp.set_option('armor')
+        export = self.gpgtmp.export_data('343CA353')
+        print export
+        self.assertTrue(export)
+        del gpg
+
+    def tearDown(self):
+        del self.gpgtmp
 
 class TestGpgNetwork(unittest.TestCase):
     """Seperate test cases for functions that hit the network"""
