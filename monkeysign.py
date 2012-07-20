@@ -196,7 +196,7 @@ class Gpg():
 
                 use set_option('local-user', key) to choose a signing key
                 """
-                return self.call_command(['sign-key', fpr], "y\n")
+                return self.call_command(['sign-key', fpr], "y\ny\n")
 
 class GpgTemp(Gpg):
         def __init__(self):
