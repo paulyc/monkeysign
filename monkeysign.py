@@ -38,7 +38,7 @@ class Gpg():
                             'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
                             }
                 if homedir is not None:
-                        os.environ['GPG_HOME'] = homedir
+                        self.set_option('homedir', homedir)
 
         def set_option(self, option, value = None):
                 """set an option to pass to gpg
@@ -227,7 +227,7 @@ class GpgTemp(Gpg):
                 Gpg.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
 
         def __del__(self):
-                shutil.rmtree(os.environ['GPG_HOME'])
+                shutil.rmtree(self.options['homedir'])
 
 class OpenPGPkey():
         """An OpenPGP key.

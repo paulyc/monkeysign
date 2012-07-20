@@ -1,5 +1,6 @@
-import sys, os
+import sys, os, shutil
 import unittest
+import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
@@ -14,10 +15,10 @@ class TestGpgTmp(unittest.TestCase):
     def setUp(self):
         self.gpg = Gpg('/tmp/gpg-home')
 
-    def test_env(self):
-        self.assertEqual(os.environ['GPG_HOME'], '/tmp/gpg-home')
+    def tearDown(self):
+        shutil.rmtree(self.tmp)
 
-class TestGpgTemp(unittest.TestCase):
+class TestGpg(unittest.TestCase):
     # those need to match the options in the Gpg class
     options = { 'status-fd': 1,
                     'command-fd': 0,
@@ -33,9 +34,9 @@ class TestGpgTemp(unittest.TestCase):
     rendered_options = ['gpg', '--command-fd', '0', '--fixed-list-mode', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--use-agent', '--no-tty', '--with-colons', '--status-fd', '1' ]
 
     def setUp(self):
-        if 'GPG_HOME' in os.environ: del os.environ['GPG_HOME']
         # we test using the temporary keyring because it's too dangerous otherwise
         self.gpg = GpgTemp()
+        self.assertIn('homedir', self.gpg.options)
 
     def test_set_option(self):
         self.gpg.set_option('armor')
@@ -44,22 +45,19 @@ class TestGpgTemp(unittest.TestCase):
         self.assertDictContainsSubset({'keyserver': 'foo.example.com'}, self.gpg.options)
 
     def test_build_command(self):
-        # reset options to a known setting
-        self.gpg.options = dict(self.options) # work on a copy
-        self.assertItemsEqual(self.gpg.build_command(['list-keys', 'foo']), self.rendered_options + ['--list-keys', 'foo'])
-
-    def test_env(self):
-        self.assertTrue(os.path.exists(os.environ['GPG_HOME']))
+        c1 = self.gpg.build_command(['list-keys', 'foo'])
+        self.assertIn('homedir', self.gpg.options)
+        c2 = self.rendered_options + ['--list-keys', 'foo'] + ['--homedir', self.gpg.options['homedir']]
+        self.assertItemsEqual(c1, c2)
 
     def test_command(self):
         c = list(self.rendered_options) # work on a copy
-        c.append('--version')
         c2 = self.gpg.build_command(['version'])
+        c += ['--homedir', self.gpg.options['homedir'], '--version']
         self.assertEqual(c, c2)
         c = list(self.rendered_options)
-        c.append('--export')
-        c.append('foo')
         c2 = self.gpg.build_command(['export', 'foo'])
+        c += ['--homedir', self.gpg.options['homedir'], '--export', 'foo']
         self.assertEqual(c, c2)
 
     def test_version(self):
