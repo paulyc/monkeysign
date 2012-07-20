@@ -123,6 +123,7 @@ class TestGpgNetwork(unittest.TestCase):
         self.gpg = GpgTemp()
 
     def test_fetch_keys(self):
+        self.gpg.set_option('keyserver', 'pool.sks-keyservers.net')
         self.assertTrue(self.gpg.fetch_keys('4023702F'))
 
     def tearDown(self):
