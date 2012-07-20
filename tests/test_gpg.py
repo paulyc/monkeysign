@@ -90,7 +90,7 @@ class TestGpg(unittest.TestCase):
         # just a cute display for now
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         for fpr, key in self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E').iteritems():
-            print >>sys.stderr, key
+            print key
 
     def test_get_secret_keys(self):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
