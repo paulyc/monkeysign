@@ -30,6 +30,7 @@ class TestGpg(unittest.TestCase):
                 'command-fd': 0,
                 'no-tty': None,
                 'batch': None,
+                'quiet': None,
                 'use-agent': None,
                 'with-colons': None,
                 'with-fingerprint': None,
@@ -38,7 +39,7 @@ class TestGpg(unittest.TestCase):
                 }
 
     # ... and this is the rendered version of the above
-    rendered_options = ['gpg', '--command-fd', '0', '--fixed-list-mode', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--use-agent', '--no-tty', '--with-colons', '--status-fd', '1', '--batch' ]
+    rendered_options = ['gpg', '--command-fd', '0', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--batch', '--fixed-list-mode', '--no-tty', '--with-colons', '--use-agent', '--status-fd', '1', '--quiet' ]
 
     def setUp(self):
         # we test using the temporary keyring because it's too dangerous otherwise
@@ -61,11 +62,11 @@ class TestGpg(unittest.TestCase):
         c = list(self.rendered_options) # work on a copy
         c2 = self.gpg.build_command(['version'])
         c += ['--homedir', self.gpg.options['homedir'], '--version']
-        self.assertEqual(c, c2)
+        self.assertItemsEqual(c, c2)
         c = list(self.rendered_options)
         c2 = self.gpg.build_command(['export', 'foo'])
         c += ['--homedir', self.gpg.options['homedir'], '--export', 'foo']
-        self.assertEqual(c, c2)
+        self.assertItemsEqual(c, c2)
 
     def test_version(self):
         self.assertTrue(self.gpg.version())
