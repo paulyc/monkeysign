@@ -142,7 +142,7 @@ class Gpg():
                 """
                 if keyserver:
                         self.set_option('keyserver', keyserver)
-                self.call_command(['--recv-keys', fpr])
+                self.call_command(['recv-keys', fpr])
                 return self.returncode == 0
                 
         def sign_key_and_forget(self, fpr, sign_key, local = False):
