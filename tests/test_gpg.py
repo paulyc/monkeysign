@@ -128,9 +128,16 @@ class TestGpg(unittest.TestCase):
     def test_sign_key_missing_key(self):
         """try to sign a missing key
 
-        this should fail because we don't have the public key material for the requested key"""
+        this should fail because we don't have the public key material
+        for the requested key
+
+        however, gpg returns the wrong exit code here, so we end up at
+        looking if there is really no output
+        """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertFalse(self.gpg.sign_key('7B75921E'))
+        self.assertTrue(self.gpg.sign_key('7B75921E'))
+        self.assertEqual(self.gpg.stdout, '')
+        self.assertEqual(self.gpg.stderr, '')
 
     def test_sign_key_as_user(self):
         """normal signature with a signing user specified"""
