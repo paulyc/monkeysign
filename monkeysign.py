@@ -385,6 +385,8 @@ class OpenPGPkey():
                                         self.subkeys[subkey._keyid] = subkey
                         elif rectype == 'uat':
                                 pass # user attributes, ignore for now
+                        elif rectype == 'rvk':
+                                pass # revocation key, ignored for now
                         elif rectype == '':
                                 pass
                         else:
