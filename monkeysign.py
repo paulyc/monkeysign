@@ -120,12 +120,16 @@ class Gpg():
                 return self.stdout
 
         def fetch_keys(self, fpr, keyserver = None):
-                """Get keys from a keyserver"""
-                command = ['--recv-keys', fpr]
+                """Download keys from a keyserver into the local keyring
+
+                This expects a fingerprint (or a at least a key id).
+
+                Returns true if the command succeeded.
+                """
                 if keyserver:
-                        command[len(command):] = ['--keyserver', keyserver]
-                proc = subprocess.Popen(self.build_command(command))
-                # needs error handling
+                        self.set_option('keyserver', keyserver)
+                self.call_command(['--recv-keys', fpr])
+                return self.returncode == 0
                 
         def sign_key_and_forget(self, fpr, sign_key, local = False):
                 "Sign key using sign_key. Signature is exportable if local is False"
