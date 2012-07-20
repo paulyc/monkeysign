@@ -383,6 +383,8 @@ class OpenPGPkey():
                                         self.subkeys[subkey._keyid].secret = True
                                 else:
                                         self.subkeys[subkey._keyid] = subkey
+                        elif rectype == 'uat':
+                                pass # user attributes, ignore for now
                         elif rectype == '':
                                 pass
                         else:
