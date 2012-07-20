@@ -26,6 +26,11 @@ class MonkeysignScan(gtk.Window):
         tmpkeyring = monkeysign.GpgTemp()
         pubkeyring = monkeysign.Gpg()
 
+        # the current fingerprint being processed
+        fpr = ''
+
+        signing_key = '7B75921E'
+
         def __init__(self):
                 super(MonkeysignScan, self).__init__()
 
@@ -133,17 +138,24 @@ class MonkeysignScan(gtk.Window):
                         self.keep_pulsing=False
                         self.dialog.destroy()
                         if condition == 0:
-                                for fpr, key in self.tmpkeyring.get_keys(fpr).iteritems():
-                                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "Would you like to certify this key/userid pair ?\n\nFingerprint : " + fpr + "\nFull key : " + key)
+                                for fpr, key in self.tmpkeyring.get_keys(self.fpr).iteritems():
+                                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "Would you like to certify this key/userid pair ?\n\nFingerprint : " + fpr + "\nFull key : " + str(key))
                                                 gtk.gdk.threads_enter()
                                                 response = md.run()
                                                 gtk.gdk.threads_leave()
                                                 if response == gtk.RESPONSE_YES:
-                                                        self.tmpkeyring.sign_key(fpr)
+                                                        self.tmpkeyring.import_data(self.pubkeyring.export_data(self.signing_key, True))
+                                                        self.tmpkeyring.import_data(self.pubkeyring.export_data(self.signing_key))
+                                                        if self.tmpkeyring.sign_key(fpr):
+                                                                self.tmpkeyring.set_option('armor')
+                                                                print "key signed successfully!"
+                                                                print self.tmpkeyring.export_data(fpr)
+                                                        else:
+                                                                print >>sys.stderr, 'failed to sign key:', self.tmpkeyring.stderr
                                                 self.resume_capture()
                                                 md.destroy()
                         else:
-                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key " + fpr + " not found.")
+                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key " + self.fpr + " not found.")
                                 gtk.gdk.threads_enter()
                                 md.run()
                                 gtk.gdk.threads_leave()
@@ -156,7 +168,7 @@ class MonkeysignScan(gtk.Window):
 
                 if m != None:
                         # Found fingerprint
-                        fpr = m.group(1)
+                        self.fpr = m.group(1)
 
                         # Capture and display the video frame containing QR code
                         self.zbarframe.set_shadow_type(gtk.SHADOW_NONE)
@@ -173,7 +185,7 @@ class MonkeysignScan(gtk.Window):
                         # Disable video capture
                         self.zbar.set_video_enabled(False)
                         self.tmpkeyring.set_option('keyserver', self.keyserver)
-                        command = self.tmpkeyring.build_command(['recv-keys', fpr])
+                        command = self.tmpkeyring.build_command(['recv-keys', self.fpr])
                         self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
                         self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
                         message = gtk.Label("Retrieving public key from server...")
