@@ -41,17 +41,25 @@ class Gpg():
                 this will add relevant arguments around the gpg binary"""
                 return [self.gpg_binary] + self.options + command
 
+        def call_command(self, command, data=None):
+                """internal wrapper to call a GPG pipe"""
+                proc = subprocess.Popen(self.build_command(command), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+                (self.stdout, self.stderr) = proc.communicate(data) # XXX: yield?
+                self.returncode = proc.returncode
+                return proc.returncode == 0
+
         def version(self, type='short'):
-                proc = subprocess.Popen(self.build_command(['--version']), stdout=subprocess.PIPE)
-                (stdout, stderr) = proc.communicate()
+                self.call_command(['--version'])
                 if type is not 'short': raise TypeError('invalid type')
-                m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', stdout)
+                m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
                 return m.group(1)
 
         def import_data(self, data):
-                proc = subprocess.Popen(self.build_command(['--import']), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-                (stdout, stderr) = proc.communicate(data)
-                return (proc.returncode == 0)
+                return self.call_command(['--import'], data)
+
+        def export_data(self, fpr):
+                self.call_command(['--export', fpr])
+                return self.stdout
 
         def fetch_keys(self, fpr, keyserver = None):
                 """Get keys from a keyserver"""
