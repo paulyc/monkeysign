@@ -85,16 +85,30 @@ class TestGpg(unittest.TestCase):
         #k1.fingerprint = '8DC901CE64146C048AD50FBB792152527B75921E'
         #k1.secret = False
         # just a cute display for now
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         for fpr, key in self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E').iteritems():
             print >>sys.stderr, key
 
     def test_get_secret_keys(self):
-        #k1 = OpenPGPKey()
-        #k1.fingerprint = '8DC901CE64146C048AD50FBB792152527B75921E'
-        #k1.secret = False
-        # just a cute display for now
-        for fpr, key in self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E', True, False).iteritems():
-            print >>sys.stderr, key
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        # this shouldn't show anything, as this is just a public key blob
+        self.assertFalse(self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E', True, False))
+
+    def test_sign_key(self):
+        #self.assertTrue(self.gpg.sign_key('343CA353'))            
+        pass
+
+    def test_sign_key_from_other(self):
+        gpg = Gpg()
+        gpgtmp = Gpg(tempfile.mkdtemp(prefix="monkeysign-"))
+        data = gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E')
+        self.assertTrue(data)
+        self.assertTrue(gpgtmp.import_data(data))
+        self.assertTrue(gpgtmp.import_data(gpg.export_data('343CA353')))
+        gpg.set_option('export-secret-keys')
+        gpgtmp.import_data(gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E'))
+        gpgtmp.sign_key('343CA353')
+        print self.gpg.export_data('343CA353')
 
     def tearDown(self):
         del self.gpg
