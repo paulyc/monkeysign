@@ -73,8 +73,8 @@ class Gpg():
                         options += ['--' + left]
                         if right is not None:
                                 options += [str(right)]
-                if type(command) is not list:
-                        command = list(str(command))
+                if type(command) is str:
+                        command = [command]
                 if len(command) > 0:
                         command[0] = '--' + command[0]
                 return [self.gpg_binary] + options + command
