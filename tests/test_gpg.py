@@ -13,6 +13,12 @@ class TestGpg(unittest.TestCase):
         self.assertEqual(os.environ['GPG_HOME'], '/tmp/gpg-home')
 
 class TestGpgTemp(unittest.TestCase):
+    # those need to match the options in the Gpg class
+    options = { 'status-fd': 1, 'command-fd': 0, 'no-tty': None, 'use-agent': None }
+
+    # ... and this is the rendered version of the above
+    rendered_options = ['gpg', '--command-fd', '0', '--no-tty', '--status-fd', '1', '--use-agent']
+
     def setUp(self):
         # we test using the temporary keyring because it's too dangerous otherwise
         if 'GPG_HOME' in os.environ: del os.environ['GPG_HOME']
@@ -26,17 +32,21 @@ class TestGpgTemp(unittest.TestCase):
 
     def test_build_command(self):
         # reset options to a known setting
-        options = { 'status-fd': 1, 'command-fd': 0, 'no-tty': None, 'use-agent': None }
-        self.gpg.options = options
-        self.assertEqual(self.gpg.build_command(['list-keys', 'foo']), ['gpg', '--command-fd', '0', '--no-tty', '--status-fd', '1', '--use-agent', '--list-keys', 'foo' ])
+        self.gpg.options = dict(self.options) # work on a copy
+        self.assertEqual(self.gpg.build_command(['list-keys', 'foo']), self.rendered_options + ['--list-keys', 'foo'])
 
     def test_env(self):
         self.assertTrue(os.path.exists(os.environ['GPG_HOME']))
 
     def test_command(self):
-        c = self.gpg.build_command([])
+        c = list(self.rendered_options) # work on a copy
         c.append('--version')
         c2 = self.gpg.build_command(['version'])
+        self.assertEqual(c, c2)
+        c = list(self.rendered_options)
+        c.append('--export')
+        c.append('foo')
+        c2 = self.gpg.build_command(['export', 'foo'])
         self.assertEqual(c, c2)
 
     def test_version(self):
