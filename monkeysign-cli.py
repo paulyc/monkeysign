@@ -92,7 +92,7 @@ class MonkeysignCli():
         if options.local:
             raise NotImplementedError('local key signing not implemented yet')
         if not options.alluids:
-            raise NotImplementedError('please use -a for now')
+            raise NotImplementedError('per uid signatures not supported yet, please use -a for now')
 
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
