@@ -330,7 +330,7 @@ class Keyring():
                 raise GpgProcotolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
         return keys
 
-    def sign_key(self, uid, signall = False):
+    def sign_key(self, pattern, signall = False):
         """sign a OpenPGP public key
 
         By default it looks up and signs a specific uid, but it can
@@ -340,8 +340,8 @@ class Keyring():
         # we iterate over the keys matching the provided
         # keyid, but we should really load those uids from the
         # output of --sign-key
-        if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command(['sign-key', uid])
-        proc = subprocess.Popen(self.context.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+        if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command(['sign-key', pattern])
+        proc = subprocess.Popen(self.context.build_command(['sign-key', pattern]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
         # don't sign all uids
         self.context.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
         if signall: # special case, sign all keys
@@ -361,7 +361,7 @@ class Keyring():
         self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
         while True:
             m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
-            if m and m.group(1) == uid:
+            if m and m.group(1) == pattern:
                 index = int(m.group(2)) + 1
                 break
         print >>proc.stdin, str(index)
