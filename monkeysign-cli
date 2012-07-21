@@ -63,6 +63,9 @@ class MonkeysignCli():
     # the fingerprints that we actually signed
     signed_keys = None
 
+    # temporary, to keep track of the OpenPGPkey we are signing
+    signing_key = None
+
     def main(self,pattern, options = {}):
         """main code execution loop
 
@@ -96,20 +99,6 @@ class MonkeysignCli():
         if options.debug:
             self.tmpkeyring.context.debug = sys.stderr
         if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
-
-        # detect the proper uid
-        if options.user is None:
-            keys = self.keyring.get_keys(None, True)
-            for fpr, key in keys.iteritems():
-                if not key.invalid and not key.disabled and not key.expired and not key.revoked:
-                    options.user = key.uids.values()[0].uid
-                    break
-
-            if options.user is None:
-                print >>sys.stderr, 'no default secret key found, abort!'
-                sys.exit(1)
-
-        print "Using your identity:", options.user
 
         # 1. fetch the key into a temporary keyring
         self.find_key()
@@ -166,6 +155,27 @@ class MonkeysignCli():
                 print >>sys.stderr, 'could not find private key material, do you have a GPG key?'
                 sys.exit(5)
 
+        # detect the proper uid
+        if self.options.user is None:
+            keys = self.tmpkeyring.get_keys(None, True)
+        else:
+            keys = self.tmpkeyring.get_keys(self.options.user, True)
+
+        for fpr, key in keys.iteritems():
+            if not key.invalid and not key.disabled and not key.expired and not key.revoked:
+                self.signing_key = key
+                break
+
+        if self.signing_key is None:
+            print >>sys.stderr, 'no default secret key found, abort!'
+            sys.exit(1)
+
+        if not self.tmpkeyring.import_data(self.keyring.export_data(self.signing_key.fpr)):
+            print >>sys.stderr, 'could not find public key material, do you have a GPG key?'
+            sys.exit(5)
+        print "Preparing to sign with this key"
+        print self.signing_key
+
     def sign_key(self):
         """sign the key uids, as specified"""
 
@@ -214,11 +224,10 @@ class MonkeysignCli():
         self.tmpkeyring.context.set_option('armor')
         self.tmpkeyring.context.set_option('always-trust')
 
-        if '@' in options.user:
+        if options.user is not None and '@' in options.user:
             from_user = options.user
         else:
-            from_key = self.tmpkeyring.get_keys(options.user).values()[0]        
-            from_user = from_key.uids.values()[0].uid
+            from_user = self.signing_key.uidslist[0].uid
 
         for fpr in self.signed_keys:
             data = self.tmpkeyring.export_data(fpr)
