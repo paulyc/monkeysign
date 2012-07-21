@@ -38,7 +38,7 @@ import os, tempfile, shutil, subprocess, re
 
 from StringIO import StringIO
 
-class Keyring():
+class Context():
     """Python wrapper for GnuPG
 
     This wrapper allows for a simpler interface than GPGME or PyME to
@@ -62,17 +62,7 @@ class Keyring():
     # if not false, needs to be a file descriptor
     debug = False
 
-    def __init__(self, homedir=None):
-        """constructor for the gpg context
-
-        this mostly sets options, and allows passing in a different
-        homedir, that will be added to the option right here and
-        there.
-
-        by default, we do not create or destroy the keyring, although
-        later function calls on the object may modify the keyring (or
-        other keyrings, if the homedir option is modified.
-        """
+    def __init__(self):
         self.options = { 'status-fd': 2,
                          'command-fd': 0,
                          'no-tty': None,
@@ -84,9 +74,6 @@ class Keyring():
                          'fixed-list-mode': None,
                          'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
                          }
-        if homedir is not None:
-            self.set_option('homedir', homedir)
-
     def set_option(self, option, value = None):
         """set an option to pass to gpg
 
@@ -160,133 +147,6 @@ class Keyring():
             print >>self.debug, 'ret:', self.returncode, 'stdout:', self.stdout, 'stderr:', self.stderr
         return proc.returncode == 0
 
-    def version(self):
-        """return the version of the GPG binary"""
-        self.call_command(['version'])
-        m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
-        return m.group(1)
-
-    def import_data(self, data):
-        """Import OpenPGP data blocks into the keyring.
-
-        This takes actual OpenPGP data, ascii-armored or not, gpg will
-        gladly take it. This can be signatures, public, private keys,
-        etc.
-
-        You may need to set import-flags to import non-exportable
-        signatures, however.
-        """
-        self.call_command(['import'], data)
-        fd = StringIO(self.stderr)
-        self.seek(fd, 'IMPORT_OK')
-        self.seek(fd, 'IMPORT_RES')
-        return self.returncode == 0
-
-    def export_data(self, fpr = None, secret = False):
-        """Export OpenPGP data blocks from the keyring.
-
-        This exports actual OpenPGP data, by default in binary format,
-        but can also be exported asci-armored by setting the 'armor'
-        option."""
-        if secret: command = ['export-secret-keys']
-        else: command = ['export']
-        if fpr: command += [fpr]
-        self.call_command(command)
-        return self.stdout
-
-    def fetch_keys(self, fpr, keyserver = None):
-        """Download keys from a keyserver into the local keyring
-
-        This expects a fingerprint (or a at least a key id).
-
-        Returns true if the command succeeded.
-        """
-        if keyserver:
-            self.set_option('keyserver', keyserver)
-        self.call_command(['recv-keys', fpr])
-        return self.returncode == 0
-
-    def get_keys(self, pattern = None, secret = False, public = True):
-        """load keys matching a specific patterns
-
-        this uses the (rather poor) list-keys API to load keys
-        information
-        """
-        keys = {}
-        if public:
-            command = ['list-keys']
-            if pattern: command += [pattern]
-            self.call_command(command)
-            if self.returncode == 0:
-                key = OpenPGPkey(self.stdout)
-                keys[key.fpr] = key
-            elif self.returncode == 2:
-                return None
-            else:
-                raise GpgProtocolError(self.returncode, "unexpected GPG exit code in list-keys: %d" % self.returncode)
-        if secret:
-            command = ['list-secret-keys']
-            if pattern: command += [pattern]
-            self.call_command(command)
-            if self.returncode == 0:
-                key = OpenPGPkey(self.stdout)
-                # check if we already have that key, in which case we
-                # add to it instead of adding a new key
-                if key.fpr in keys:
-                    keys[key.fpr].parse_gpg_list(self.stdout)
-                    del key
-                else:
-                    keys[key.fpr] = key
-            elif self.returncode == 2:
-                return None
-            else:
-                raise GpgProcotolError(self.returncode, "unexpected GPG exit code in list-keys: %d" % self.returncode)
-        return keys
-
-    def sign_key(self, fpr):
-        """sign a key already present in the temporary keyring
-        
-        use set_option('local-user', key) to choose a signing key
-        """
-        return self.call_command(['sign-key', fpr], "y\ny\n")
-
-    def sign_uid(self, uid):
-        """sign a specific uid on a key"""
-
-        # we iterate over the keys matching the provided
-        # keyid, but we should really load those uids from the
-        # output of --sign-key
-        if self.debug: print >>self.debug, 'command:', self.build_command(['sign-key', uid])
-        proc = subprocess.Popen(self.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-        # don't sign all uids
-        self.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
-        print >>proc.stdin, "n"
-        self.expect(proc.stderr, 'GOT_IT')
-        # select the uid
-        self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-        while True:
-            m = self.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
-            if m and m.group(1) == uid:
-                index = int(m.group(2)) + 1
-                break
-        print >>proc.stdin, str(index)
-        self.expect(proc.stderr, 'GOT_IT')
-        # sign the selected uid
-        self.seek(proc.stderr, 'GET_LINE keyedit.prompt')
-        print >>proc.stdin, "sign"
-        self.expect(proc.stderr, 'GOT_IT')
-        # confirm signature
-        self.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
-        print >>proc.stdin, 'y'
-        self.expect(proc.stderr, 'GOT_IT')
-        # expect the passphrase confirmation
-        self.expect(proc.stderr, 'GOOD_PASSPHRASE')
-        # save the resulting key
-        self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-        print >>proc.stdin, "save"
-        self.expect(proc.stderr, 'GOT_IT')
-        return proc.wait() == 0
-
     def seek_pattern(self, fd, pattern):
         """iterate over file descriptor until certain pattern is found
 
@@ -344,6 +204,167 @@ class Keyring():
         """
         return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
+    def version(self):
+        """return the version of the GPG binary"""
+        self.call_command(['version'])
+        m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
+        return m.group(1)
+
+class Keyring():
+    """Keyring functionalities.
+
+    This allows various operations (e.g. listing, signing, exporting
+    data) on a keyring.
+
+    Concretely, we talk about a "keyring", but we really mean a set of
+    public and private keyrings and their trust databases. In
+    practice, this is the equivalent of the GNUPGHOME or --homedir in
+    GPG, and in fact this is implemented by setting a specific homedir
+    to tell GPG to operate on a specific keyring.
+
+    We actually use the --homedir parameter to gpg to set the keyring
+    we operate upon.
+    """
+
+    # the context this keyring is associated with
+    context = None
+
+    def __init__(self, homedir=None):
+        """constructor for the gpg context
+
+        this mostly sets options, and allows passing in a different
+        homedir, that will be added to the option right here and
+        there.
+
+        by default, we do not create or destroy the keyring, although
+        later function calls on the object may modify the keyring (or
+        other keyrings, if the homedir option is modified.
+        """
+        self.context = Context()
+        if homedir is not None:
+            self.context.set_option('homedir', homedir)
+
+    def import_data(self, data):
+        """Import OpenPGP data blocks into the keyring.
+
+        This takes actual OpenPGP data, ascii-armored or not, gpg will
+        gladly take it. This can be signatures, public, private keys,
+        etc.
+
+        You may need to set import-flags to import non-exportable
+        signatures, however.
+        """
+        self.context.call_command(['import'], data)
+        fd = StringIO(self.context.stderr)
+        self.context.seek(fd, 'IMPORT_OK')
+        self.context.seek(fd, 'IMPORT_RES')
+        return self.context.returncode == 0
+
+    def export_data(self, fpr = None, secret = False):
+        """Export OpenPGP data blocks from the keyring.
+
+        This exports actual OpenPGP data, by default in binary format,
+        but can also be exported asci-armored by setting the 'armor'
+        option."""
+        if secret: command = ['export-secret-keys']
+        else: command = ['export']
+        if fpr: command += [fpr]
+        self.context.call_command(command)
+        return self.context.stdout
+
+    def fetch_keys(self, fpr, keyserver = None):
+        """Download keys from a keyserver into the local keyring
+
+        This expects a fingerprint (or a at least a key id).
+
+        Returns true if the command succeeded.
+        """
+        if keyserver:
+            self.context.set_option('keyserver', keyserver)
+        self.context.call_command(['recv-keys', fpr])
+        return self.context.returncode == 0
+
+    def get_keys(self, pattern = None, secret = False, public = True):
+        """load keys matching a specific patterns
+
+        this uses the (rather poor) list-keys API to load keys
+        information
+        """
+        keys = {}
+        if public:
+            command = ['list-keys']
+            if pattern: command += [pattern]
+            self.context.call_command(command)
+            if self.context.returncode == 0:
+                key = OpenPGPkey(self.context.stdout)
+                keys[key.fpr] = key
+            elif self.context.returncode == 2:
+                return None
+            else:
+                raise GpgProtocolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
+        if secret:
+            command = ['list-secret-keys']
+            if pattern: command += [pattern]
+            self.context.call_command(command)
+            if self.context.returncode == 0:
+                key = OpenPGPkey(self.context.stdout)
+                # check if we already have that key, in which case we
+                # add to it instead of adding a new key
+                if key.fpr in keys:
+                    keys[key.fpr].parse_gpg_list(self.context.stdout)
+                    del key
+                else:
+                    keys[key.fpr] = key
+            elif self.context.returncode == 2:
+                return None
+            else:
+                raise GpgProcotolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
+        return keys
+
+    def sign_key(self, fpr):
+        """sign a key already present in the temporary keyring
+        
+        use set_option('local-user', key) to choose a signing key
+        """
+        return self.context.call_command(['sign-key', fpr], "y\ny\n")
+
+    def sign_uid(self, uid):
+        """sign a specific uid on a key"""
+
+        # we iterate over the keys matching the provided
+        # keyid, but we should really load those uids from the
+        # output of --sign-key
+        if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command(['sign-key', uid])
+        proc = subprocess.Popen(self.context.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+        # don't sign all uids
+        self.context.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+        print >>proc.stdin, "n"
+        self.context.expect(proc.stderr, 'GOT_IT')
+        # select the uid
+        self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+        while True:
+            m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
+            if m and m.group(1) == uid:
+                index = int(m.group(2)) + 1
+                break
+        print >>proc.stdin, str(index)
+        self.context.expect(proc.stderr, 'GOT_IT')
+        # sign the selected uid
+        self.context.seek(proc.stderr, 'GET_LINE keyedit.prompt')
+        print >>proc.stdin, "sign"
+        self.context.expect(proc.stderr, 'GOT_IT')
+        # confirm signature
+        self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+        print >>proc.stdin, 'y'
+        self.context.expect(proc.stderr, 'GOT_IT')
+        # expect the passphrase confirmation
+        self.context.expect(proc.stderr, 'GOOD_PASSPHRASE')
+        # save the resulting key
+        self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+        print >>proc.stdin, "save"
+        self.context.expect(proc.stderr, 'GOT_IT')
+        return proc.wait() == 0
+
 class TempKeyring(Keyring):
     def __init__(self):
         """Override the parent class to generate a temporary GPG home
@@ -351,7 +372,7 @@ class TempKeyring(Keyring):
         Keyring.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
 
     def __del__(self):
-        shutil.rmtree(self.options['homedir'])
+        shutil.rmtree(self.context.options['homedir'])
 
 class OpenPGPkey():
     """An OpenPGP key.

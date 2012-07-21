@@ -12,29 +12,9 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from gpg import Keyring, TempKeyring, OpenPGPkey, OpenPGPuid
+from gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid
 
-class TestGpgPlain(unittest.TestCase):
-    def test_plain(self):
-        """make sure other instances do not poison us"""
-        g = Keyring()
-        self.assertNotIn('homedir', g.options)
-
-class TestGpgTmp(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.mkdtemp(prefix="pygpg-")
-        self.gpgtmp = Keyring(self.tmp)
-        self.assertEqual(self.gpgtmp.options['homedir'], self.tmp)
-
-    def test_home(self):
-        """test if the homedir is properly set and populated"""
-        self.gpgtmp.export_data('') # dummy call to make gpg populate his directory
-        self.assertTrue(open(self.tmp + '/pubring.gpg'))
-
-    def tearDown(self):
-        shutil.rmtree(self.tmp)
-
-class TestGpg(unittest.TestCase):
+class TestContext(unittest.TestCase):
     # those need to match the options in the Gpg class
     options = { 'status-fd': 2,
                 'command-fd': 0,
@@ -52,9 +32,13 @@ class TestGpg(unittest.TestCase):
     rendered_options = ['gpg', '--command-fd', '0', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--batch', '--fixed-list-mode', '--no-tty', '--with-colons', '--use-agent', '--status-fd', '2', '--quiet' ]
 
     def setUp(self):
-        # we test using the temporary keyring because it's too dangerous otherwise
-        self.gpg = TempKeyring()
-        self.assertIn('homedir', self.gpg.options)
+        self.gpg = Context()
+
+    def test_plain(self):
+        """make sure other instances do not poison us"""
+        d = Context()
+        d.set_option('homedir', '/var/nonexistent')
+        self.assertNotIn('homedir', self.gpg.options)
 
     def test_set_option(self):
         """make sure setting options works"""
@@ -63,31 +47,43 @@ class TestGpg(unittest.TestCase):
         self.gpg.set_option('keyserver', 'foo.example.com')
         self.assertDictContainsSubset({'keyserver': 'foo.example.com'}, self.gpg.options)
 
-    def test_build_command(self):
-        """test commandline building capabilities
+    def test_command(self):
+        """test various command creation
 
         if this fails, it's probably because you added default options
         to the tested class without adding them in the test class
         """
-        c1 = self.gpg.build_command(['list-keys', 'foo'])
-        self.assertIn('homedir', self.gpg.options)
-        c2 = self.rendered_options + ['--list-keys', 'foo'] + ['--homedir', self.gpg.options['homedir']]
-        self.assertItemsEqual(c1, c2)
-
-    def test_command(self):
-        """test various command creation"""
-        c = list(self.rendered_options) # work on a copy
+        c = self.rendered_options + ['--version']
         c2 = self.gpg.build_command(['version'])
-        c += ['--homedir', self.gpg.options['homedir'], '--version']
         self.assertItemsEqual(c, c2)
-        c = list(self.rendered_options)
+        c = self.rendered_options + ['--export', 'foo']
         c2 = self.gpg.build_command(['export', 'foo'])
-        c += ['--homedir', self.gpg.options['homedir'], '--export', 'foo']
         self.assertItemsEqual(c, c2)
 
     def test_version(self):
         """make sure version() returns something"""
         self.assertTrue(self.gpg.version())
+
+class TestGpgTmp(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.mkdtemp(prefix="pygpg-")
+        self.gpgtmp = Keyring(self.tmp)
+        self.assertEqual(self.gpgtmp.context.options['homedir'], self.tmp)
+
+    def test_home(self):
+        """test if the homedir is properly set and populated"""
+        self.gpgtmp.export_data('') # dummy call to make gpg populate his directory
+        self.assertTrue(open(self.tmp + '/pubring.gpg'))
+
+    def tearDown(self):
+        shutil.rmtree(self.tmp)
+
+class TestGpg(unittest.TestCase):
+
+    def setUp(self):
+        # we test using the temporary keyring because it's too dangerous otherwise
+        self.gpg = TempKeyring()
+        self.assertIn('homedir', self.gpg.context.options)
 
     def test_import(self):
         """make sure import_data returns true on known good data
@@ -108,8 +104,8 @@ class TestGpg(unittest.TestCase):
         """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         k1 = open(os.path.dirname(__file__) + '/96F47C6A.asc').read()
-        self.gpg.set_option('armor')
-        self.gpg.set_option('export-options', 'export-minimal')
+        self.gpg.context.set_option('armor')
+        self.gpg.context.set_option('export-options', 'export-minimal')
         k2 = self.gpg.export_data('96F47C6A')
         self.assertEqual(k1,k2)
 
@@ -151,7 +147,7 @@ class TestGpg(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.gpg.set_option('local-user', '0000000F')
+        self.gpg.context.set_option('local-user', '0000000F')
         self.assertFalse(self.gpg.sign_key('7B75921E'))
         for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
             print key
@@ -162,11 +158,11 @@ class TestGpg(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.assertTrue(self.gpg.sign_key('7B75921E'))
-        self.assertNotEqual(self.gpg.stdout, '')
+        self.assertNotEqual(self.gpg.context.stdout, '')
         for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
             print key
-        self.gpg.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+        self.gpg.context.call_command(['list-sigs', '7B75921E'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
 
     def test_sign_key_uid(self):
         """test signature of a single uid"""
@@ -174,8 +170,8 @@ class TestGpg(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.assertTrue(self.gpg.sign_uid('Antoine Beaupré <anarcat@debian.org>'))
-        self.gpg.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+        self.gpg.context.call_command(['list-sigs', '7B75921E'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
 
     def test_sign_key_missing_key(self):
         """try to sign a missing key
@@ -188,15 +184,15 @@ class TestGpg(unittest.TestCase):
         """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.assertTrue(self.gpg.sign_key('7B75921E'))
-        self.assertEqual(self.gpg.stdout, '')
-        self.assertEqual(self.gpg.stderr, '')
+        self.assertEqual(self.gpg.context.stdout, '')
+        self.assertEqual(self.gpg.context.stderr, '')
 
     def test_sign_key_as_user(self):
         """normal signature with a signing user specified"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.gpg.set_option('local-user', '96F47C6A')
+        self.gpg.context.set_option('local-user', '96F47C6A')
         self.assertTrue(self.gpg.sign_key('7B75921E'))
 
     def test_gen_key(self):
@@ -216,12 +212,12 @@ class TestGpgCaff(unittest.TestCase):
 
     def test_sign_key_from_other(self):
         gpg = Keyring()
-        gpg.set_option('export-options', 'export-minimal')
+        gpg.context.set_option('export-options', 'export-minimal')
         self.assertTrue(self.gpgtmp.import_data(gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E')))
         self.assertTrue(self.gpgtmp.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpgtmp.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.assertTrue(self.gpgtmp.sign_key('7B75921E'))
-        self.gpgtmp.set_option('armor')
+        self.gpgtmp.context.set_option('armor')
         export = self.gpgtmp.export_data('7B75921E')
         print export
         self.assertTrue(export)
