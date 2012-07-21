@@ -19,10 +19,17 @@ class TestGpgNetwork(unittest.TestCase):
 
     def setUp(self):
         self.gpg = TempKeyring()
+        self.gpg.context.set_option('keyserver', 'pool.sks-keyservers.net')
 
     def test_fetch_keys(self):
-        self.gpg.context.set_option('keyserver', 'pool.sks-keyservers.net')
         self.assertTrue(self.gpg.fetch_keys('4023702F'))
+
+    def test_special_key(self):
+        """test a key that sign_key had trouble with"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.fetch_keys('3CCDBB7355D1758F549354D20B123309D3366755'))
+        self.assertTrue(self.gpg.sign_key('3CCDBB7355D1758F549354D20B123309D3366755'))
 
     def tearDown(self):
         del self.gpg
