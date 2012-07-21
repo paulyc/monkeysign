@@ -1,9 +1,6 @@
 Monkeysign: OpenPGP Key Exchange for Humans 
 ===========================================
 
-License: GPLv3 or later
-Authors: Jerome Charaoui and Antoine Beaupré
-
 monkeysign is a tool to overhaul the OpenPGP keysigning experience and
 bring it closer to something that most primates can understand.
 
@@ -16,7 +13,13 @@ can build a little rogue's gallery of the people that you have met and
 exchanged keys with!
 
 Requirements:
-* python-qrencode
-* python-gtk2
-* python-pyme
-* python-zbarpygtk
+
+ * python-qrencode
+ * python-gtk2
+ * python-pyme
+ * python-zbarpygtk
+
+License: GPLv3 or later
+
+Authors: Jerome Charaoui and Antoine Beaupré
+
