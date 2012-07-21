@@ -15,6 +15,11 @@ sys.path.append(os.path.dirname(__file__) + '/..')
 from gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid
 
 class TestContext(unittest.TestCase):
+    """Tests for the Context class.
+
+    Those should be limited to talking to the GPG binary, not
+    operating on actual keyrings or GPG data."""
+
     # those need to match the options in the Gpg class
     options = { 'status-fd': 2,
                 'command-fd': 0,
@@ -64,7 +69,9 @@ class TestContext(unittest.TestCase):
         """make sure version() returns something"""
         self.assertTrue(self.gpg.version())
 
-class TestGpgTmp(unittest.TestCase):
+class TestTempKeyring(unittest.TestCase):
+    """Test the TempKeyring class."""
+
     def setUp(self):
         self.tmp = tempfile.mkdtemp(prefix="pygpg-")
         self.gpgtmp = Keyring(self.tmp)
@@ -78,10 +85,14 @@ class TestGpgTmp(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.tmp)
 
-class TestGpg(unittest.TestCase):
+class TestKeyring(unittest.TestCase):
+    """Test the Keyring class."""
 
     def setUp(self):
-        # we test using the temporary keyring because it's too dangerous otherwise
+        """setup the test environment
+
+        we test using the temporary keyring because it's too dangerous otherwise
+        """
         self.gpg = TempKeyring()
         self.assertIn('homedir', self.gpg.context.options)
 
