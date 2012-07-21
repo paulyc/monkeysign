@@ -276,11 +276,6 @@ class Gpg():
 
         def sign_uid(self, uid):
                 """sign a specific uid on a key"""
-                self.unset_option('batch')
-                self.unset_option('quiet')
-
-                import sys
-
                 for fpr, key in self.get_keys(uid).iteritems():
                         index = None
                         for i in range(0, len(key.uidslist)):
