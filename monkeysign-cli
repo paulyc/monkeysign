@@ -102,6 +102,8 @@ class MonkeysignUi(object):
             self.main(pattern, options)
         except NotImplementedError as e:
             self.abort(str(e))
+        # this is implicit in the garbage collection, but tell the user anyways
+        self.log('deleting the temporary keyring ' + self.tmpkeyring.tmphomedir)
 
     def abort(self, message):
         """show a message to the user and abort program"""
@@ -251,7 +253,6 @@ class MonkeysignCli(MonkeysignUi):
         # @todo
 
         # 4. trash the temporary keyring
-        self.log('deleting the temporary keyring ' + tmpkeyring.tmphomedir)
         # implicit
 
     def yes_no(self, prompt, default = None):
