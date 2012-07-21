@@ -103,7 +103,7 @@ class MonkeysignCli():
             # 1.b) from the local keyring (@todo try that first?)
             if self.options.verbose: print >>sys.stderr, 'looking for key %s in your keyring' % self.pattern
             if self.options.dryrun: return True
-            if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
+            if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
                 print >>sys.stderr, 'could not find key %s in your keyring, and no keyserve defined' % self.pattern
                 sys.exit(3)
         else:
