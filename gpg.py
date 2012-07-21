@@ -40,6 +40,25 @@ temporary one).
 This is how you can access keys, which are represented by the
 OpenPGPkey datastructure, but which will not look in your keyring or
 on the keyservers itself without the Keyring class.
+
+It seems that I have missed a similar project that's been around for
+quite a while (2008-2012):
+
+https://code.google.com/p/python-gnupg/
+
+The above project has a lot of similarities with this implementation,
+but is better because:
+
+ 1. it actually parses most status outputs from GPG, in a clean way
+ 2. uses threads so it doesn't block
+ 3. supports streams
+ 4. supports verification, key generation and deletion
+ 5. has a cleaner and more complete test suite
+
+However, the implementation here has:
+
+ 1. key signing support
+ 2. a cleaner API
 """
 
 import os, tempfile, shutil, subprocess, re
