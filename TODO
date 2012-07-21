@@ -1,0 +1,57 @@
+Blockers
+========
+
+A small list of things to do before this is officially released as
+0.1.
+
+ * hook into python's install procedures
+   - use distutils, see setup.py in python-gnupg
+
+ * finish monkeysign-scan
+   - migrate the MIME handling code to a common class or to the library?
+   - may require merging with monkeysign-cli (below)
+
+ * merge with monkeysphere.info
+   - merge refactor branch in master (trivial)
+   - publish code upstream on monkeysphere.info
+   - make a webpage explaining common uses
+
+Nice to haves
+=============
+
+The software should be tagged and release even without those.
+
+ o [anarcat] make a debian package
+ o [anarcat] make sure we can apply improvements to python-gnupg
+ o [anarcat] decide to merge or split from pythong-gnupg
+   - for merge arguments:
+     - gnupg has more history and authors
+     - has more features (see below)
+     - avoid project proliferation (already 4 python APIs to gpg)
+     - may be less work
+   - against merge arguments:
+     - needs to rewrite monkeysign again (fairly easy)
+     - i just spend about 20 hours in two days on this project
+     - python-gnupg doesn't seem to have a VCS
+     - hosted on code.google.com, BSD license (minor)
+ * if merging, apply those improvements to python-gnupg
+   - add key signing support
+   - split the "context" and "keyring" classes
+   - monkeysign also needs to be ported
+ * if not merging, take those improvements from python-gnupg
+   - improve test suite
+   - add abstract status handlers that react on a main read loop
+     instead of expect-like functionality
+   - add support for verification, key generation and deletion
+   - support streams of I/O
+   - use threads?
+   - move the TempKeyring class to a monkeysign lib?
+ * add a manpage
+   - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
+ * merge monkeysign-scan and monkeysign-cli
+   - use a parent class for argument passing and Gpg wrappers
+   - detect if the zbar libraries and X11 are present
+ * merge monkeysign-scan and monkeysign-gen
+   - display the qrcode in monkeysign-scan
+ * get rid of the pyme dependencies
+   - just removing monkeysign-gen should be enough
