@@ -221,11 +221,11 @@ class Context():
         """
         line = fd.readline()
         match = re.search(pattern, line)
-        if match:
-            if self.debug: print >>self.debug, "FOUND:", line,
-            return match
-        else:
-            raise GpgProcotolError(self.returncode, "unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
+
+        if self.debug:
+            if match: print >>self.debug, "FOUND:", line,
+            else: print >>self.debug, "SKIPPED:", line,
+        return match
 
     def expect(self, fd, pattern):
         """look for a specific GNUPG status on the next line of output
@@ -393,45 +393,54 @@ class Keyring():
         # output of --sign-key
         if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command(['sign-key', pattern])
         proc = subprocess.Popen(self.context.build_command(['sign-key', pattern]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-        # don't sign all uids
-        self.context.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
-        if signall: # special case, sign all keys
-            print >>proc.stdin, "y"
+
+        # if there are multiple uids to sign, we'll get this point, and a whole other interface
+        multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+        if multiuid:
+            if signall: # special case, sign all keys
+                print >>proc.stdin, "y"
+                self.context.expect(proc.stderr, 'GOT_IT')
+                # confirm signature
+                self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+                print >>proc.stdin, 'y'
+                self.context.expect(proc.stderr, 'GOT_IT')
+                # expect the passphrase confirmation
+                # we seek because i have seen a USERID_HINT <keyid> <uid> in some cases
+                self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+                return proc.wait() == 0
+
+            # don't sign all uids
+            print >>proc.stdin, "n"
+            self.context.expect(proc.stderr, 'GOT_IT')
+            # select the uid
+            self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+            while True:
+                m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
+                if m and m.group(1) == pattern:
+                    index = int(m.group(2)) + 1
+                    break
+            print >>proc.stdin, str(index)
+            self.context.expect(proc.stderr, 'GOT_IT')
+            # sign the selected uid
+            self.context.seek(proc.stderr, 'GET_LINE keyedit.prompt')
+            print >>proc.stdin, "sign"
             self.context.expect(proc.stderr, 'GOT_IT')
             # confirm signature
             self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
-            print >>proc.stdin, 'y'
-            self.context.expect(proc.stderr, 'GOT_IT')
-            # expect the passphrase confirmation
-            # we seek because i have seen a USERID_HINT <keyid> <uid> in some cases
-            self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
-            return proc.wait() == 0
 
-        print >>proc.stdin, "n"
-        self.context.expect(proc.stderr, 'GOT_IT')
-        # select the uid
-        self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-        while True:
-            m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
-            if m and m.group(1) == pattern:
-                index = int(m.group(2)) + 1
-                break
-        print >>proc.stdin, str(index)
-        self.context.expect(proc.stderr, 'GOT_IT')
-        # sign the selected uid
-        self.context.seek(proc.stderr, 'GET_LINE keyedit.prompt')
-        print >>proc.stdin, "sign"
-        self.context.expect(proc.stderr, 'GOT_IT')
-        # confirm signature
-        self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+        # we fallthrough here if there's only one key to sign
         print >>proc.stdin, 'y'
         self.context.expect(proc.stderr, 'GOT_IT')
         # expect the passphrase confirmation
-        self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
-        # save the resulting key
-        self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-        print >>proc.stdin, "save"
-        self.context.expect(proc.stderr, 'GOT_IT')
+        try:
+            self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+        except GpgProcotolError:
+            return False
+        if multiuid:
+            # we save the resulting key in uid selection mode
+            self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+            print >>proc.stdin, "save"
+            self.context.expect(proc.stderr, 'GOT_IT')
         return proc.wait() == 0
 
 class TempKeyring(Keyring):
