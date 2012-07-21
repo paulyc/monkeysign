@@ -66,23 +66,32 @@ def main(pattern, options = {}):
     if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
 
     # 1. fetch the key into a temporary keyring
+    # 1.a) if allowed (@todo), from the keyservers
     if options.verbose: print >>sys.stderr, 'fetching key %s from keyservers' % pattern
     if not options.dryrun:
         if not tmpkeyring.fetch_keys(pattern):
+            # 1.b) @todo from the local keyring (@todo try that first?)
             print >>sys.stderr, 'failed to get key %s from keyservers, aborting' % pattern
             sys.exit(3)
 
-    # 1.a) if allowed (@todo), from the keyservers
-    # 1.b) from the local keyring (@todo try that first?)
     # 2. copy the signing key secrets into the keyring
+    if options.verbose: print >>sys.stderr, 'copying your private key to temporary keyring in', tmpkeyring.tmphomedir
+    if not options.dryrun:
+        keyring = Keyring() # the real keyring
+        if not tmpkeyring.import_data(keyring.export_data(options.user, True)):
+            print >>sys.stderr, 'could not find private key material, do you have a GPG key?'
+            sys.exit(4)
+
     # 3. for every user id (or all, if -a is specified)
     # 3.1. sign the uid, using gpg-agent
     # 3.2. export and encrypt the signature
     # 3.3. mail the key to the user
     # 3.4. optionnally (-l), create a local signature and import in
     #local keyring
-    # 4. trash the temporary keyring
 
+    # 4. trash the temporary keyring
+    if options.verbose: print >>sys.stderr, 'deleting the temporary keyring ', tmpkeyring.tmphomedir
+    # implicit
 
 if __name__ == '__main__':
     (options, args) = parse_args()
