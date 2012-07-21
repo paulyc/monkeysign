@@ -49,7 +49,7 @@ class MonkeysignCli():
     tmpkeyring = None
 
     # the fingerprints that we actually signed
-    signed_fprs = None
+    signed_keys = None
 
     def main(self,pattern, options = {}):
         """main code execution loop
@@ -73,7 +73,7 @@ class MonkeysignCli():
         """
         self.options = options
         self.pattern = pattern
-        self.signed_fprs = []
+        self.signed_keys = {}
 
         if options.user is None:
             raise NotImplementedError('no default key detection code, please provide a user to sign keys with -u')
@@ -101,10 +101,8 @@ class MonkeysignCli():
         self.sign_key()
 
         # 3.2. export and encrypt the signature
-        self.export_key()
-
         # 3.3. mail the key to the user
-        self.mail_key()
+        self.export_key()
 
         # 3.4. optionnally (-l), create a local signature and import in
         #local keyring
@@ -174,16 +172,17 @@ class MonkeysignCli():
                 if not self.tmpkeyring.sign_key(keys[key].fpr, options.alluids):
                     print >>sys.stderr, 'key signing failed'
                 else:
-                    self.signed_fprs.append(key)
+                    self.signed_keys[key] = keys[key]
 
     def export_key(self):
         self.tmpkeyring.context.set_option('armor')
-        for fpr in self.signed_fprs:
+        self.tmpkeyring.context.set_option('always-trust')
+
+        for fpr in self.signed_keys:
             data = self.tmpkeyring.export_data(fpr)
             encrypted = self.tmpkeyring.encrypt_data(data, self.pattern)
-
-    def mail_key(self):
-        raise NotImplementedError('key mailing not implemented')
+            print "resulting signature, encrypted to the user"
+            print encrypted
 
 if __name__ == '__main__':
     (options, args) = parse_args()
