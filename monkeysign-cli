@@ -256,7 +256,7 @@ class MonkeysignCli(MonkeysignUi):
 
         # 3.2. export and encrypt the signature
         # 3.3. mail the key to the user
-        data = type(self.export_key())
+        data = self.export_key()
         if type(data) == str: print data
 
         # 3.4. optionnally (-l), create a local signature and import in
