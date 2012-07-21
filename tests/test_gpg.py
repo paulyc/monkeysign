@@ -221,7 +221,7 @@ class TestKeyring(unittest.TestCase):
         @todo not implemented"""
         pass
 
-    def test_encrypt_data_armored_untrusted(self):
+    def test_encrypt_decrypt_data_armored_untrusted(self):
         """test if we can encrypt data to our private key (and decrypt it)"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
 
@@ -236,9 +236,9 @@ class TestKeyring(unittest.TestCase):
         self.gpg.context.debug = False
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
-        self.gpg.context.call_command(['decrypt'], cyphertext)
-        self.assertTrue(self.gpg.context.returncode == 0)
-        self.assertEqual(self.gpg.context.stdout, plaintext)
+        p = self.gpg.decrypt_data(cyphertext)
+        self.assertTrue(p)
+        self.assertEqual(p, plaintext)
 
     def test_gen_key(self):
         """test key generation

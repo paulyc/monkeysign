@@ -341,6 +341,17 @@ class Keyring():
         else:
             return False
 
+    def decrypt_data(self, data):
+        """decrypt data using asymetric encryption
+
+        returns the plaintext data or False if it failed.
+        """
+        self.context.call_command(['--decrypt'], data)
+        if self.context.returncode == 0:
+            return self.context.stdout
+        else:
+            return False
+
     def sign_key(self, pattern, signall = False):
         """sign a OpenPGP public key
 
