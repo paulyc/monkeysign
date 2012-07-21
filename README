@@ -2,7 +2,7 @@ Monkeysign: OpenPGP Key Exchange for Humans
 ===========================================
 
 License: GPLv3 or later
-Authors: Jerome Charaoui
+Authors: Jerome Charaoui and Antoine Beaupré
 
 monkeysign is a tool to overhaul the OpenPGP keysigning experience and
 bring it closer to something that most primates can understand.
