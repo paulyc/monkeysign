@@ -1,3 +1,39 @@
+# -*- coding: utf-8 -*-
+#
+#    Copyright (C) 2012 Antoine Beaupré <anarcat@orangeseeds.org>
+#
+#    This program is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU General Public License as published by
+#    the Free Software Foundation, either version 3 of the License, or
+#    any later version.
+#
+#    This program is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU General Public License for more details.
+#
+#    You should have received a copy of the GNU General Public License
+#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+"""
+Native Python / GPG API
+
+This API was written to replace the GPGME bindings because the GPGME
+API has a few problems:
+
+ 1. it is arcane and difficult to grasp
+ 2. it is very closely bound to the internal GPG data and commandline
+    structures, which are quite confusing
+ 3. GPGME doesn't actually talk to a GPG library, but interacts with
+    GPG through the commandline
+ 4. GPGME developers are not willing to extend GPGME to cover private
+    key material management and consider this is outside the scope of
+    the project.
+
+The latter two points are especially problematic for this project, and
+I have therefore started working on a replacement.
+"""
+
 import os, tempfile, shutil, subprocess, re
 
 from StringIO import StringIO
