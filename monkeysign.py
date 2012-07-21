@@ -237,11 +237,16 @@ class Gpg():
                 waiting for input.
                 """
                 line = fd.readline()
-                while line and not re.search(pattern, line):
+                match = re.search(pattern, line)
+                while line and not match:
                         if self.debug: print >>self.debug, "skipped:", line,
                         line = fd.readline()
-                if not line: raise IOError("could not find pattern '%s' in input" % pattern)
-                if self.debug: print >>self.debug, "FOUND:", line,
+                        match = re.search(pattern, line)
+                if match:
+                        if self.debug: print >>self.debug, "FOUND:", line,
+                        return match
+                else:
+                        raise IOError("could not find pattern '%s' in input" % pattern)
 
         def seek(self, fd, pattern):
                 """look for a specific GNUPG status line in the output
@@ -261,9 +266,10 @@ class Gpg():
                 also hang like seek_pattern()
                 """
                 line = fd.readline()
-                if re.search(pattern, line):
+                match = re.search(pattern, line)
+                if match:
                         if self.debug: print >>self.debug, "FOUND:", line,
-                        return line
+                        return match
                 else:
                         raise IOError("unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
 
