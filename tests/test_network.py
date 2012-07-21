@@ -12,13 +12,13 @@ import unittest
 import sys, os
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from gpg import GpgTemp
+from gpg import TempKeyring
 
 class TestGpgNetwork(unittest.TestCase):
     """Seperate test cases for functions that hit the network"""
 
     def setUp(self):
-        self.gpg = GpgTemp()
+        self.gpg = TempKeyring()
 
     def test_fetch_keys(self):
         self.gpg.set_option('keyserver', 'pool.sks-keyservers.net')

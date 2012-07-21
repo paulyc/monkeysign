@@ -8,7 +8,7 @@ import re
 import Image, StringIO
 import zbar, zbarpygtk
 
-import monkeysign
+from gpg import Keyring, TempKeyring
 
 class MonkeysignScan(gtk.Window):
 
@@ -32,8 +32,8 @@ class MonkeysignScan(gtk.Window):
         def __init__(self):
                 super(MonkeysignScan, self).__init__()
 
-                self.tmpkeyring = monkeysign.GpgTemp()
-                self.pubkeyring = monkeysign.Gpg()
+                self.tmpkeyring = TempKeyring()
+                self.pubkeyring = Keyring()
 
                 # get the list of secret keys and guess (the first valid one
                 #self.pubkeyring.debug = sys.stderr

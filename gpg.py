@@ -38,7 +38,7 @@ import os, tempfile, shutil, subprocess, re
 
 from StringIO import StringIO
 
-class Gpg():
+class Keyring():
     """Python wrapper for GnuPG
 
     This wrapper allows for a simpler interface than GPGME or PyME to
@@ -344,11 +344,11 @@ class Gpg():
         """
         return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
-class GpgTemp(Gpg):
+class TempKeyring(Keyring):
     def __init__(self):
         """Override the parent class to generate a temporary GPG home
         that gets destroyed at the end of operations."""
-        Gpg.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
+        Keyring.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
 
     def __del__(self):
         shutil.rmtree(self.options['homedir'])

@@ -12,18 +12,18 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from gpg import Gpg, GpgTemp, OpenPGPkey, OpenPGPuid
+from gpg import Keyring, TempKeyring, OpenPGPkey, OpenPGPuid
 
 class TestGpgPlain(unittest.TestCase):
     def test_plain(self):
         """make sure other instances do not poison us"""
-        g = Gpg()
+        g = Keyring()
         self.assertNotIn('homedir', g.options)
 
 class TestGpgTmp(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp(prefix="pygpg-")
-        self.gpgtmp = Gpg(self.tmp)
+        self.gpgtmp = Keyring(self.tmp)
         self.assertEqual(self.gpgtmp.options['homedir'], self.tmp)
 
     def test_home(self):
@@ -53,7 +53,7 @@ class TestGpg(unittest.TestCase):
 
     def setUp(self):
         # we test using the temporary keyring because it's too dangerous otherwise
-        self.gpg = GpgTemp()
+        self.gpg = TempKeyring()
         self.assertIn('homedir', self.gpg.options)
 
     def test_set_option(self):
@@ -212,10 +212,10 @@ class TestGpg(unittest.TestCase):
 
 class TestGpgCaff(unittest.TestCase):
     def setUp(self):
-        self.gpgtmp = GpgTemp()
+        self.gpgtmp = TempKeyring()
 
     def test_sign_key_from_other(self):
-        gpg = Gpg()
+        gpg = Keyring()
         gpg.set_option('export-options', 'export-minimal')
         self.assertTrue(self.gpgtmp.import_data(gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E')))
         self.assertTrue(self.gpgtmp.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
