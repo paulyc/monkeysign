@@ -3,472 +3,467 @@ import os, tempfile, shutil, subprocess, re
 from StringIO import StringIO
 
 class KeyNotFound(Exception):
-        def __init__(self, msg=None):
-                self.msg = msg
-        def __repr__(self):
-                return self.msg
+    def __init__(self, msg=None):
+        self.msg = msg
+    def __repr__(self):
+        return self.msg
 
 class Gpg():
-        """Python wrapper for GnuPG
+    """Python wrapper for GnuPG
 
-        This wrapper allows for a simpler interface than GPGME or PyME
-        to GPG, and bypasses completely GPGME to interoperate directly
-        with GPG as a process.
+    This wrapper allows for a simpler interface than GPGME or PyME to
+    GPG, and bypasses completely GPGME to interoperate directly with
+    GPG as a process.
 
-        It uses the gpg-agent to prompt for passphrases and
-        communicates with GPG over the stdin for commnads
-        (--command-fd) and stdout for status (--status-fd).
+    It uses the gpg-agent to prompt for passphrases and communicates
+    with GPG over the stdin for commnads (--command-fd) and stdout for
+    status (--status-fd).
+    """
+
+    # the gpg binary to call
+    gpg_binary = 'gpg'
+
+    # a list of key => value commandline options
+    #
+    # to pass a flag without options, use None as the value
+    options = {}
+
+    # whether to paste output here and there
+    # if not false, needs to be a file descriptor
+    debug = False
+
+    def __init__(self, homedir=None):
+        """constructor for the gpg context
+
+        this mostly sets options, and allows passing in a different
+        homedir, that will be added to the option right here and
+        there.
+
+        by default, we do not create or destroy the keyring, although
+        later function calls on the object may modify the keyring (or
+        other keyrings, if the homedir option is modified.
         """
+        self.options = { 'status-fd': 2,
+                         'command-fd': 0,
+                         'no-tty': None,
+                         'quiet': None,
+                         'batch': None,
+                         'use-agent': None,
+                         'with-colons': None,
+                         'with-fingerprint': None,
+                         'fixed-list-mode': None,
+                         'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
+                         }
+        if homedir is not None:
+            self.set_option('homedir', homedir)
 
-        # the gpg binary to call
-        gpg_binary = 'gpg'
+    def set_option(self, option, value = None):
+        """set an option to pass to gpg
 
-        # a list of key => value commandline options
-        #
-        # to pass a flag without options, use None as the value
-        options = {}
+        this adds the given 'option' commandline argument with the
+        value 'value'. to pass a flag without an argument, use 'None'
+        for value
+        """
+        self.options[option] = value
 
-        # whether to paste output here and there
-        # if not false, needs to be a file descriptor
-        debug = False
+    def unset_option(self, option):
+        """remove an option from the gpg commandline"""
+        if option in self.options:
+            del self.options[option]
+        else:
+            return false
 
-        def __init__(self, homedir=None):
-                """constructor for the gpg context
+    def build_command(self, command):
+        """internal helper to build a proper gpg commandline
 
-                this mostly sets options, and allows passing in a
-                different homedir, that will be added to the option
-                right here and there.
+        this will add relevant arguments around the gpg binary.
 
-                by default, we do not create or destroy the keyring,
-                although later function calls on the object may modify
-                the keyring (or other keyrings, if the homedir option
-                is modified.
-                """
-                self.options = { 'status-fd': 2,
-                                 'command-fd': 0,
-                                 'no-tty': None,
-                                 'quiet': None,
-                                 'batch': None,
-                                 'use-agent': None,
-                                 'with-colons': None,
-                                 'with-fingerprint': None,
-                                 'fixed-list-mode': None,
-                                 'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
-                                 }
-                if homedir is not None:
-                        self.set_option('homedir', homedir)
+        like the options arguments, the command is expected to be a
+        regular gpg command with the -- stripped. the -- are added
+        before being called. this is to make the code more readable,
+        and eventually support other backends that actually make more
+        sense.
 
-        def set_option(self, option, value = None):
-                """set an option to pass to gpg
+        this uses build_command to create a commandline out of the
+        'options' dictionnary, and appends the provided command at the
+        end. this is because order of certain options matter in gpg,
+        where some options (like --recv-keys) are expected to be at
+        the end.
 
-                this adds the given 'option' commandline argument with
-                the value 'value'. to pass a flag without an argument,
-                use 'None' for value"""
-                self.options[option] = value
+        it is here that the options dictionnary is converted into a
+        list. the command argument is expected to be a list of
+        arguments that can be converted to strings. if it is not a
+        list, it is cast into a list."""
+        options = []
+        for left, right in self.options.iteritems():
+            options += ['--' + left]
+            if right is not None:
+                options += [str(right)]
+        if type(command) is str:
+            command = [command]
+        if len(command) > 0 and command[0][0:2] != '--':
+            command[0] = '--' + command[0]
+        return [self.gpg_binary] + options + command
 
-        def unset_option(self, option):
-                """remove an option from the gpg commandline"""
-                if option in self.options:
-                        del self.options[option]
+    def call_command(self, command, stdin=None):
+        """internal wrapper to call a GPG commandline
+
+        this will call the command generated by build_command() and
+        setup a regular pipe to the subcommand.
+
+        this assumes that we have the status-fd on stdout and
+        command-fd on stdin, but could really be used in any other
+        way.
+
+        we pass the stdin argument in the standard input of gpg and we
+        keep the output in the stdout and stderr array. the exit code
+        is in the returncode variable.
+
+        we can optionnally watch for a confirmation pattern on the
+        statusfd.
+        """
+        proc = subprocess.Popen(self.build_command(command), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+        (self.stdout, self.stderr) = proc.communicate(stdin)
+        self.returncode = proc.returncode
+        if self.debug:
+            print >>self.debug, 'command:', self.build_command(command)
+            print >>self.debug, 'ret:', self.returncode, 'stdout:', self.stdout, 'stderr:', self.stderr
+        return proc.returncode == 0
+
+    def version(self, type='short'):
+        """return the version of the GPG binary"""
+        self.call_command(['version'])
+        if type is not 'short': raise TypeError('invalid type')
+        m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
+        return m.group(1)
+
+    def import_data(self, data):
+        """Import OpenPGP data blocks into the keyring.
+
+        This takes actual OpenPGP data, ascii-armored or not, gpg will
+        gladly take it. This can be signatures, public, private keys,
+        etc.
+
+        You may need to set import-flags to import non-exportable
+        signatures, however.
+        """
+        self.call_command(['import'], data)
+        fd = StringIO(self.stderr)
+        self.seek(fd, 'IMPORT_OK')
+        self.seek(fd, 'IMPORT_RES')
+        return self.returncode == 0
+
+    def export_data(self, fpr = None, secret = False):
+        """Export OpenPGP data blocks from the keyring.
+
+        This exports actual OpenPGP data, by default in binary format,
+        but can also be exported asci-armored by setting the 'armor'
+        option."""
+        if secret: command = ['export-secret-keys']
+        else: command = ['export']
+        if fpr: command += [fpr]
+        self.call_command(command)
+        return self.stdout
+
+    def fetch_keys(self, fpr, keyserver = None):
+        """Download keys from a keyserver into the local keyring
+
+        This expects a fingerprint (or a at least a key id).
+
+        Returns true if the command succeeded.
+        """
+        if keyserver:
+            self.set_option('keyserver', keyserver)
+        self.call_command(['recv-keys', fpr])
+        return self.returncode == 0
+
+    def get_keys(self, pattern = None, secret = False, public = True):
+        """load keys matching a specific patterns
+
+        this uses the (rather poor) list-keys API to load keys
+        information
+        """
+        keys = {}
+        if public:
+            command = ['list-keys']
+            if pattern: command += [pattern]
+            self.call_command(command)
+            if self.returncode == 0:
+                key = OpenPGPkey()
+                key.parse_gpg_list(self.stdout)
+                keys[key.fpr] = key
+            elif self.returncode == 2:
+                return None
+            else:
+                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
+        if secret:
+            command = ['list-secret-keys']
+            if pattern: command += [pattern]
+            self.call_command(command)
+            if self.returncode == 0:
+                key = OpenPGPkey()
+                key.parse_gpg_list(self.stdout)
+                if key.fpr in keys:
+                    keys[key.fpr].parse_gpg_list(self.stdout)
+                    del key
                 else:
-                        return false
+                    keys[key.fpr] = key
+            elif self.returncode == 2:
+                return None
+            else:
+                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
+        return keys
 
-        def build_command(self, command):
-                """internal helper to build a proper gpg commandline
+    def sign_key(self, fpr):
+        """sign a key already present in the temporary keyring
+        
+        use set_option('local-user', key) to choose a signing key
+        """
+        return self.call_command(['sign-key', fpr], "y\ny\n")
 
-                this will add relevant arguments around the gpg
-                binary.
+    def sign_uid(self, uid):
+        """sign a specific uid on a key"""
 
-                like the options arguments, the command is expected to
-                be a regular gpg command with the -- stripped. the --
-                are added before being called. this is to make the
-                code more readable, and eventually support other
-                backends that actually make more sense.
+        # we iterate over the keys matching the provided
+        # keyid, but we should really load those uids from the
+        # output of --sign-key
+        if self.debug: print >>self.debug, 'command:', self.build_command(['sign-key', uid])
+        proc = subprocess.Popen(self.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+        # don't sign all uids
+        self.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+        print >>proc.stdin, "n"
+        self.expect(proc.stderr, 'GOT_IT')
+        # select the uid
+        self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+        while True:
+            m = self.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
+            if m and m.group(1) == uid:
+                index = int(m.group(2)) + 1
+                break
+        print >>proc.stdin, str(index)
+        self.expect(proc.stderr, 'GOT_IT')
+        # sign the selected uid
+        self.seek(proc.stderr, 'GET_LINE keyedit.prompt')
+        print >>proc.stdin, "sign"
+        self.expect(proc.stderr, 'GOT_IT')
+        # confirm signature
+        self.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+        print >>proc.stdin, 'y'
+        self.expect(proc.stderr, 'GOT_IT')
+        # expect the passphrase confirmation
+        self.expect(proc.stderr, 'GOOD_PASSPHRASE')
+        # save the resulting key
+        self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+        print >>proc.stdin, "save"
+        self.expect(proc.stderr, 'GOT_IT')
+        return proc.wait() == 0
 
-                this uses build_command to create a commandline out of
-                the 'options' dictionnary, and appends the provided
-                command at the end. this is because order of certain
-                options matter in gpg, where some options (like
-                --recv-keys) are expected to be at the end.
+    def seek_pattern(self, fd, pattern):
+        """iterate over file descriptor until certain pattern is found
 
-                it is here that the options dictionnary is converted
-                into a list. the command argument is expected to be a
-                list of arguments that can be converted to strings. if
-                it is not a list, it is cast into a list."""
-                options = []
-                for left, right in self.options.iteritems():
-                        options += ['--' + left]
-                        if right is not None:
-                                options += [str(right)]
-                if type(command) is str:
-                        command = [command]
-                if len(command) > 0 and command[0][0:2] != '--':
-                        command[0] = '--' + command[0]
-                return [self.gpg_binary] + options + command
+        fd is a file descriptor
+        pattern a string describing a regular expression to match
 
-        def call_command(self, command, stdin=None):
-                """internal wrapper to call a GPG commandline
+        this will skip lines not matching pattern until the pattern is
+        found. it will raise an IOError if the pattern is not found
+        and EOF is reached.
 
-                this will call the command generated by
-                build_command() and setup a regular pipe to the
-                subcommand.
+        this may hang for streams that do not send EOF or are waiting
+        for input.
+        """
+        line = fd.readline()
+        match = re.search(pattern, line)
+        while line and not match:
+            if self.debug: print >>self.debug, "skipped:", line,
+            line = fd.readline()
+            match = re.search(pattern, line)
+        if match:
+            if self.debug: print >>self.debug, "FOUND:", line,
+            return match
+        else:
+            raise IOError("could not find pattern '%s' in input" % pattern)
 
-                this assumes that we have the status-fd on stdout and
-                command-fd on stdin, but could really be used in any
-                other way.
+    def seek(self, fd, pattern):
+        """look for a specific GNUPG status line in the output
 
-                we pass the stdin argument in the standard input of
-                gpg and we keep the output in the stdout and stderr
-                array. the exit code is in the returncode variable.
+        this is a stub for seek_pattern()
+        """
+        return self.seek_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
-                we can optionnally watch for a confirmation pattern on
-                the statusfd.
-                """
-                proc = subprocess.Popen(self.build_command(command), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-                (self.stdout, self.stderr) = proc.communicate(stdin)
-                self.returncode = proc.returncode
-                if self.debug:
-                        print >>self.debug, 'command:', self.build_command(command)
-                        print >>self.debug, 'ret:', self.returncode, 'stdout:', self.stdout, 'stderr:', self.stderr
-                return proc.returncode == 0
+    def expect_pattern(self, fd, pattern):
+        """make sure the next line matches the provided pattern
 
-        def version(self, type='short'):
-                """return the version of the GPG binary"""
-                self.call_command(['version'])
-                if type is not 'short': raise TypeError('invalid type')
-                m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
-                return m.group(1)
+        in contrast with seek_pattern(), this will *not* skip
+        non-matching lines and instead raise an exception if such a
+        line is found.
 
-        def import_data(self, data):
-                """Import OpenPGP data blocks into the keyring.
+        this therefore looks only at the next line, but may also hang
+        like seek_pattern()
+        """
+        line = fd.readline()
+        match = re.search(pattern, line)
+        if match:
+            if self.debug: print >>self.debug, "FOUND:", line,
+            return match
+        else:
+            raise IOError("unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
 
-                This takes actual OpenPGP data, ascii-armored or not,
-                gpg will gladly take it. This can be signatures,
-                public, private keys, etc.
+    def expect(self, fd, pattern):
+        """look for a specific GNUPG status on the next line of output
 
-                You may need to set import-flags to import
-                non-exportable signatures, however.
-                """
-                self.call_command(['import'], data)
-                fd = StringIO(self.stderr)
-                self.seek(fd, 'IMPORT_OK')
-                self.seek(fd, 'IMPORT_RES')
-                return self.returncode == 0
-
-        def export_data(self, fpr = None, secret = False):
-                """Export OpenPGP data blocks from the keyring.
-
-                This exports actual OpenPGP data, by default in binary
-                format, but can also be exported asci-armored by
-                setting the 'armor' option."""
-                if secret: command = ['export-secret-keys']
-                else: command = ['export']
-                if fpr: command += [fpr]
-                self.call_command(command)
-                return self.stdout
-
-        def fetch_keys(self, fpr, keyserver = None):
-                """Download keys from a keyserver into the local keyring
-
-                This expects a fingerprint (or a at least a key id).
-
-                Returns true if the command succeeded.
-                """
-                if keyserver:
-                        self.set_option('keyserver', keyserver)
-                self.call_command(['recv-keys', fpr])
-                return self.returncode == 0
-
-        def get_keys(self, pattern = None, secret = False, public = True):
-                """load keys matching a specific patterns
-
-                this uses the (rather poor) list-keys API to load keys
-                information
-                """
-                keys = {}
-                if public:
-                        command = ['list-keys']
-                        if pattern: command += [pattern]
-                        self.call_command(command)
-                        if self.returncode == 0:
-                                key = OpenPGPkey()
-                                key.parse_gpg_list(self.stdout)
-                                keys[key.fpr] = key
-                        elif self.returncode == 2:
-                                return None
-                        else:
-                                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
-                if secret:
-                        command = ['list-secret-keys']
-                        if pattern: command += [pattern]
-                        self.call_command(command)
-                        if self.returncode == 0:
-                                key = OpenPGPkey()
-                                key.parse_gpg_list(self.stdout)
-                                if key.fpr in keys:
-                                        keys[key.fpr].parse_gpg_list(self.stdout)
-                                        del key
-                                else:
-                                        keys[key.fpr] = key
-                        elif self.returncode == 2:
-                                return None
-                        else:
-                                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
-                return keys
-
-        def sign_key(self, fpr):
-                """sign a key already present in the temporary keyring
-
-                use set_option('local-user', key) to choose a signing key
-                """
-                return self.call_command(['sign-key', fpr], "y\ny\n")
-
-        def sign_uid(self, uid):
-                """sign a specific uid on a key"""
-
-                # we iterate over the keys matching the provided
-                # keyid, but we should really load those uids from the
-                # output of --sign-key
-                if self.debug: print >>self.debug, 'command:', self.build_command(['sign-key', uid])
-                proc = subprocess.Popen(self.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-                # don't sign all uids
-                self.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
-                print >>proc.stdin, "n"
-                self.expect(proc.stderr, 'GOT_IT')
-                # select the uid
-                self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-                while True:
-                        m = self.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
-                        if m and m.group(1) == uid:
-                                index = int(m.group(2)) + 1
-                                break
-                print >>proc.stdin, str(index)
-                self.expect(proc.stderr, 'GOT_IT')
-                # sign the selected uid
-                self.seek(proc.stderr, 'GET_LINE keyedit.prompt')
-                print >>proc.stdin, "sign"
-                self.expect(proc.stderr, 'GOT_IT')
-                # confirm signature
-                self.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
-                print >>proc.stdin, 'y'
-                self.expect(proc.stderr, 'GOT_IT')
-                # expect the passphrase confirmation
-                self.expect(proc.stderr, 'GOOD_PASSPHRASE')
-                # save the resulting key
-                self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-                print >>proc.stdin, "save"
-                self.expect(proc.stderr, 'GOT_IT')
-                return proc.wait() == 0
-
-        def seek_pattern(self, fd, pattern):
-                """iterate over file descriptor until certain pattern is found
-
-                fd is a file descriptor
-                pattern a string describing a regular expression to match
-
-                this will skip lines not matching pattern until the
-                pattern is found. it will raise an IOError if the
-                pattern is not found and EOF is reached.
-
-                this may hang for streams that do not send EOF or are
-                waiting for input.
-                """
-                line = fd.readline()
-                match = re.search(pattern, line)
-                while line and not match:
-                        if self.debug: print >>self.debug, "skipped:", line,
-                        line = fd.readline()
-                        match = re.search(pattern, line)
-                if match:
-                        if self.debug: print >>self.debug, "FOUND:", line,
-                        return match
-                else:
-                        raise IOError("could not find pattern '%s' in input" % pattern)
-
-        def seek(self, fd, pattern):
-                """look for a specific GNUPG status line in the output
-
-                this is a stub for seek_pattern()
-                """
-                return self.seek_pattern(fd, '^\[GNUPG:\] ' + pattern)
-
-        def expect_pattern(self, fd, pattern):
-                """make sure the next line matches the provided pattern
-
-                in contrast with seek_pattern(), this will *not* skip
-                non-matching lines and instead raise an exception if
-                such a line is found.
-
-                this therefore looks only at the next line, but may
-                also hang like seek_pattern()
-                """
-                line = fd.readline()
-                match = re.search(pattern, line)
-                if match:
-                        if self.debug: print >>self.debug, "FOUND:", line,
-                        return match
-                else:
-                        raise IOError("unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
-
-        def expect(self, fd, pattern):
-                """look for a specific GNUPG status on the next line of output
-
-                this is a stub for expect()
-                """
-                return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
+        this is a stub for expect()
+        """
+        return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
 class GpgTemp(Gpg):
-        def __init__(self):
-                """Override the parent class to generate a temporary
-                GPG home that gets destroyed at the end of
-                operations."""
+    def __init__(self):
+        """Override the parent class to generate a temporary GPG home
+        that gets destroyed at the end of operations."""
+        Gpg.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
 
-                # Create tempdir for gpg operations
-                Gpg.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
-
-        def __del__(self):
-                shutil.rmtree(self.options['homedir'])
+    def __del__(self):
+        shutil.rmtree(self.options['homedir'])
 
 class OpenPGPkey():
-        """An OpenPGP key.
+    """An OpenPGP key.
 
-        Some of this datastructure is taken verbatim from GPGME.
-        """
+    Some of this datastructure is taken verbatim from GPGME.
+    """
 
-        # the key has a revocation certificate
-        # @todo - not implemented
-        revoked = False
+    # the key has a revocation certificate
+    # @todo - not implemented
+    revoked = False
 
-        # the expiry date is set and it is passed
-        # @todo - not implemented
-        expired = False
+    # the expiry date is set and it is passed
+    # @todo - not implemented
+    expired = False
 
-        # the key has been disabled
-        # @todo - not implemented
-        disabled = False
+    # the key has been disabled
+    # @todo - not implemented
+    disabled = False
 
-        # ?
-        invalid = False
+    # ?
+    invalid = False
 
-        # the various flags on this key
-        purpose = {}
+    # the various flags on this key
+    purpose = {}
 
-        # This is true if the subkey can be used for qualified
-        # signatures according to local government regulations.
-        # @todo - not implemented
-        qualified = False
+    # This is true if the subkey can be used for qualified
+    # signatures according to local government regulations.
+    # @todo - not implemented
+    qualified = False
 
-        # this key has also secret key material
-        secret = False
+    # this key has also secret key material
+    secret = False
 
-        # This is the public key algorithm supported by this subkey.
-        algo = -1
+    # This is the public key algorithm supported by this subkey.
+    algo = -1
 
-        # This is the length of the subkey (in bits).
-        length = None
+    # This is the length of the subkey (in bits).
+    length = None
 
-        # The key fingerprint (a string representation)
-        fpr = None
+    # The key fingerprint (a string representation)
+    fpr = None
 
-        # The key id (a string representation), only if the fingerprint is unavailable
-        # use keyid() instead of this field to find the keyid
-        _keyid = None
+    # The key id (a string representation), only if the fingerprint is unavailable
+    # use keyid() instead of this field to find the keyid
+    _keyid = None
 
-        # This is the creation timestamp of the subkey.  This is -1 if
-        # the timestamp is invalid, and 0 if it is not available.
-        creation = 0
+    # This is the creation timestamp of the subkey.  This is -1 if
+    # the timestamp is invalid, and 0 if it is not available.
+    creation = 0
 
-        # This is the expiration timestamp of the subkey, or 0 if the
-        # subkey does not expire.
-        expiry = 0
+    # This is the expiration timestamp of the subkey, or 0 if the
+    # subkey does not expire.
+    expiry = 0
 
-        # the list of OpenPGPuids associated with this key
-        uids = {}
+    # the list of OpenPGPuids associated with this key
+    uids = {}
 
-        # the list of subkeys associated with this key
-        subkeys = {}
+    # the list of subkeys associated with this key
+    subkeys = {}
 
-        def __init__(self):
-                self.purpose = { 'encrypt': True, # if the public key part can be used to encrypt data
-                                 'sign': True,    # if the private key part can be used to sign data
-                                 'certify': True, # if the private key part can be used to sign other keys
-                                 'authenticate': True, # if this key can be used for authentication purposes
-                                 }
-                self.uids = {}
-                self.subkeys = {}
+    def __init__(self):
+        self.purpose = { 'encrypt': True, # if the public key part can be used to encrypt data
+                         'sign': True,    # if the private key part can be used to sign data
+                         'certify': True, # if the private key part can be used to sign other keys
+                         'authenticate': True, # if this key can be used for authentication purposes
+                         }
+        self.uids = {}
+        self.subkeys = {}
 
-        def keyid(self, l=8):
-                if self.fpr is None:
-                        assert(self._keyid is not None)
-                        return self._keyid[-l:]
-                return self.fpr[-l:]
+    def keyid(self, l=8):
+        if self.fpr is None:
+            assert(self._keyid is not None)
+            return self._keyid[-l:]
+        return self.fpr[-l:]
 
-        def parse_gpg_list(self, text):
-                uidslist = []
-                for block in text.split("\n"):
-                        record = block.split(":")
-                        #for block in record:
-                        #        print >>sys.stderr, block, "|\t",
-                        #print >>sys.stderr, "\n"
-                        rectype = record[0]
-                        if rectype == 'tru':
-                                (rectype, trust, selflen, algo, keyid, creation, expiry, serial) = record
-                        elif rectype == 'fpr':
-                                self.fpr = record[9]
-                        elif rectype == 'pub':
-                                (null, trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record
-                                for p in self.purpose:
-                                        self.purpose[p] = p[0].lower() in purpose.lower()
-                        elif rectype == 'uid':
-                                (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = record
-                                uid = OpenPGPuid(uid, trust, creation, expiry, uidhash)
-                                self.uids[uidhash] = uid
-                                uidslist.append(uid)
-                        elif rectype == 'sub':
-                                subkey = OpenPGPkey()
-                                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record
-                                for p in subkey.purpose:
-                                        subkey.purpose[p] = p[0].lower() in purpose.lower()
-                                self.subkeys[subkey._keyid] = subkey
-                        elif rectype == 'sec':
-                                (null, trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
-                                self.secret = True
-                        elif rectype == 'ssb':
-                                subkey = OpenPGPkey()
-                                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
-                                if subkey._keyid in self.subkeys:
-                                        # XXX: nothing else to add here?
-                                        self.subkeys[subkey._keyid].secret = True
-                                else:
-                                        self.subkeys[subkey._keyid] = subkey
-                        elif rectype == 'uat':
-                                pass # user attributes, ignore for now
-                        elif rectype == 'rvk':
-                                pass # revocation key, ignored for now
-                        elif rectype == '':
-                                pass
-                        else:
-                                raise NotImplementedError("record type '%s' not implemented" % rectype)
-                if uidslist: self.uidslist = uidslist
+    def parse_gpg_list(self, text):
+        uidslist = []
+        for block in text.split("\n"):
+            record = block.split(":")
+            #for block in record:
+            #        print >>sys.stderr, block, "|\t",
+            #print >>sys.stderr, "\n"
+            rectype = record[0]
+            if rectype == 'tru':
+                (rectype, trust, selflen, algo, keyid, creation, expiry, serial) = record
+            elif rectype == 'fpr':
+                self.fpr = record[9]
+            elif rectype == 'pub':
+                (null, trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record
+                for p in self.purpose:
+                    self.purpose[p] = p[0].lower() in purpose.lower()
+            elif rectype == 'uid':
+                (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = record
+                uid = OpenPGPuid(uid, trust, creation, expiry, uidhash)
+                self.uids[uidhash] = uid
+                uidslist.append(uid)
+            elif rectype == 'sub':
+                subkey = OpenPGPkey()
+                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record
+                for p in subkey.purpose:
+                    subkey.purpose[p] = p[0].lower() in purpose.lower()
+                self.subkeys[subkey._keyid] = subkey
+            elif rectype == 'sec':
+                (null, trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
+                self.secret = True
+            elif rectype == 'ssb':
+                subkey = OpenPGPkey()
+                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
+                if subkey._keyid in self.subkeys:
+                    # XXX: nothing else to add here?
+                    self.subkeys[subkey._keyid].secret = True
+                else:
+                    self.subkeys[subkey._keyid] = subkey
+            elif rectype == 'uat':
+                pass # user attributes, ignore for now
+            elif rectype == 'rvk':
+                pass # revocation key, ignored for now
+            elif rectype == '':
+                pass
+            else:
+                raise NotImplementedError("record type '%s' not implemented" % rectype)
+        if uidslist: self.uidslist = uidslist
 
-        def __str__(self):
-                ret = "pub    " + self.length + "R/" 
-                ret += self.keyid(8) + " " + self.creation
-                if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
-                ret += "\n"
-                ret += '    Fingerprint = ' + self.fpr + "\n"
-                for uid in self.uids.values():
-                        ret += "uid      [ " + uid.trust + " ] " + uid.uid + "\n"
-                for subkey in self.subkeys.values():
-                        ret += "sub   " + subkey.length + "R/" + subkey.keyid(8) + " " + subkey.creation
-                        if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
-                        ret += "\n"
-                return ret
+    def __str__(self):
+        ret = "pub    " + self.length + "R/" 
+        ret += self.keyid(8) + " " + self.creation
+        if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
+        ret += "\n"
+        ret += '    Fingerprint = ' + self.fpr + "\n"
+        for uid in self.uids.values():
+            ret += "uid      [ " + uid.trust + " ] " + uid.uid + "\n"
+        for subkey in self.subkeys.values():
+            ret += "sub   " + subkey.length + "R/" + subkey.keyid(8) + " " + subkey.creation
+            if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
+            ret += "\n"
+        return ret
 
 class OpenPGPuid():
-        def __init__(self, uid, trust, creation = 0, expire = None, uidhash = ''):
-                self.uid = uid
-                self.trust = trust
-                self.creation = creation
-                self.expire = expire
-                self.uidhash = uidhash
+    def __init__(self, uid, trust, creation = 0, expire = None, uidhash = ''):
+        self.uid = uid
+        self.trust = trust
+        self.creation = creation
+        self.expire = expire
+        self.uidhash = uidhash
