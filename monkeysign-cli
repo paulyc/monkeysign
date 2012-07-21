@@ -112,6 +112,9 @@ class MonkeysignUi(object):
         """log an informational message if verbose"""
         if self.options.verbose and self.options.log: print >>self.options.log, message
 
+    def yes_no(self, prompt, default = None):
+        raise NotImplementedError('prompting not implemented in base class')
+
     def find_key(self):
         """find the key to be signed somewhere"""
         self.keyring.context.set_option('export-options', 'export-minimal')
@@ -143,42 +146,7 @@ class MonkeysignUi(object):
                 self.abort('could not find private key material, do you have a GPG key?')
 
     def sign_key(self):
-        """sign the key uids, as specified"""
-
-        keys = self.tmpkeyring.get_keys(self.pattern)
-
-        print "found", len(keys), "keys matching your request"
-
-        for key in keys:
-            print 'Signing the following key'
-            print
-            print str(keys[key])
-            print
-
-            alluids = self.yes_no('Sign all identities? [y/N] ', False)
-
-            if alluids:
-                pattern = keys[key].fpr
-            else:
-                allowed_uids = []
-                for uid in keys[key].uidslist:
-                    allowed_uids.append(uid.uid)
-                pattern = raw_input('Specify the identity to sign: ')
-                while pattern not in allowed_uids and not pattern.isdigit() and int(pattern)-1 not in range(0,len(allowed_uids)):
-                    print "invalid uid"
-                    pattern = raw_input('Specify the identity to sign: ')
-                if pattern.isdigit():
-                    pattern = allowed_uids[int(pattern)-1]
-
-            if not self.options.dryrun:
-                if not self.yes_no('Really sign key? [y/N] ', False):
-                    print >>sys.stderr, 'aborting key signing as requested'
-                    continue
-                if not self.tmpkeyring.sign_key(pattern, alluids):
-                    print >>sys.stderr, 'key signing failed'
-                else:
-                    self.signed_keys[key] = keys[key]
-
+        raise NotImplementedError('signing is too UI-dependent to have a good default, implement one')
 
     def export_key(self):
         self.tmpkeyring.context.set_option('armor')
@@ -237,7 +205,7 @@ class MonkeysignUi(object):
                 p.communicate(msg.as_string())
             else:
                 # okay, no mail, just dump the exported key then
-                print data
+                return data
 
 class MonkeysignCli(MonkeysignUi):
     def main(self, pattern, options = {}):
@@ -292,6 +260,44 @@ class MonkeysignCli(MonkeysignUi):
             ans = raw_input(prompt)
         if default: return default
         else: return ans.lower() == 'y'
+
+    def sign_key(self):
+        """sign the key uids, as specified"""
+
+        keys = self.tmpkeyring.get_keys(self.pattern)
+
+        print "found", len(keys), "keys matching your request"
+
+        for key in keys:
+            print 'Signing the following key'
+            print
+            print str(keys[key])
+            print
+
+            alluids = self.yes_no('Sign all identities? [y/N] ', False)
+
+            if alluids:
+                pattern = keys[key].fpr
+            else:
+                allowed_uids = []
+                for uid in keys[key].uidslist:
+                    allowed_uids.append(uid.uid)
+                pattern = raw_input('Specify the identity to sign: ')
+                while pattern not in allowed_uids and not pattern.isdigit() and int(pattern)-1 not in range(0,len(allowed_uids)):
+                    print "invalid uid"
+                    pattern = raw_input('Specify the identity to sign: ')
+                if pattern.isdigit():
+                    pattern = allowed_uids[int(pattern)-1]
+
+            if not self.options.dryrun:
+                if not self.yes_no('Really sign key? [y/N] ', False):
+                    print >>sys.stderr, 'aborting key signing as requested'
+                    continue
+                if not self.tmpkeyring.sign_key(pattern, alluids):
+                    print >>sys.stderr, 'key signing failed'
+                else:
+                    self.signed_keys[key] = keys[key]
+
 
 if __name__ == '__main__':
     (options, args) = parse_args()
