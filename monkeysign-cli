@@ -158,6 +158,7 @@ class MonkeysignUi(object):
             from_key = self.tmpkeyring.get_keys(options.user).values()[0]        
             from_user = from_key.uids.values()[0].uid
 
+        if len(self.signed_keys) < 1: self.log('no key signed, nothing to export')
         for fpr in self.signed_keys:
             data = self.tmpkeyring.export_data(fpr)
 
