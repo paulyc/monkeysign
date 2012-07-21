@@ -101,6 +101,7 @@ class MonkeysignCli():
             self.tmpkeyring.context.debug = sys.stderr
         if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
 
+        # detect the proper uid
         if options.user is None:
             keys = self.keyring.get_keys(None, True)
             for fpr, key in keys.iteritems():
