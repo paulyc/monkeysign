@@ -79,7 +79,7 @@ class MonkeysignUi(object):
         self.signed_keys = {}
 
         if options.local:
-            raise NotImplementedError('local key signing not implemented yet')
+            self.abort('local key signing not implemented yet')
 
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
@@ -98,7 +98,10 @@ class MonkeysignUi(object):
 
             if options.user is None:
                 self.abort('no default secret key found, abort!')
-        self.main(pattern, options)
+        try:
+            self.main(pattern, options)
+        except NotImplementedError as e:
+            self.abort(str(e)
 
     def abort(self, message):
         """show a message to the user and abort program"""
@@ -170,15 +173,13 @@ class MonkeysignCli(MonkeysignUi):
 
             if not self.tmpkeyring.fetch_keys(self.pattern) \
                     and not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
-                print >>sys.stderr, 'failed to get key %s from keyservers or from your keyring, aborting' % pattern
-                sys.exit(4)
+                self.abort('failed to get key %s from keyservers or from your keyring, aborting' % pattern)
         else:
             # 1.b) from the local keyring (@todo try that first?)
             if self.options.verbose: print >>sys.stderr, 'looking for key %s in your keyring' % self.pattern
             if self.options.dryrun: return True
             if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
-                print >>sys.stderr, 'could not find key %s in your keyring, and no keyserve defined' % self.pattern
-                sys.exit(3)
+                self.abort('could not find key %s in your keyring, and no keyserve defined' % self.pattern)
 
 
     def copy_secrets(self):
@@ -186,8 +187,7 @@ class MonkeysignCli(MonkeysignUi):
         if self.options.verbose: print >>sys.stderr, 'copying your private key to temporary keyring in', self.tmpkeyring.tmphomedir
         if not self.options.dryrun:
             if not self.tmpkeyring.import_data(self.keyring.export_data(options.user, True)):
-                print >>sys.stderr, 'could not find private key material, do you have a GPG key?'
-                sys.exit(5)
+                self.abort('could not find private key material, do you have a GPG key?')
 
     def sign_key(self):
         """sign the key uids, as specified"""
@@ -297,8 +297,4 @@ if __name__ == '__main__':
     if len(args) != 1:
         print >>sys.stderr, 'wrong number of arguments'
         sys.exit(1)
-    try:
-        MonkeysignCli(args[0], options)
-    except NotImplementedError as e:
-        print >>sys.stderr, str(e)
-        sys.exit(2)
+    MonkeysignCli(args[0], options)
