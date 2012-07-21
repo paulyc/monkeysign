@@ -215,6 +215,12 @@ class TestKeyring(unittest.TestCase):
         self.gpg.context.set_option('local-user', '96F47C6A')
         self.assertTrue(self.gpg.sign_key('7B75921E', True))
 
+    def test_sign_already_signed(self):
+        """test if signing a already signed key fails with a meaningful message
+
+        @todo not implemented"""
+        pass
+
     def test_gen_key(self):
         """test key generation
 
