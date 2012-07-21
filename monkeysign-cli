@@ -112,53 +112,6 @@ class MonkeysignUi(object):
         """log an informational message if verbose"""
         if self.options.verbose and self.options.log: print >>self.options.log, message
 
-class MonkeysignCli(MonkeysignUi):
-    def main(self, pattern, options = {}):
-        """main code execution loop
-
-        we expect to have the commandline parsed for us
-
-        General process
-        ===============
-
-        1. fetch the key into a temporary keyring
-        1.a) if allowed (@todo), from the keyservers
-        1.b) from the local keyring (@todo try that first?)
-        2. copy the signing key secrets into the keyring
-        3. for every user id (or all, if -a is specified)
-        3.1. sign the uid, using gpg-agent
-        3.2. export and encrypt the signature
-        3.3. mail the key to the user
-        3.4. optionnally (-l), create a local signature and import in
-        local keyring
-        4. trash the temporary keyring
-        """
-
-        # @todo how do we show this in the UI?
-        print "Using your identity:", options.user
-
-        # 1. fetch the key into a temporary keyring
-        self.find_key()
-
-        # 2. copy the signing key secrets into the keyring
-        self.copy_secrets()
-
-        # 3. for every user id (or all, if -a is specified)
-        # 3.1. sign the uid, using gpg-agent
-        self.sign_key()
-
-        # 3.2. export and encrypt the signature
-        # 3.3. mail the key to the user
-        self.export_key()
-
-        # 3.4. optionnally (-l), create a local signature and import in
-        #local keyring
-        # @todo
-
-        # 4. trash the temporary keyring
-        self.log('deleting the temporary keyring ' + tmpkeyring.tmphomedir)
-        # implicit
-
     def find_key(self):
         """find the key to be signed somewhere"""
         self.keyring.context.set_option('export-options', 'export-minimal')
@@ -226,12 +179,6 @@ class MonkeysignCli(MonkeysignUi):
                 else:
                     self.signed_keys[key] = keys[key]
 
-    def yes_no(self, prompt, default = None):
-        ans = raw_input(prompt)
-        while default is None and ans.lower() not in ["y", "n"]:
-            ans = raw_input(prompt)
-        if default: return default
-        else: return ans.lower() == 'y'
 
     def export_key(self):
         self.tmpkeyring.context.set_option('armor')
@@ -291,6 +238,60 @@ class MonkeysignCli(MonkeysignUi):
             else:
                 # okay, no mail, just dump the exported key then
                 print data
+
+class MonkeysignCli(MonkeysignUi):
+    def main(self, pattern, options = {}):
+        """main code execution loop
+
+        we expect to have the commandline parsed for us
+
+        General process
+        ===============
+
+        1. fetch the key into a temporary keyring
+        1.a) if allowed (@todo), from the keyservers
+        1.b) from the local keyring (@todo try that first?)
+        2. copy the signing key secrets into the keyring
+        3. for every user id (or all, if -a is specified)
+        3.1. sign the uid, using gpg-agent
+        3.2. export and encrypt the signature
+        3.3. mail the key to the user
+        3.4. optionnally (-l), create a local signature and import in
+        local keyring
+        4. trash the temporary keyring
+        """
+
+        # @todo how do we show this in the UI?
+        print "Using your identity:", options.user
+
+        # 1. fetch the key into a temporary keyring
+        self.find_key()
+
+        # 2. copy the signing key secrets into the keyring
+        self.copy_secrets()
+
+        # 3. for every user id (or all, if -a is specified)
+        # 3.1. sign the uid, using gpg-agent
+        self.sign_key()
+
+        # 3.2. export and encrypt the signature
+        # 3.3. mail the key to the user
+        self.export_key()
+
+        # 3.4. optionnally (-l), create a local signature and import in
+        #local keyring
+        # @todo
+
+        # 4. trash the temporary keyring
+        self.log('deleting the temporary keyring ' + tmpkeyring.tmphomedir)
+        # implicit
+
+    def yes_no(self, prompt, default = None):
+        ans = raw_input(prompt)
+        while default is None and ans.lower() not in ["y", "n"]:
+            ans = raw_input(prompt)
+        if default: return default
+        else: return ans.lower() == 'y'
 
 if __name__ == '__main__':
     (options, args) = parse_args()
