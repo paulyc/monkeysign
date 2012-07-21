@@ -360,7 +360,8 @@ class Keyring():
             print >>proc.stdin, 'y'
             self.context.expect(proc.stderr, 'GOT_IT')
             # expect the passphrase confirmation
-            self.context.expect(proc.stderr, 'GOOD_PASSPHRASE')
+            # we seek because i have seen a USERID_HINT <keyid> <uid> in some cases
+            self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
             return proc.wait() == 0
 
         print >>proc.stdin, "n"
