@@ -6,7 +6,7 @@ from gpg import __version__ as version
 
 setup(name = 'monkeysign',
     description='OpenPGP key exchange for humans',
-    long_description='This tool makes it easier to sign and exchange OpenPGP keys.'
+    long_description='This tool makes it easier to sign and exchange OpenPGP keys.',
     version=version,
     author='Antoine Beaupré',
     author_email='anarcat@debian.org',
