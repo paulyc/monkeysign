@@ -78,6 +78,9 @@ class MonkeysignUi(object):
         self.pattern = pattern
         self.signed_keys = {}
 
+        if options.local:
+            raise NotImplementedError('local key signing not implemented yet')
+
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
         self.keyring = Keyring() # the real keyring
@@ -130,9 +133,6 @@ class MonkeysignCli(MonkeysignUi):
         local keyring
         4. trash the temporary keyring
         """
-
-        if options.local:
-            raise NotImplementedError('local key signing not implemented yet')
 
         # @todo how do we show this in the UI?
         print "Using your identity:", options.user
