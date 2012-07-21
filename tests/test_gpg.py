@@ -12,7 +12,7 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign import Gpg, GpgTemp, OpenPGPkey, OpenPGPuid
+from gpg import Gpg, GpgTemp, OpenPGPkey, OpenPGPuid
 
 class TestGpgPlain(unittest.TestCase):
     def test_plain(self):
@@ -22,7 +22,7 @@ class TestGpgPlain(unittest.TestCase):
 
 class TestGpgTmp(unittest.TestCase):
     def setUp(self):
-        self.tmp = tempfile.mkdtemp(prefix="monkeysign-")
+        self.tmp = tempfile.mkdtemp(prefix="pygpg-")
         self.gpgtmp = Gpg(self.tmp)
         self.assertEqual(self.gpgtmp.options['homedir'], self.tmp)
 

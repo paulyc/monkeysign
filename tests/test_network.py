@@ -12,7 +12,7 @@ import unittest
 import sys, os
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign import GpgTemp
+from gpg import GpgTemp
 
 class TestGpgNetwork(unittest.TestCase):
     """Seperate test cases for functions that hit the network"""
