@@ -202,8 +202,6 @@ class MonkeysignUi(object):
             msg['From'] = from_user
             msg.preamble = 'This is a multi-part message in PGP/MIME format...'
             # take the first uid, not ideal
-            if not self.options.to:
-                self.options.to = self.signed_keys[fpr].uids.values()[0].uid
             msg['To'] = self.options.to
 
             if self.options.smtpserver is not None:
@@ -310,6 +308,8 @@ Sign all identities? [y/N] \
 
             if alluids:
                 pattern = keys[key].fpr
+                if not self.options.to:
+                    self.options.to = keys[key].uids.values()[0].uid
             else:
                 pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
                 if not self.options.to:
