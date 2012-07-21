@@ -101,7 +101,7 @@ class MonkeysignUi(object):
         try:
             self.main(pattern, options)
         except NotImplementedError as e:
-            self.abort(str(e)
+            self.abort(str(e))
 
     def abort(self, message):
         """show a message to the user and abort program"""
