@@ -12,9 +12,10 @@ script assumes you have gpg-agent configure to prompt for passwords.
 # see the optparse below for the remaining arguments
 
 import sys
-
 from optparse import OptionParser, TitledHelpFormatter
+
 from gpg import Keyring, TempKeyring
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.message import MIMEMessage
 from email.mime.application import MIMEApplication
