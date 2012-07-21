@@ -73,17 +73,12 @@ class TestTempKeyring(unittest.TestCase):
     """Test the TempKeyring class."""
 
     def setUp(self):
-        self.tmp = tempfile.mkdtemp(prefix="pygpg-")
-        self.gpgtmp = Keyring(self.tmp)
-        self.assertEqual(self.gpgtmp.context.options['homedir'], self.tmp)
-
-    def test_home(self):
-        """test if the homedir is properly set and populated"""
-        self.gpgtmp.export_data('') # dummy call to make gpg populate his directory
-        self.assertTrue(open(self.tmp + '/pubring.gpg'))
+        self.gpg = TempKeyring()
+        self.assertIn('homedir', self.gpg.context.options)
+        self.assertIn('tmphomedir', self.gpg)
 
     def tearDown(self):
-        shutil.rmtree(self.tmp)
+        del self.gpg
 
 class TestKeyring(unittest.TestCase):
     """Test the Keyring class."""
@@ -91,10 +86,25 @@ class TestKeyring(unittest.TestCase):
     def setUp(self):
         """setup the test environment
 
-        we test using the temporary keyring because it's too dangerous otherwise
+        we test using a temporary keyring because it's too dangerous
+        otherwise.
+
+        we are not using the TempKeyring class however, because we may
+        want to keep that data for examination later. see the
+        tearDown() function for that.
         """
-        self.gpg = TempKeyring()
-        self.assertIn('homedir', self.gpg.context.options)
+        self.tmp = tempfile.mkdtemp(prefix="pygpg-")
+        self.gpg = Keyring(self.tmp)
+        self.assertEqual(self.gpg.context.options['homedir'], self.tmp)
+
+    def tearDown(self):
+        """trash the temporary directory we created"""
+        shutil.rmtree(self.tmp)
+
+    def test_home(self):
+        """test if the homedir is properly set and populated"""
+        self.gpg.export_data('') # dummy call to make gpg populate his directory
+        self.assertTrue(open(self.tmp + '/pubring.gpg'))
 
     def test_import(self):
         """make sure import_data returns true on known good data
@@ -213,9 +223,6 @@ class TestKeyring(unittest.TestCase):
         #self.fpr = self.gpg.gen_key()
         #self.assertTrue(self.fpr)
         pass
-
-    def tearDown(self):
-        del self.gpg
 
 class TestGpgCaff(unittest.TestCase):
     def setUp(self):

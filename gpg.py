@@ -369,10 +369,11 @@ class TempKeyring(Keyring):
     def __init__(self):
         """Override the parent class to generate a temporary GPG home
         that gets destroyed at the end of operations."""
-        Keyring.__init__(self, tempfile.mkdtemp(prefix="monkeysign-"))
+        self.tmphomedir = tempfile.mkdtemp(prefix="pygpg-")
+        Keyring.__init__(self, self.tmphomedir)
 
     def __del__(self):
-        shutil.rmtree(self.context.options['homedir'])
+        shutil.rmtree(self.tmphomedir)
 
 class OpenPGPkey():
     """An OpenPGP key.
