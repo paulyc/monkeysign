@@ -13,7 +13,7 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid
+from gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid, GpgProcotolError
 
 class TestContext(unittest.TestCase):
     """Tests for the Context class.
@@ -171,9 +171,8 @@ class TestKeyring(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.gpg.context.set_option('local-user', '0000000F')
-        self.assertFalse(self.gpg.sign_key('7B75921E'))
-        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
-            print key
+        with self.assertRaises(GpgProcotolError):
+            self.gpg.sign_uid('7B75921E', True)
 
     def test_sign_key_all_uids(self):
         """test signature of all uids of a key"""
@@ -203,9 +202,10 @@ class TestKeyring(unittest.TestCase):
         looking if there is really no output
         """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertTrue(self.gpg.sign_key('7B75921E'))
-        self.assertEqual(self.gpg.context.stdout, '')
-        self.assertEqual(self.gpg.context.stderr, '')
+        with self.assertRaises(GpgProcotolError):
+            self.gpg.sign_uid('7B75921E')
+            self.assertEqual(self.gpg.context.stdout, '')
+            self.assertEqual(self.gpg.context.stderr, '')
 
     def test_sign_key_as_user(self):
         """normal signature with a signing user specified"""
@@ -213,7 +213,7 @@ class TestKeyring(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.gpg.context.set_option('local-user', '96F47C6A')
-        self.assertTrue(self.gpg.sign_key('7B75921E'))
+        self.assertTrue(self.gpg.sign_uid('7B75921E', True))
 
     def test_gen_key(self):
         """test key generation
