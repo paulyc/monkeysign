@@ -82,8 +82,12 @@ class TestTempKeyring(unittest.TestCase):
     def tearDown(self):
         del self.gpg
 
-class TestKeyring(unittest.TestCase):
-    """Test the Keyring class."""
+class TestKeyringBase(unittest.TestCase):
+    """Base class for Keyring class tests.
+
+    This shouldn't implement any tests that we don't want to see
+    implemented every time.
+    """
 
     def setUp(self):
         """setup the test environment
@@ -102,6 +106,9 @@ class TestKeyring(unittest.TestCase):
     def tearDown(self):
         """trash the temporary directory we created"""
         shutil.rmtree(self.tmp)
+
+class TestKeyringBasics(TestKeyringBase):
+    """Test the Keyring class base functionality."""
 
     def test_home(self):
         """test if the homedir is properly set and populated"""
@@ -163,35 +170,6 @@ class TestKeyring(unittest.TestCase):
         this is also a test of exporting an empty keyring"""
         self.assertEqual(self.gpg.export_data(), '')
 
-    def test_sign_key_wrong_user(self):
-        """make sure sign_key with a erroneous local-user fails
-
-        that is, even if all other conditions are ok"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.gpg.context.set_option('local-user', '0000000F')
-        with self.assertRaises(GpgProcotolError):
-            self.gpg.sign_key('7B75921E', True)
-
-    def test_sign_key_all_uids(self):
-        """test signature of all uids of a key"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertTrue(self.gpg.sign_key('7B75921E', True))
-        self.gpg.context.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
-
-    def test_sign_key_uid(self):
-        """test signature of a single uid"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
-        self.gpg.context.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
-
     def test_sign_key_missing_key(self):
         """try to sign a missing key
 
@@ -207,11 +185,35 @@ class TestKeyring(unittest.TestCase):
             self.assertEqual(self.gpg.context.stdout, '')
             self.assertEqual(self.gpg.context.stderr, '')
 
-    def test_sign_key_as_user(self):
-        """normal signature with a signing user specified"""
+class TestKeyringWithKeys(TestKeyringBase):
+    def setUp(self):
+        TestKeyringBase.setUp(self)
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+    def test_sign_key_wrong_user(self):
+        """make sure sign_key with a erroneous local-user fails
+
+        that is, even if all other conditions are ok"""
+        self.gpg.context.set_option('local-user', '0000000F')
+        with self.assertRaises(GpgProcotolError):
+            self.gpg.sign_key('7B75921E', True)
+
+    def test_sign_key_all_uids(self):
+        """test signature of all uids of a key"""
+        self.assertTrue(self.gpg.sign_key('7B75921E', True))
+        self.gpg.context.call_command(['list-sigs', '7B75921E'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+
+    def test_sign_key_uid(self):
+        """test signature of a single uid"""
+        self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
+        self.gpg.context.call_command(['list-sigs', '7B75921E'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+
+    def test_sign_key_as_user(self):
+        """normal signature with a signing user specified"""
         self.gpg.context.set_option('local-user', '96F47C6A')
         self.assertTrue(self.gpg.sign_key('7B75921E', True))
 
@@ -223,8 +225,6 @@ class TestKeyring(unittest.TestCase):
 
     def test_encrypt_decrypt_data_armored_untrusted(self):
         """test if we can encrypt data to our private key (and decrypt it)"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-
         plaintext = 'i come in peace'
         self.gpg.context.debug = sys.stderr
 
@@ -234,7 +234,6 @@ class TestKeyring(unittest.TestCase):
         self.assertTrue(cyphertext)
 
         self.gpg.context.debug = False
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
         p = self.gpg.decrypt_data(cyphertext)
         self.assertTrue(p)
