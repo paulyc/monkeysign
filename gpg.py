@@ -286,9 +286,12 @@ class Keyring():
         """
         self.context.call_command(['import'], data)
         fd = StringIO(self.context.stderr)
-        self.context.seek(fd, 'IMPORT_OK')
-        self.context.seek(fd, 'IMPORT_RES')
-        return self.context.returncode == 0
+        try:
+            self.context.seek(fd, 'IMPORT_OK')
+            self.context.seek(fd, 'IMPORT_RES')
+        except GpgProcotolError:
+            return False
+        return True
 
     def export_data(self, fpr = None, secret = False):
         """Export OpenPGP data blocks from the keyring.
