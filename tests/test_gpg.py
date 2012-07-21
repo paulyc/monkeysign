@@ -168,10 +168,7 @@ class TestKeyring(unittest.TestCase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertTrue(self.gpg.sign_key('7B75921E'))
-        self.assertNotEqual(self.gpg.context.stdout, '')
-        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
-            print key
+        self.assertTrue(self.gpg.sign_uid('7B75921E', True))
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
         self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
 

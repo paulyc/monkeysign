@@ -337,8 +337,12 @@ class Keyring():
         """
         return self.context.call_command(['sign-key', fpr], "y\ny\n")
 
-    def sign_uid(self, uid):
-        """sign a specific uid on a key"""
+    def sign_uid(self, uid, signall = False):
+        """sign a OpenPGP public key
+
+        By default it looks up and signs a specific uid, but it can
+        also sign all uids in one shot thanks to GPG's optimization on
+        that."""
 
         # we iterate over the keys matching the provided
         # keyid, but we should really load those uids from the
@@ -347,6 +351,17 @@ class Keyring():
         proc = subprocess.Popen(self.context.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
         # don't sign all uids
         self.context.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+        if signall: # special case, sign all keys
+            print >>proc.stdin, "y"
+            self.context.expect(proc.stderr, 'GOT_IT')
+            # confirm signature
+            self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+            print >>proc.stdin, 'y'
+            self.context.expect(proc.stderr, 'GOT_IT')
+            # expect the passphrase confirmation
+            self.context.expect(proc.stderr, 'GOOD_PASSPHRASE')
+            return proc.wait() == 0
+
         print >>proc.stdin, "n"
         self.context.expect(proc.stderr, 'GOT_IT')
         # select the uid
