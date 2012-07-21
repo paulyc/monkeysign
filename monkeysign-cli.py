@@ -105,7 +105,7 @@ class MonkeysignCli():
             if self.options.dryrun: return True
             if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
                 print >>sys.stderr, 'could not find key %s in your keyring, and no keyserve defined' % self.pattern
-                sys.exit(5)
+                sys.exit(3)
         else:
             # 1.a) if allowed, from the keyservers
             if options.verbose: print >>sys.stderr, 'fetching key %s from keyservers' % self.pattern
@@ -113,7 +113,7 @@ class MonkeysignCli():
             if not self.tmpkeyring.fetch_keys(self.pattern) \
                     and not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
                 print >>sys.stderr, 'failed to get key %s from keyservers or from your keyring, aborting' % pattern
-                sys.exit(3)
+                sys.exit(4)
 
     def copy_secrets(self):
         """import secret keys from your keyring"""
@@ -121,10 +121,15 @@ class MonkeysignCli():
         if not self.options.dryrun:
             if not self.tmpkeyring.import_data(self.keyring.export_data(options.user, True)):
                 print >>sys.stderr, 'could not find private key material, do you have a GPG key?'
-                sys.exit(4)
+                sys.exit(5)
 
     def sign_key(self):
-        raise NotImplementedError('key signing')
+        """sign the key uids, as specified"""
+        if self.options.verbose: print >>sys.stderr, 'signing key'
+        if not self.options.dryrun:
+            if not self.tmpkeyring.sign_key(self.pattern, options.alluids):
+                print >>sys.stderr, 'key signing failed'
+                sys.exit(6)
 
     def export_key(self):
         raise NotImplementedError('key encryption')
