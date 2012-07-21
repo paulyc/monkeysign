@@ -2,11 +2,13 @@ import os, tempfile, shutil, subprocess, re
 
 from StringIO import StringIO
 
-class KeyNotFound(Exception):
-    def __init__(self, msg=None):
-        self.msg = msg
-    def __repr__(self):
-        return self.msg
+class GpgProcotolError(IOError):
+    """simple exception raised when we have trouble talking with GPG
+
+    we try to pass the subprocess.popen.returncode as an errorno and a
+    significant description string
+    """
+    pass
 
 class Gpg():
     """Python wrapper for GnuPG
@@ -130,10 +132,9 @@ class Gpg():
             print >>self.debug, 'ret:', self.returncode, 'stdout:', self.stdout, 'stderr:', self.stderr
         return proc.returncode == 0
 
-    def version(self, type='short'):
+    def version(self):
         """return the version of the GPG binary"""
         self.call_command(['version'])
-        if type is not 'short': raise TypeError('invalid type')
         m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
         return m.group(1)
 
@@ -194,7 +195,7 @@ class Gpg():
             elif self.returncode == 2:
                 return None
             else:
-                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
+                raise GpgProtocolError(self.returncode, "unexpected GPG exit code in list-keys: %d" % self.returncode)
         if secret:
             command = ['list-secret-keys']
             if pattern: command += [pattern]
@@ -211,7 +212,7 @@ class Gpg():
             elif self.returncode == 2:
                 return None
             else:
-                raise RuntimeError("unexpected GPG exit code in list-keys: %d" % self.returncode)
+                raise GpgProcotolError(self.returncode, "unexpected GPG exit code in list-keys: %d" % self.returncode)
         return keys
 
     def sign_key(self, fpr):
@@ -281,7 +282,7 @@ class Gpg():
             if self.debug: print >>self.debug, "FOUND:", line,
             return match
         else:
-            raise IOError("could not find pattern '%s' in input" % pattern)
+            raise GpgProcotolError(self.returncode, "could not find pattern '%s' in input" % pattern)
 
     def seek(self, fd, pattern):
         """look for a specific GNUPG status line in the output
@@ -306,7 +307,7 @@ class Gpg():
             if self.debug: print >>self.debug, "FOUND:", line,
             return match
         else:
-            raise IOError("unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
+            raise GpgProcotolError(self.returncode, "unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
 
     def expect(self, fd, pattern):
         """look for a specific GNUPG status on the next line of output
