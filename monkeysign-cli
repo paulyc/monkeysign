@@ -224,6 +224,39 @@ not sending email, as requested, here's the signed key:
 
 %s""" % data)
 
+    def sign_key(self):
+        """sign the key uids, as specified"""
+
+        keys = self.tmpkeyring.get_keys(self.pattern)
+
+        print "found", len(keys), "keys matching your request"
+
+        for key in keys:
+            alluids = self.yes_no("""\
+Signing the following key
+
+%s
+
+Sign all identities? [y/N] \
+""" % str(keys[key]), False)
+
+            if alluids:
+                pattern = keys[key].fpr
+                if not self.options.to:
+                    self.options.to = keys[key].uids.values()[0].uid
+            else:
+                pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
+                if not self.options.to:
+                    self.options.to = pattern
+
+            if not self.options.dryrun:
+                if not self.yes_no('Really sign key? [y/N] ', False):
+                    continue
+                if not self.tmpkeyring.sign_key(pattern, alluids):
+                    self.warn('key signing failed')
+                else:
+                    self.signed_keys[key] = keys[key]
+
 class MonkeysignCli(MonkeysignUi):
     def main(self, pattern, options = {}):
         """main code execution loop
@@ -289,40 +322,6 @@ class MonkeysignCli(MonkeysignUi):
         if pattern.isdigit():
             pattern = allowed_uids[int(pattern)-1]
         return pattern
-
-    def sign_key(self):
-        """sign the key uids, as specified"""
-
-        keys = self.tmpkeyring.get_keys(self.pattern)
-
-        print "found", len(keys), "keys matching your request"
-
-        for key in keys:
-            alluids = self.yes_no("""\
-Signing the following key
-
-%s
-
-Sign all identities? [y/N] \
-""" % str(keys[key]), False)
-
-            if alluids:
-                pattern = keys[key].fpr
-                if not self.options.to:
-                    self.options.to = keys[key].uids.values()[0].uid
-            else:
-                pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
-                if not self.options.to:
-                    self.options.to = pattern
-
-            if not self.options.dryrun:
-                if not self.yes_no('Really sign key? [y/N] ', False):
-                    continue
-                if not self.tmpkeyring.sign_key(pattern, alluids):
-                    self.warn('key signing failed')
-                else:
-                    self.signed_keys[key] = keys[key]
-
 
 if __name__ == '__main__':
     (options, args) = MonkeysignUi.parse_args()
