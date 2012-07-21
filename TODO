@@ -15,6 +15,11 @@ A small list of things to do before this is officially released as
    - publish code upstream on monkeysphere.info
    - make a webpage explaining common uses
 
+ * release process
+   - signed and annotated tag
+   - create and publish tarball
+   - add announcement on website and blog
+
 Nice to haves
 =============
 
@@ -45,6 +50,7 @@ The software should be tagged and release even without those.
    - support streams of I/O
    - use threads?
    - move the TempKeyring class to a monkeysign lib?
+ * see if monkeysphere is interested in automatically generated tarballs
  * add a manpage
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
  * merge monkeysign-scan and monkeysign-cli
