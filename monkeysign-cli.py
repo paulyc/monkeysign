@@ -103,6 +103,10 @@ class MonkeysignCli():
             # 1.a) if allowed, from the keyservers
             if options.verbose: print >>sys.stderr, 'fetching key %s from keyservers' % self.pattern
             if self.options.dryrun: return True
+
+            if not re.search('^[0-9A-F]*$', self.pattern): # this is not a keyid
+                raise NotImplementedError('please provide a keyid or fingerprint, uids are not supported yet')
+
             if not self.tmpkeyring.fetch_keys(self.pattern) \
                     and not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
                 print >>sys.stderr, 'failed to get key %s from keyservers or from your keyring, aborting' % pattern
