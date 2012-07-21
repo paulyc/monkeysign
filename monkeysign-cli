@@ -121,7 +121,6 @@ class MonkeysignUi(object):
         if self.options.keyserver:
             # 1.a) if allowed, from the keyservers
             self.log('fetching key %s from keyservers' % self.pattern)
-            if self.options.dryrun: return True
 
             if not re.search('^[0-9A-F]*$', self.pattern): # this is not a keyid
                 # the problem here is that we need to implement --search-keys, and it's a pain
@@ -133,7 +132,6 @@ class MonkeysignUi(object):
         else:
             # 1.b) from the local keyring (@todo try that first?)
             self.log('looking for key %s in your keyring' % self.pattern)
-            if self.options.dryrun: return True
             if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
                 self.abort('could not find key %s in your keyring, and no keyserve defined' % self.pattern)
 
