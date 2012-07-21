@@ -35,6 +35,22 @@ def parse_args():
     return parser.parse_args()
 
 class MonkeysignCli():
+
+    # the options that determine how we operate, from the parse_args()
+    options = {}
+
+    # the key we are signing, can be a keyid or a uid pattern
+    pattern = None
+
+    # the regular keyring we suck secrets and maybe the key to be signed from
+    keyring = None
+
+    # the temporary keyring we operate in
+    tmpkeyring = None
+
+    # the fingerprints that we actually signed
+    signed_fprs = None
+
     def main(self,pattern, options = {}):
         """main code execution loop
 
@@ -57,6 +73,7 @@ class MonkeysignCli():
         """
         self.options = options
         self.pattern = pattern
+        self.signed_fprs = []
 
         if options.user is None:
             raise NotImplementedError('no default key detection code, please provide a user to sign keys with -u')
@@ -99,6 +116,7 @@ class MonkeysignCli():
 
     def find_key(self):
         """find the key to be signed somewhere"""
+        self.keyring.context.set_option('export-options', 'export-minimal')
         if self.options.keyserver:
             # 1.a) if allowed, from the keyservers
             if options.verbose: print >>sys.stderr, 'fetching key %s from keyservers' % self.pattern
@@ -150,16 +168,19 @@ class MonkeysignCli():
 
             if ans.lower() != "y\n":
                 print >>sys.stderr, 'aborting keysigning as requested'
-                sys.exit(6)
+                continue
 
             if not self.options.dryrun:
                 if not self.tmpkeyring.sign_key(keys[key].fpr, options.alluids):
                     print >>sys.stderr, 'key signing failed'
-                    sys.exit(7)
+                else:
+                    self.signed_fprs.append(key)
 
     def export_key(self):
-        raise NotImplementedError('key encryption not implemented')
-        encrypted = self.tmpkeyring.encrypt_data(data, self.pattern)
+        self.tmpkeyring.context.set_option('armor')
+        for fpr in self.signed_fprs:
+            data = self.tmpkeyring.export_data(fpr)
+            encrypted = self.tmpkeyring.encrypt_data(data, self.pattern)
 
     def mail_key(self):
         raise NotImplementedError('key mailing not implemented')
