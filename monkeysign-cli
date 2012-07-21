@@ -203,7 +203,7 @@ class MonkeysignUi(object):
             msg['To'] = self.options.to
 
             if self.options.smtpserver is not None:
-                self.log('sending message through SMTP server' + self.options.smtpserver)
+                self.log('sending message through SMTP server %s to %s' % (self.options.smtpserver, self.options.to))
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
                 server.sendmail(from_user, self.options.to, msg.as_string())
@@ -211,7 +211,7 @@ class MonkeysignUi(object):
                 server.quit()
                 return True
             elif not self.options.nomail:
-                self.log('sending message through sendmail')
+                self.log('sending message through sendmail to ' + self.options.to)
                 if self.options.dryrun: return True
                 p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
                 p.communicate(msg.as_string())
