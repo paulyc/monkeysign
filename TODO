@@ -12,7 +12,6 @@ A small list of things to do before this is officially released as
    - may require merging with monkeysign-cli (below)
 
  * merge with monkeysphere.info
-   - merge refactor branch in master (trivial)
    - publish code upstream on monkeysphere.info
    - make a webpage explaining common uses
 
