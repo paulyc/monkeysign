@@ -315,7 +315,6 @@ class Gpg():
                 self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
                 print >>proc.stdin, "save"
                 self.expect(proc.stderr, 'GOT_IT')
-                proc.communicate() # shouldn't be necessary
                 return proc.wait() == 0
 
 class GpgTemp(Gpg):
