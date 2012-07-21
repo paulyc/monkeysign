@@ -1,0 +1,15 @@
+Source: monkeysign
+Section: unknown
+Priority: extra
+Maintainer: Antoine Beaupré <anarcat@debian.org>
+Build-Depends: debhelper (>= 8.0.0), python (>= 2.3.5-7), python-dev (>= 2.3.5-7)
+Standards-Version: 3.9.2
+Homepage: http://web.monkeysphere.info/
+Vcs-Git: git://git.monkeysphere.info/monkeysign
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/monkeysign.git;a=summary
+
+Package: monkeysign
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, python-qrencode, python-gtk2, python-pyme, python-zbarpygtk
+Description: <insert up to 60 chars description>
+ <insert long description, indented with spaces>
