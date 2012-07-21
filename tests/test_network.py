@@ -22,6 +22,7 @@ class TestGpgNetwork(unittest.TestCase):
         self.gpg.context.set_option('keyserver', 'pool.sks-keyservers.net')
 
     def test_fetch_keys(self):
+        """test key fetching from keyservers"""
         self.assertTrue(self.gpg.fetch_keys('4023702F'))
 
     def test_special_key(self):
