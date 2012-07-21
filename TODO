@@ -25,7 +25,6 @@ Nice to haves
 
 The software should be tagged and release even without those.
 
- o [anarcat] make a debian package
  o [anarcat] make sure we can apply improvements to python-gnupg
  o [anarcat] decide to merge or split from pythong-gnupg
    - for merge arguments:
