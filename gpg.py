@@ -330,14 +330,7 @@ class Keyring():
                 raise GpgProcotolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
         return keys
 
-    def sign_key(self, fpr):
-        """sign a key already present in the temporary keyring
-        
-        use set_option('local-user', key) to choose a signing key
-        """
-        return self.context.call_command(['sign-key', fpr], "y\ny\n")
-
-    def sign_uid(self, uid, signall = False):
+    def sign_key(self, uid, signall = False):
         """sign a OpenPGP public key
 
         By default it looks up and signs a specific uid, but it can
