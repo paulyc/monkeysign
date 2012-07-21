@@ -14,6 +14,11 @@ script assumes you have gpg-agent configure to prompt for passwords.
 import sys
 from optparse import OptionParser, TitledHelpFormatter
 from gpg import Keyring, TempKeyring
+from email.mime.multipart import MIMEMultipart
+from email.mime.message import MIMEMessage
+from email.mime.application import MIMEApplication
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
 
 def parse_args():
     """parse the commandline arguments"""
@@ -181,9 +186,38 @@ class MonkeysignCli():
 
         for fpr in self.signed_keys:
             data = self.tmpkeyring.export_data(fpr)
-            print "resulting signature"
-            print data
-            encrypted = self.tmpkeyring.encrypt_data(data, self.pattern)
+
+            # first layer, seen from within:
+            # an encrypted MIME message, made of two parts: the
+            # introduction and the signed key material
+            text = MIMEText('your pgp key, yay', 'plain', 'utf-8')
+            filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
+            key = MIMEBase('application', 'php-keys', name=filename)
+            key.add_header('Content-Disposition', 'attachment', filename=filename)
+            key.add_header('Content-Transfer-Encoding', '7bit')
+            key.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
+            message = MIMEMultipart('mixed', [text, data])
+            encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.pattern)
+
+            # the second layer up, made of two parts: a version number
+            # and the first layer, encrypted
+            p1 = MIMEBase('application', 'pgp-encrypted', filename='signedkey.msg')
+            p1.add_header('Content-Disposition','attachment', filename='signedkey.msg')
+            p1.set_payload('Version: 1')
+            p2 = MIMEBase('application', 'octet-stream', filename='msg.asc')
+            p2.add_header('Content-Disposition', 'inline', filename='msg.asc')
+            p2.add_header('Content-Transfer-Encoding', '7bit')
+            p2.set_payload(encrypted)
+            msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
+            msg['Subject'] = 'Your signed OpenPGP key'
+            #msg['From'] = 
+            # yark
+            for k, uid in self.signed_keys[fpr].uids.iteritems():
+                msg['To'] = uid.uid
+                break
+                       
+            print msg.as_string()
+
             # next step, mailing the key, is a huge PITA
             # caff sets up a proper multi-part MIME email, a bit like this:
             # layer 1: multipart/encrypted; protocol="application/pgp-encrypted";
