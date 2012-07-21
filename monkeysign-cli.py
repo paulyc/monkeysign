@@ -12,6 +12,7 @@ script assumes you have gpg-agent configure to prompt for passwords.
 # see the optparse below for the remaining arguments
 
 import sys
+
 from optparse import OptionParser, TitledHelpFormatter
 from gpg import Keyring, TempKeyring
 from email.mime.multipart import MIMEMultipart
@@ -19,6 +20,8 @@ from email.mime.message import MIMEMessage
 from email.mime.application import MIMEApplication
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
+import smtplib
+import subprocess
 
 def parse_args():
     """parse the commandline arguments"""
@@ -37,6 +40,11 @@ def parse_args():
                       help='import in normal keyring a local certification')
     parser.add_option('-k', '--keyserver', dest='keyserver',
                       help='keyserver to fetch keys from')
+    parser.add_option('-s', '--smtp', dest='smtpserver', help='SMTP server to use')
+    parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
+                      help='Do not send email at all. (Default is to use sendmail.)')
+    parser.add_option('-t', '--to', dest='to', 
+                      help='Override destination email for testing (default is to use the first uid on the key or send email to each uid chosen)')
 
     return parser.parse_args()
 
@@ -219,28 +227,25 @@ class MonkeysignCli():
             msg['From'] = from_user
             msg.preamble = 'This is a multi-part message in PGP/MIME format...'
             # take the first uid, not ideal
-            msg['To'] = self.signed_keys[fpr].uids.values()[0].uid
+            if not self.options.to:
+                self.options.to = self.signed_keys[fpr].uids.values()[0].uid
+            msg['To'] = self.options.to
 
-            print msg.as_string()
-
-            # next step, mailing the key, is a huge PITA
-            # caff sets up a proper multi-part MIME email, a bit like this:
-            # layer 1: multipart/encrypted; protocol="application/pgp-encrypted";
-            # part 1: Content-Type: application/pgp-encrypted; name="signedkey.msg"
-            #         Content-Disposition: attachment; filename="signedkey.msg"
-            #   this part contains nothing but "Version: 1"
-            # part 2: Content-Type: application/octet-stream; name="msg.asc"
-            #         Content-Disposition: inline; filename="msg.asc"
-            #         Content-Transfer-Encoding: 7bit
-            #   this part contains the encrypted message, the second layer
-            # layer 2: Content-Type: multipart/mixed; boundary="----------=_1342631253-16575-0"
-            # part 1: Content-Type: text/plain; charset="utf-8"
-            #   this part has a friendly message saying wtf is going on
-            # part 2: Content-Type: application/pgp-keys; name="0x792152527B75921E.4.signed-by-0xCCD2ED94D21739E9.asc"
-            #         Content-Disposition: attachment; filename="0x792152527B75921E.4.signed-by-0xCCD2ED94D21739E9.asc"
-            #         Content-Transfer-Encoding: 7bit
-            #         Content-Description: PGP Key 0x792152527B75921E, uid Antoine Beaupré <anarcat@orangeseeds.org> (4), signed by 0xCCD2ED94D21739E9
-            #   this part has the actual key block
+            if self.options.smtpserver is not None:
+                if self.options.verbose: print >>sys.stderr, 'sending message through SMTP server', self.options.smtpserver
+                if self.options.dryrun: return True
+                server = smtplib.SMTP(self.options.smtpserver)
+                server.sendmail(from_user, self.options.to, msg.as_string())
+                server.set_debuglevel(1)
+                server.quit()
+            elif not self.options.nomail:
+                if self.options.verbose: print >>sys.stderr, 'sending message through sendmail'
+                if self.options.dryrun: return True
+                p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
+                p.communicate(msg.as_string())
+            else:
+                # okay, no mail, just dump the exported key then
+                print data
 
 if __name__ == '__main__':
     (options, args) = parse_args()
