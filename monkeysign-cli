@@ -43,6 +43,9 @@ class MonkeysignUi(object):
     # the fingerprints that we actually signed
     signed_keys = None
 
+    # temporary, to keep track of the OpenPGPkey we are signing
+    signing_key = None
+
     @staticmethod
     def parse_args():
         """parse the commandline arguments"""
@@ -89,16 +92,6 @@ class MonkeysignUi(object):
             self.tmpkeyring.context.debug = sys.stderr
         if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
 
-        # detect the proper uid
-        if options.user is None:
-            keys = self.keyring.get_keys(None, True)
-            for fpr, key in keys.iteritems():
-                if not key.invalid and not key.disabled and not key.expired and not key.revoked:
-                    options.user = key.uids.values()[0].uid
-                    break
-
-            if options.user is None:
-                self.abort('no default secret key found, abort!')
         try:
             self.main(pattern, options)
         except NotImplementedError as e:
@@ -146,6 +139,23 @@ class MonkeysignUi(object):
             if not self.tmpkeyring.import_data(self.keyring.export_data(options.user, True)):
                 self.abort('could not find private key material, do you have a GPG key?')
 
+        # detect the proper uid
+        if self.options.user is None:
+            keys = self.tmpkeyring.get_keys(None, True)
+        else:
+            keys = self.tmpkeyring.get_keys(self.options.user, True)
+
+        for fpr, key in keys.iteritems():
+            if not key.invalid and not key.disabled and not key.expired and not key.revoked:
+                self.signing_key = key
+                break
+
+        if self.signing_key is None:
+            self.abort('no default secret key found, abort!')
+
+        if not self.tmpkeyring.import_data(self.keyring.export_data(self.signing_key.fpr)):
+            self.abort('could not find public key material, do you have a GPG key?')
+
     def sign_key(self):
         raise NotImplementedError('signing is too UI-dependent to have a good default, implement one')
 
@@ -153,11 +163,10 @@ class MonkeysignUi(object):
         self.tmpkeyring.context.set_option('armor')
         self.tmpkeyring.context.set_option('always-trust')
 
-        if '@' in options.user:
+        if options.user is not None and '@' in options.user:
             from_user = options.user
         else:
-            from_key = self.tmpkeyring.get_keys(options.user).values()[0]        
-            from_user = from_key.uids.values()[0].uid
+            from_user = self.signing_key.uidslist[0].uid
 
         if len(self.signed_keys) < 1: self.log('no key signed, nothing to export')
         for fpr in self.signed_keys:
@@ -232,14 +241,14 @@ class MonkeysignCli(MonkeysignUi):
         4. trash the temporary keyring
         """
 
-        # @todo how do we show this in the UI?
-        print "Using your identity:", options.user
-
         # 1. fetch the key into a temporary keyring
         self.find_key()
 
         # 2. copy the signing key secrets into the keyring
         self.copy_secrets()
+
+        print "Preparing to sign with this key"
+        print self.signing_key
 
         # 3. for every user id (or all, if -a is specified)
         # 3.1. sign the uid, using gpg-agent
