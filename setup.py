@@ -12,7 +12,7 @@ setup(name = 'monkeysign',
     author_email='anarcat@debian.org',
     url='http://web.monkeysphere.info/',
     py_modules=['gpg'],
-    scripts=['monkeysign-cli.py', 'monkeysign-scan.py', 'monkeysign-gen.py'],
+    scripts=['monkeysign-cli', 'monkeysign-scan', 'monkeysign-gen'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
