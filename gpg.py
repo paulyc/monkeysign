@@ -425,7 +425,7 @@ class Keyring():
         print >>proc.stdin, 'y'
         self.context.expect(proc.stderr, 'GOT_IT')
         # expect the passphrase confirmation
-        self.context.expect(proc.stderr, 'GOOD_PASSPHRASE')
+        self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
         # save the resulting key
         self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
         print >>proc.stdin, "save"
