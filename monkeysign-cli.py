@@ -62,6 +62,8 @@ class MonkeysignCli():
             raise NotImplementedError('no default key detection code, please provide a user to sign keys with -u')
         if options.local:
             raise NotImplementedError('local key signing not implemented yet')
+        if not options.alluids:
+            raise NotImplementedError('please use -a for now')
 
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
@@ -77,11 +79,19 @@ class MonkeysignCli():
         self.copy_secrets()
 
         # 3. for every user id (or all, if -a is specified)
+        # @todo select the uid
         # 3.1. sign the uid, using gpg-agent
+        self.sign_key()
+
         # 3.2. export and encrypt the signature
+        self.export_key()
+
         # 3.3. mail the key to the user
+        self.mail_key()
+
         # 3.4. optionnally (-l), create a local signature and import in
         #local keyring
+        # @todo
 
         # 4. trash the temporary keyring
         if options.verbose: print >>sys.stderr, 'deleting the temporary keyring ', tmpkeyring.tmphomedir
@@ -113,6 +123,15 @@ class MonkeysignCli():
                 print >>sys.stderr, 'could not find private key material, do you have a GPG key?'
                 sys.exit(4)
 
+    def sign_key(self):
+        raise NotImplementedError('key signing')
+
+    def export_key(self):
+        raise NotImplementedError('key encryption')
+        encrypted = self.tmpkeyring.encrypt_data(data, self.pattern)
+
+    def mail_key(self):
+        raise NotImplementedError('key mailing')
 
 if __name__ == '__main__':
     (options, args) = parse_args()
