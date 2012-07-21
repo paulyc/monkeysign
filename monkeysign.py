@@ -2,14 +2,6 @@ import os, tempfile, shutil, subprocess, re
 
 from StringIO import StringIO
 
-class GpgProcotolError(IOError):
-    """simple exception raised when we have trouble talking with GPG
-
-    we try to pass the subprocess.popen.returncode as an errorno and a
-    significant description string
-    """
-    pass
-
 class Gpg():
     """Python wrapper for GnuPG
 
@@ -470,3 +462,11 @@ class OpenPGPuid():
         self.creation = creation
         self.expire = expire
         self.uidhash = uidhash
+
+class GpgProcotolError(IOError):
+    """simple exception raised when we have trouble talking with GPG
+
+    we try to pass the subprocess.popen.returncode as an errorno and a
+    significant description string
+    """
+    pass
