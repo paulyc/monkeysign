@@ -278,6 +278,20 @@ class MonkeysignCli(MonkeysignUi):
         if default: return default
         else: return ans.lower() == 'y'
 
+    def choose_uid(self, prompt, key):
+        """present the user with a list of UIDs and let him choose one"""
+        allowed_uids = []
+        for uid in key.uidslist:
+            allowed_uids.append(uid.uid)
+
+        pattern = raw_input(pattern)
+        while pattern not in allowed_uids and not pattern.isdigit() and int(pattern)-1 not in range(0,len(allowed_uids)):
+            print "invalid uid"
+            pattern = raw_input(pattern)
+        if pattern.isdigit():
+            pattern = allowed_uids[int(pattern)-1]
+        return pattern
+
     def sign_key(self):
         """sign the key uids, as specified"""
 
@@ -296,15 +310,9 @@ class MonkeysignCli(MonkeysignUi):
             if alluids:
                 pattern = keys[key].fpr
             else:
-                allowed_uids = []
-                for uid in keys[key].uidslist:
-                    allowed_uids.append(uid.uid)
-                pattern = raw_input('Specify the identity to sign: ')
-                while pattern not in allowed_uids and not pattern.isdigit() and int(pattern)-1 not in range(0,len(allowed_uids)):
-                    print "invalid uid"
-                    pattern = raw_input('Specify the identity to sign: ')
-                if pattern.isdigit():
-                    pattern = allowed_uids[int(pattern)-1]
+                pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
+                if not self.options.to:
+                    self.options.to = pattern
 
             if not self.options.dryrun:
                 if not self.yes_no('Really sign key? [y/N] ', False):
