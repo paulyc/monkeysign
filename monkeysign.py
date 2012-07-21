@@ -285,22 +285,27 @@ class Gpg():
                         for i in range(0, len(key.uidslist)):
                                 if key.uidslist[i].uid == uid:
                                         index = i
-                        if self.debug:
-                                print >>self.debug, 'command:', self.build_command(['sign-key', key.fpr])
+                        if self.debug: print >>self.debug, 'command:', self.build_command(['sign-key', key.fpr])
                         proc = subprocess.Popen(self.build_command(['sign-key', key.fpr]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+                        # don't sign all uids
                         self.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
                         print >>proc.stdin, "n"
                         self.expect(proc.stderr, 'GOT_IT')
+                        # select the uid
                         self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, str(index+1)
                         self.expect(proc.stderr, 'GOT_IT')
+                        # sign the selected uid
                         self.seek(proc.stderr, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, "sign"
                         self.expect(proc.stderr, 'GOT_IT')
+                        # confirm signature
                         self.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
                         print >>proc.stdin, 'y'
                         self.expect(proc.stderr, 'GOT_IT')
+                        # expect the passphrase confirmation
                         self.expect(proc.stderr, 'GOOD_PASSPHRASE')
+                        # save the resulting key
                         self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
                         print >>proc.stdin, "save"
                         self.expect(proc.stderr, 'GOT_IT')
