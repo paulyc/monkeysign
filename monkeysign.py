@@ -217,8 +217,8 @@ class Gpg():
                 while line and not re.search(pattern, line):
                         if self.debug: print >>self.debug, "skipped:", line,
                         line = fd.readline()
-                if self.debug: print >>self.debug, "FOUND:", line,
                 if not line: raise IOError("could not find pattern '%s' in input" % pattern)
+                if self.debug: print >>self.debug, "FOUND:", line,
 
         def seek(self, fd, pattern):
                 return self.seek_pattern(fd, '^\[GNUPG:\] ' + pattern)
