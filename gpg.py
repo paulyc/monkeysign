@@ -335,7 +335,15 @@ class Keyring():
 
         By default it looks up and signs a specific uid, but it can
         also sign all uids in one shot thanks to GPG's optimization on
-        that."""
+        that.
+
+        The pattern here should be a full user id if we sign a
+        specific key (default) or any pattern (fingerprint, keyid,
+        partial user id) that GPG will accept if we sign all uids.
+
+        @todo that this currently block if the pattern specifies an
+        incomplete UID and we do not sign all keys.
+        """
 
         # we iterate over the keys matching the provided
         # keyid, but we should really load those uids from the
