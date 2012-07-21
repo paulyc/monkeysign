@@ -32,6 +32,14 @@ API has a few problems:
 
 The latter two points are especially problematic for this project, and
 I have therefore started working on a replacement.
+
+Operations are performed mostly through the Keyring or KeyringTmp
+class (if you do not want to access your regular keyring but an empty
+temporary one).
+
+This is how you can access keys, which are represented by the
+OpenPGPkey datastructure, but which will not look in your keyring or
+on the keyservers itself without the Keyring class.
 """
 
 import os, tempfile, shutil, subprocess, re
