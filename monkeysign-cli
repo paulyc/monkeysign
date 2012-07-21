@@ -63,6 +63,9 @@ class MonkeysignCli():
     # the fingerprints that we actually signed
     signed_keys = None
 
+    def __init__(self, pattern, options = {}):
+        self.main(self, pattern, options)
+
     def main(self,pattern, options = {}):
         """main code execution loop
 
@@ -275,7 +278,7 @@ if __name__ == '__main__':
         print >>sys.stderr, 'wrong number of arguments'
         sys.exit(1)
     try:
-        MonkeysignCli().main(args[0], options)
+        MonkeysignCli(args[0], options)
     except NotImplementedError as e:
         print >>sys.stderr, str(e)
         sys.exit(2)
