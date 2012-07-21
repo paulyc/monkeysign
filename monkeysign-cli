@@ -300,12 +300,13 @@ class MonkeysignCli(MonkeysignUi):
         print "found", len(keys), "keys matching your request"
 
         for key in keys:
-            print 'Signing the following key'
-            print
-            print str(keys[key])
-            print
+            alluids = self.yes_no("""\
+Signing the following key
 
-            alluids = self.yes_no('Sign all identities? [y/N] ', False)
+%s
+
+Sign all identities? [y/N] \
+""" % str(keys[key]), False)
 
             if alluids:
                 pattern = keys[key].fpr
@@ -316,7 +317,6 @@ class MonkeysignCli(MonkeysignUi):
 
             if not self.options.dryrun:
                 if not self.yes_no('Really sign key? [y/N] ', False):
-                    print >>sys.stderr, 'aborting key signing as requested'
                     continue
                 if not self.tmpkeyring.sign_key(pattern, alluids):
                     self.warn('key signing failed')
