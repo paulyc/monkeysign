@@ -101,8 +101,12 @@ class MonkeysignUi(object):
 
     def abort(self, message):
         """show a message to the user and abort program"""
-        self.log(message)
+        self.warn(message)
         sys.exit(1)
+
+    def warn(self, message):
+        """display an error message"""
+        print message
 
     def log(self, message):
         """log an informational message if verbose"""
@@ -168,7 +172,7 @@ class MonkeysignUi(object):
         else:
             from_user = self.signing_key.uidslist[0].uid
 
-        if len(self.signed_keys) < 1: self.log('no key signed, nothing to export')
+        if len(self.signed_keys) < 1: self.warn('no key signed, nothing to export')
         for fpr in self.signed_keys:
             data = self.tmpkeyring.export_data(fpr)
 
@@ -203,7 +207,7 @@ class MonkeysignUi(object):
             msg['To'] = self.options.to
 
             if self.options.smtpserver is not None:
-                self.log('sending message through SMTP server %s to %s' % (self.options.smtpserver, self.options.to))
+                self.warn('sending message through SMTP server %s to %s' % (self.options.smtpserver, self.options.to))
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
                 server.sendmail(from_user, self.options.to, msg.as_string())
@@ -211,13 +215,16 @@ class MonkeysignUi(object):
                 server.quit()
                 return True
             elif not self.options.nomail:
-                self.log('sending message through sendmail to ' + self.options.to)
+                self.warn('sending message through sendmail to ' + self.options.to)
                 if self.options.dryrun: return True
                 p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
                 p.communicate(msg.as_string())
             else:
                 # okay, no mail, just dump the exported key then
-                return data
+                self.warn("""\
+not sending email, as requested, here's the signed key:
+
+%s""" % data)
 
 class MonkeysignCli(MonkeysignUi):
     def main(self, pattern, options = {}):
@@ -247,8 +254,7 @@ class MonkeysignCli(MonkeysignUi):
         # 2. copy the signing key secrets into the keyring
         self.copy_secrets()
 
-        print "Preparing to sign with this key"
-        print self.signing_key
+        self.warn("Preparing to sign with this key\n\n%s" % self.signing_key)
 
         # 3. for every user id (or all, if -a is specified)
         # 3.1. sign the uid, using gpg-agent
@@ -256,8 +262,7 @@ class MonkeysignCli(MonkeysignUi):
 
         # 3.2. export and encrypt the signature
         # 3.3. mail the key to the user
-        data = self.export_key()
-        if type(data) == str: print data
+        self.export_key()
 
         # 3.4. optionnally (-l), create a local signature and import in
         #local keyring
@@ -306,7 +311,7 @@ class MonkeysignCli(MonkeysignUi):
                     print >>sys.stderr, 'aborting key signing as requested'
                     continue
                 if not self.tmpkeyring.sign_key(pattern, alluids):
-                    print >>sys.stderr, 'key signing failed'
+                    self.warn('key signing failed')
                 else:
                     self.signed_keys[key] = keys[key]
 
