@@ -223,6 +223,43 @@ class Gpg():
                 """
                 return self.call_command(['sign-key', fpr], "y\ny\n")
 
+        def sign_uid(self, uid):
+                """sign a specific uid on a key"""
+
+                # we iterate over the keys matching the provided
+                # keyid, but we should really load those uids from the
+                # output of --sign-key
+                if self.debug: print >>self.debug, 'command:', self.build_command(['sign-key', uid])
+                proc = subprocess.Popen(self.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+                # don't sign all uids
+                self.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+                print >>proc.stdin, "n"
+                self.expect(proc.stderr, 'GOT_IT')
+                # select the uid
+                self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+                while True:
+                        m = self.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
+                        if m and m.group(1) == uid:
+                                index = int(m.group(2)) + 1
+                                break
+                print >>proc.stdin, str(index)
+                self.expect(proc.stderr, 'GOT_IT')
+                # sign the selected uid
+                self.seek(proc.stderr, 'GET_LINE keyedit.prompt')
+                print >>proc.stdin, "sign"
+                self.expect(proc.stderr, 'GOT_IT')
+                # confirm signature
+                self.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+                print >>proc.stdin, 'y'
+                self.expect(proc.stderr, 'GOT_IT')
+                # expect the passphrase confirmation
+                self.expect(proc.stderr, 'GOOD_PASSPHRASE')
+                # save the resulting key
+                self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+                print >>proc.stdin, "save"
+                self.expect(proc.stderr, 'GOT_IT')
+                return proc.wait() == 0
+
         def seek_pattern(self, fd, pattern):
                 """iterate over file descriptor until certain pattern is found
 
@@ -279,43 +316,6 @@ class Gpg():
                 this is a stub for expect()
                 """
                 return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
-
-        def sign_uid(self, uid):
-                """sign a specific uid on a key"""
-
-                # we iterate over the keys matching the provided
-                # keyid, but we should really load those uids from the
-                # output of --sign-key
-                if self.debug: print >>self.debug, 'command:', self.build_command(['sign-key', uid])
-                proc = subprocess.Popen(self.build_command(['sign-key', uid]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-                # don't sign all uids
-                self.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
-                print >>proc.stdin, "n"
-                self.expect(proc.stderr, 'GOT_IT')
-                # select the uid
-                self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-                while True:
-                        m = self.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
-                        if m and m.group(1) == uid:
-                                index = int(m.group(2)) + 1
-                                break
-                print >>proc.stdin, str(index)
-                self.expect(proc.stderr, 'GOT_IT')
-                # sign the selected uid
-                self.seek(proc.stderr, 'GET_LINE keyedit.prompt')
-                print >>proc.stdin, "sign"
-                self.expect(proc.stderr, 'GOT_IT')
-                # confirm signature
-                self.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
-                print >>proc.stdin, 'y'
-                self.expect(proc.stderr, 'GOT_IT')
-                # expect the passphrase confirmation
-                self.expect(proc.stderr, 'GOOD_PASSPHRASE')
-                # save the resulting key
-                self.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-                print >>proc.stdin, "save"
-                self.expect(proc.stderr, 'GOT_IT')
-                return proc.wait() == 0
 
 class GpgTemp(Gpg):
         def __init__(self):
