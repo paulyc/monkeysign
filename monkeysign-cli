@@ -140,7 +140,7 @@ class MonkeysignUi(object):
 
     def copy_secrets(self):
         """import secret keys from your keyring"""
-        self.log('copying your private key to temporary keyring in', self.tmpkeyring.tmphomedir)
+        self.log('copying your private key to temporary keyring in' + self.tmpkeyring.tmphomedir)
         if not self.options.dryrun:
             if not self.tmpkeyring.import_data(self.keyring.export_data(options.user, True)):
                 self.abort('could not find private key material, do you have a GPG key?')
@@ -192,7 +192,7 @@ class MonkeysignUi(object):
             msg['To'] = self.options.to
 
             if self.options.smtpserver is not None:
-                self.log('sending message through SMTP server', self.options.smtpserver)
+                self.log('sending message through SMTP server' + self.options.smtpserver)
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
                 server.sendmail(from_user, self.options.to, msg.as_string())
