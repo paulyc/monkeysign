@@ -188,9 +188,11 @@ class MonkeysignCli():
                 for uid in keys[key].uidslist:
                     allowed_uids.append(uid.uid)
                 pattern = raw_input('Specify the identity to sign: ')
-                while pattern not in allowed_uids:
+                while pattern not in allowed_uids and not pattern.isdigit() and int(pattern)-1 not in range(0,len(allowed_uids)):
                     print "invalid uid"
                     pattern = raw_input('Specify the identity to sign: ')
+                if pattern.isdigit():
+                    pattern = allowed_uids[int(pattern)-1]
 
             if not self.options.dryrun:
                 if not self.yes_no('Really sign key? [y/N] ', False):
@@ -269,11 +271,11 @@ class MonkeysignCli():
 
 if __name__ == '__main__':
     (options, args) = parse_args()
-    try:
-        MonkeysignCli().main(args[0], options)
-    except IndexError:
+    if len(args) != 1:
         print >>sys.stderr, 'wrong number of arguments'
         sys.exit(1)
+    try:
+        MonkeysignCli().main(args[0], options)
     except NotImplementedError as e:
         print >>sys.stderr, str(e)
         sys.exit(2)
