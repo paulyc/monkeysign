@@ -67,6 +67,13 @@ class MonkeysignUi(object):
 
     def __init__(self, pattern, options = {}):
         self.options = options
+        try:
+            self.log('Initializing UI')
+        except AttributeError:
+            # set a default logging mechanism
+            self.options.log = sys.stderr
+            self.log('Initializing UI')
+
         self.pattern = pattern
         self.signed_keys = {}
 
@@ -88,19 +95,21 @@ class MonkeysignUi(object):
             if options.user is None:
                 self.abort('no default secret key found, abort!')
 
-    def abort(message):
+    def abort(self, message):
+        """show a message to the user and abort program"""
         self.log(message)
         sys.exit(1)
 
-    def log(message):
-        print >>sys.stderr, message
+    def log(self, message):
+        """log an informational message if verbose"""
+        if self.options.verbose and self.options.log: print >>self.options.log, message
 
 class MonkeysignCli(MonkeysignUi):
     def __init__(self, pattern, options = {}):
-        MonkeysignCli.__init__(self, pattern, options)
-        self.main(self, pattern, options)
+        MonkeysignUi.__init__(self, pattern, options)
+        self.main(pattern, options)
 
-    def main(self,pattern, options = {}):
+    def main(self, pattern, options = {}):
         """main code execution loop
 
         we expect to have the commandline parsed for us
