@@ -99,14 +99,7 @@ class MonkeysignCli():
 
     def find_key(self):
         """find the key to be signed somewhere"""
-        if not self.options.keyserver:
-            # 1.b) from the local keyring (@todo try that first?)
-            if self.options.verbose: print >>sys.stderr, 'looking for key %s in your keyring' % self.pattern
-            if self.options.dryrun: return True
-            if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
-                print >>sys.stderr, 'could not find key %s in your keyring, and no keyserve defined' % self.pattern
-                sys.exit(3)
-        else:
+        if self.options.keyserver:
             # 1.a) if allowed, from the keyservers
             if options.verbose: print >>sys.stderr, 'fetching key %s from keyservers' % self.pattern
             if self.options.dryrun: return True
@@ -114,6 +107,14 @@ class MonkeysignCli():
                     and not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
                 print >>sys.stderr, 'failed to get key %s from keyservers or from your keyring, aborting' % pattern
                 sys.exit(4)
+        else:
+            # 1.b) from the local keyring (@todo try that first?)
+            if self.options.verbose: print >>sys.stderr, 'looking for key %s in your keyring' % self.pattern
+            if self.options.dryrun: return True
+            if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
+                print >>sys.stderr, 'could not find key %s in your keyring, and no keyserve defined' % self.pattern
+                sys.exit(3)
+
 
     def copy_secrets(self):
         """import secret keys from your keyring"""
