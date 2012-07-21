@@ -11,6 +11,7 @@ from monkeysign import Gpg, GpgTemp, OpenPGPkey, OpenPGPuid
 
 class TestGpgPlain(unittest.TestCase):
     def test_plain(self):
+        """make sure other instances do not poison us"""
         g = Gpg()
         self.assertNotIn('homedir', g.options)
 
@@ -21,6 +22,7 @@ class TestGpgTmp(unittest.TestCase):
         self.assertEqual(self.gpgtmp.options['homedir'], self.tmp)
 
     def test_home(self):
+        """test if the homedir is properly set and populated"""
         self.gpgtmp.export_data('') # dummy call to make gpg populate his directory
         self.assertTrue(open(self.tmp + '/pubring.gpg'))
 
@@ -50,18 +52,25 @@ class TestGpg(unittest.TestCase):
         self.assertIn('homedir', self.gpg.options)
 
     def test_set_option(self):
+        """make sure setting options works"""
         self.gpg.set_option('armor')
         self.assertIn('armor', self.gpg.options)
         self.gpg.set_option('keyserver', 'foo.example.com')
         self.assertDictContainsSubset({'keyserver': 'foo.example.com'}, self.gpg.options)
 
     def test_build_command(self):
+        """test commandline building capabilities
+
+        if this fails, it's probably because you added default options
+        to the tested class without adding them in the test class
+        """
         c1 = self.gpg.build_command(['list-keys', 'foo'])
         self.assertIn('homedir', self.gpg.options)
         c2 = self.rendered_options + ['--list-keys', 'foo'] + ['--homedir', self.gpg.options['homedir']]
         self.assertItemsEqual(c1, c2)
 
     def test_command(self):
+        """test various command creation"""
         c = list(self.rendered_options) # work on a copy
         c2 = self.gpg.build_command(['version'])
         c += ['--homedir', self.gpg.options['homedir'], '--version']
@@ -72,16 +81,26 @@ class TestGpg(unittest.TestCase):
         self.assertItemsEqual(c, c2)
 
     def test_version(self):
+        """make sure version() returns something"""
         self.assertTrue(self.gpg.version())
 
     def test_import(self):
+        """make sure import_data returns true on known good data
+
+        it should throw an exception if there's something wrong with the backend too
+        """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
 
     def test_import_fail(self):
+        """test that import_data() throws an error on wrong data"""
         with self.assertRaises(IOError):
             self.assertFalse(self.gpg.import_data(''))
 
     def test_export(self):
+        """test that we can export data similar to what we import
+
+        @todo this will probably fail if tests are ran on a different GPG version
+        """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         k1 = open(os.path.dirname(__file__) + '/96F47C6A.asc').read()
         self.gpg.set_option('armor')
@@ -90,6 +109,10 @@ class TestGpg(unittest.TestCase):
         self.assertEqual(k1,k2)
 
     def test_get_keys(self):
+        """test that we can list the keys after importing them
+
+        @todo we should check the data structure
+        """
         #k1 = OpenPGPKey()
         #k1.fingerprint = '8DC901CE64146C048AD50FBB792152527B75921E'
         #k1.secret = False
@@ -98,12 +121,14 @@ class TestGpg(unittest.TestCase):
         for fpr, key in self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E').iteritems():
             print key
 
-    def test_get_secret_keys(self):
+    def test_get_missing_secret_keys(self):
+        """make sure we fail to get secret keys when they are missing"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         # this shouldn't show anything, as this is just a public key blob
         self.assertFalse(self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E', True, False))
 
     def test_export_secret(self):
+        """make sure we can import and export secret data"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.secret = self.gpg.export_data('96F47C6A', True)
         self.assertTrue(self.secret)
@@ -115,6 +140,9 @@ class TestGpg(unittest.TestCase):
         self.assertEqual(self.gpg.export_data(), '')
 
     def test_sign_key_wrong_user(self):
+        """make sure sign_key with a erroneous local-user fails
+
+        that is, even if all other conditions are ok"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
@@ -124,6 +152,7 @@ class TestGpg(unittest.TestCase):
             print key
 
     def test_sign_key_all_uids(self):
+        """test signature of all uids of a key"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
@@ -135,6 +164,7 @@ class TestGpg(unittest.TestCase):
         self.assertRegexpMatches(self.gpg.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
 
     def test_sign_key_uid(self):
+        """test signature of a single uid"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
@@ -165,6 +195,9 @@ class TestGpg(unittest.TestCase):
         self.assertTrue(self.gpg.sign_key('7B75921E'))
 
     def test_gen_key(self):
+        """test key generation
+
+        not implemented"""
         #self.fpr = self.gpg.gen_key()
         #self.assertTrue(self.fpr)
         pass
