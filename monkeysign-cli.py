@@ -65,26 +65,16 @@ class MonkeysignCli():
 
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
+        self.keyring = Keyring() # the real keyring
         if options.debug:
             self.tmpkeyring.context.debug = sys.stderr
         if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
 
         # 1. fetch the key into a temporary keyring
-        # 1.a) if allowed (@todo), from the keyservers
-        if options.verbose: print >>sys.stderr, 'fetching key %s from keyservers' % pattern
-        if not options.dryrun:
-            if not tmpkeyring.fetch_keys(pattern):
-                # 1.b) @todo from the local keyring (@todo try that first?)
-                print >>sys.stderr, 'failed to get key %s from keyservers, aborting' % pattern
-                sys.exit(3)
+        self.find_key()
 
         # 2. copy the signing key secrets into the keyring
-        if options.verbose: print >>sys.stderr, 'copying your private key to temporary keyring in', tmpkeyring.tmphomedir
-        if not options.dryrun:
-            keyring = Keyring() # the real keyring
-            if not tmpkeyring.import_data(keyring.export_data(options.user, True)):
-                print >>sys.stderr, 'could not find private key material, do you have a GPG key?'
-                sys.exit(4)
+        self.copy_secrets()
 
         # 3. for every user id (or all, if -a is specified)
         # 3.1. sign the uid, using gpg-agent
@@ -96,6 +86,33 @@ class MonkeysignCli():
         # 4. trash the temporary keyring
         if options.verbose: print >>sys.stderr, 'deleting the temporary keyring ', tmpkeyring.tmphomedir
         # implicit
+
+    def find_key(self):
+        """find the key to be signed somewhere"""
+        if not self.options.keyserver:
+            # 1.b) from the local keyring (@todo try that first?)
+            if self.options.verbose: print >>sys.stderr, 'looking for key %s in your keyring' % self.pattern
+            if self.options.dryrun: return True
+            if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
+                print >>sys.stderr, 'could not find key %s in your keyring, and no keyserve defined' % self.pattern
+                sys.exit(5)
+        else:
+            # 1.a) if allowed, from the keyservers
+            if options.verbose: print >>sys.stderr, 'fetching key %s from keyservers' % self.pattern
+            if self.options.dryrun: return True
+            if not self.tmpkeyring.fetch_keys(self.pattern) \
+                    and not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
+                print >>sys.stderr, 'failed to get key %s from keyservers or from your keyring, aborting' % pattern
+                sys.exit(3)
+
+    def copy_secrets(self):
+        """import secret keys from your keyring"""
+        if self.options.verbose: print >>sys.stderr, 'copying your private key to temporary keyring in', self.tmpkeyring.tmphomedir
+        if not self.options.dryrun:
+            if not self.tmpkeyring.import_data(self.keyring.export_data(options.user, True)):
+                print >>sys.stderr, 'could not find private key material, do you have a GPG key?'
+                sys.exit(4)
+
 
 if __name__ == '__main__':
     (options, args) = parse_args()
