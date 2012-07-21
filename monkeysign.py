@@ -276,6 +276,10 @@ class Gpg():
 
         def sign_uid(self, uid):
                 """sign a specific uid on a key"""
+
+                # we iterate over the keys matching the provided
+                # keyid, but we should really load those uids from the
+                # output of --sign-key
                 for fpr, key in self.get_keys(uid).iteritems():
                         index = None
                         for i in range(0, len(key.uidslist)):
