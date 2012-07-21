@@ -2,7 +2,7 @@ Source: monkeysign
 Section: utils
 Priority: extra
 Maintainer: Antoine Beaupré <anarcat@debian.org>
-Build-Depends: debhelper (>= 8.0.0), python (>= 2.3.5-7), python-dev (>= 2.3.5-7)
+Build-Depends: debhelper (>= 8.0.0), python (>= 2.6)
 Standards-Version: 3.9.2
 Homepage: http://web.monkeysphere.info/
 Vcs-Git: git://git.monkeysphere.info/monkeysign
@@ -10,7 +10,7 @@ Vcs-Git: git://git.monkeysphere.info/monkeysign
 
 Package: monkeysign
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python, python-qrencode, python-gtk2, python-pyme, python-zbarpygtk
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-qrencode, python-gtk2, python-pyme, python-zbarpygtk
 Description: OpenPGP key exchange for humans
  monkeysign is a tool to overhaul the OpenPGP keysigning experience
  and bring it closer to something that most primates can understand.
