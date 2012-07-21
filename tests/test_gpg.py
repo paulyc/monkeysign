@@ -224,26 +224,6 @@ class TestKeyring(unittest.TestCase):
         #self.assertTrue(self.fpr)
         pass
 
-class TestGpgCaff(unittest.TestCase):
-    def setUp(self):
-        self.gpgtmp = TempKeyring()
-
-    def test_sign_key_from_other(self):
-        gpg = Keyring()
-        gpg.context.set_option('export-options', 'export-minimal')
-        self.assertTrue(self.gpgtmp.import_data(gpg.export_data('8DC901CE64146C048AD50FBB792152527B75921E')))
-        self.assertTrue(self.gpgtmp.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpgtmp.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertTrue(self.gpgtmp.sign_key('7B75921E'))
-        self.gpgtmp.context.set_option('armor')
-        export = self.gpgtmp.export_data('7B75921E')
-        print export
-        self.assertTrue(export)
-        del gpg
-
-    def tearDown(self):
-        del self.gpgtmp
-
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
         self.key = OpenPGPkey()
