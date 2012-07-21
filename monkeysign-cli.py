@@ -184,6 +184,12 @@ class MonkeysignCli():
         self.tmpkeyring.context.set_option('armor')
         self.tmpkeyring.context.set_option('always-trust')
 
+        if '@' in options.user:
+            from_user = options.user
+        else:
+            from_key = self.tmpkeyring.get_keys(options.user).values()[0]        
+            from_user = from_key.uids.values()[0].uid
+
         for fpr in self.signed_keys:
             data = self.tmpkeyring.export_data(fpr)
 
@@ -210,12 +216,11 @@ class MonkeysignCli():
             p2.set_payload(encrypted)
             msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
             msg['Subject'] = 'Your signed OpenPGP key'
-            #msg['From'] = 
-            # yark
-            for k, uid in self.signed_keys[fpr].uids.iteritems():
-                msg['To'] = uid.uid
-                break
-                       
+            msg['From'] = from_user
+            msg.preamble = 'This is a multi-part message in PGP/MIME format...'
+            # take the first uid, not ideal
+            msg['To'] = self.signed_keys[fpr].uids.values()[0].uid
+
             print msg.as_string()
 
             # next step, mailing the key, is a huge PITA
