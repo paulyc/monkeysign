@@ -1,5 +1,5 @@
 Source: monkeysign
-Section: unknown
+Section: utils
 Priority: extra
 Maintainer: Antoine Beaupré <anarcat@debian.org>
 Build-Depends: debhelper (>= 8.0.0), python (>= 2.3.5-7), python-dev (>= 2.3.5-7)
