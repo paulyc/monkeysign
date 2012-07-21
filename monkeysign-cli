@@ -115,6 +115,9 @@ class MonkeysignUi(object):
     def yes_no(self, prompt, default = None):
         raise NotImplementedError('prompting not implemented in base class')
 
+    def choose_uid(self, prompt, uids):
+        raise NotImplementedError('prompting not implemented in base class')
+
     def find_key(self):
         """find the key to be signed somewhere"""
         self.keyring.context.set_option('export-options', 'export-minimal')
