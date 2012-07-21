@@ -1,6 +1,11 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
+"""General test suite for the GPG API.
+
+Tests that require network access should go in test_network.py.
+"""
+
 import sys, os, shutil
 import unittest
 import tempfile
@@ -233,19 +238,6 @@ class TestOpenPGPkey(unittest.TestCase):
         self.key.uids[''] = OpenPGPuid('foo@example.com', 'u')
         key = OpenPGPkey()
         self.assertEqual(key.uids, {})
-
-class TestGpgNetwork(unittest.TestCase):
-    """Seperate test cases for functions that hit the network"""
-
-    def setUp(self):
-        self.gpg = GpgTemp()
-
-    def test_fetch_keys(self):
-        self.gpg.set_option('keyserver', 'pool.sks-keyservers.net')
-        self.assertTrue(self.gpg.fetch_keys('4023702F'))
-
-    def tearDown(self):
-        del self.gpg
 
 if __name__ == '__main__':
     unittest.main()
