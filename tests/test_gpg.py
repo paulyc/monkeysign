@@ -238,5 +238,11 @@ class TestOpenPGPkey(unittest.TestCase):
         key = OpenPGPkey()
         self.assertEqual(key.uids, {})
 
+    def test_format_fpr(self):
+        self.key.fpr = '3F94240C918E63590B04152E86E4E70A96F47C6A'
+        expected = '3F94 240C 918E 6359 0B04  152E 86E4 E70A 96F4 7C6A'
+        actual = self.key.format_fpr()
+        self.assertEqual(expected, actual)
+
 if __name__ == '__main__':
     unittest.main()

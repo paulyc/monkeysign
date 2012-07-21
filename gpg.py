@@ -529,7 +529,7 @@ class OpenPGPkey():
         ret += self.keyid(8) + " " + self.creation
         if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
         ret += "\n"
-        ret += '    Fingerprint = ' + self.fpr + "\n"
+        ret += '    Fingerprint = ' + self.format_fpr() + "\n"
         for uid in self.uids.values():
             ret += "uid      [ " + uid.trust + " ] " + uid.uid + "\n"
         for subkey in self.subkeys.values():
@@ -537,6 +537,22 @@ class OpenPGPkey():
             if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
             ret += "\n"
         return ret
+
+    def format_fpr(self):
+        """display a clean version of the fingerprint
+
+        this is the display we usually see
+        """
+        l = list(self.fpr) # explode
+        s = ''
+        for i in range(10):
+            # output 4 chars
+            s += ''.join(l[4*i:4*i+4])
+            # add a space, except at the end
+            if i < 9: s += ' '
+            # add an extra space in the middle
+            if i == 4: s += ' '
+        return s
 
 class OpenPGPuid():
     def __init__(self, uid, trust, creation = 0, expire = None, uidhash = ''):
