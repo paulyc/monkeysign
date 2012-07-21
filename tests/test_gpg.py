@@ -21,17 +21,7 @@ class TestContext(unittest.TestCase):
     operating on actual keyrings or GPG data."""
 
     # those need to match the options in the Gpg class
-    options = { 'status-fd': 2,
-                'command-fd': 0,
-                'no-tty': None,
-                'batch': None,
-                'quiet': None,
-                'use-agent': None,
-                'with-colons': None,
-                'with-fingerprint': None,
-                'fixed-list-mode': None,
-                'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
-                }
+    options = Context.options
 
     # ... and this is the rendered version of the above
     rendered_options = ['gpg', '--command-fd', '0', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--batch', '--fixed-list-mode', '--no-tty', '--with-colons', '--use-agent', '--status-fd', '2', '--quiet' ]

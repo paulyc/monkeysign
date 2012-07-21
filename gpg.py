@@ -56,24 +56,25 @@ class Context():
     # a list of key => value commandline options
     #
     # to pass a flag without options, use None as the value
-    options = {}
+    options = { 'status-fd': 2,
+                'command-fd': 0,
+                'no-tty': None,
+                'quiet': None,
+                'batch': None,
+                'use-agent': None,
+                'with-colons': None,
+                'with-fingerprint': None,
+                'fixed-list-mode': None,
+                'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
+                }
 
     # whether to paste output here and there
     # if not false, needs to be a file descriptor
     debug = False
 
     def __init__(self):
-        self.options = { 'status-fd': 2,
-                         'command-fd': 0,
-                         'no-tty': None,
-                         'quiet': None,
-                         'batch': None,
-                         'use-agent': None,
-                         'with-colons': None,
-                         'with-fingerprint': None,
-                         'fixed-list-mode': None,
-                         'list-options': 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire',
-                         }
+        self.options = dict(Context.options) # copy
+
     def set_option(self, option, value = None):
         """set an option to pass to gpg
 
