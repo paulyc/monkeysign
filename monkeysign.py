@@ -201,6 +201,8 @@ class Gpg():
             self.call_command(command)
             if self.returncode == 0:
                 key = OpenPGPkey(self.stdout)
+                # check if we already have that key, in which case we
+                # add to it instead of adding a new key
                 if key.fpr in keys:
                     keys[key.fpr].parse_gpg_list(self.stdout)
                     del key
