@@ -98,6 +98,7 @@ class MonkeysignUi(object):
 
             if options.user is None:
                 self.abort('no default secret key found, abort!')
+        self.main(pattern, options)
 
     def abort(self, message):
         """show a message to the user and abort program"""
@@ -109,10 +110,6 @@ class MonkeysignUi(object):
         if self.options.verbose and self.options.log: print >>self.options.log, message
 
 class MonkeysignCli(MonkeysignUi):
-    def __init__(self, pattern, options = {}):
-        MonkeysignUi.__init__(self, pattern, options)
-        self.main(pattern, options)
-
     def main(self, pattern, options = {}):
         """main code execution loop
 
