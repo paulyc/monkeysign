@@ -160,11 +160,11 @@ class MonkeysignScan(gtk.Window):
                                                         self.tmpkeyring.import_data(self.pubkeyring.export_data(self.signing_key, True))
                                                         self.tmpkeyring.import_data(self.pubkeyring.export_data(self.signing_key))
                                                         if self.tmpkeyring.sign_key(fpr):
-                                                                self.tmpkeyring.set_option('armor')
+                                                                self.tmpkeyring.context.set_option('armor')
                                                                 print "key signed successfully!"
                                                                 print self.tmpkeyring.export_data(fpr)
                                                         else:
-                                                                print >>sys.stderr, 'failed to sign key:', self.tmpkeyring.stderr
+                                                                print >>sys.stderr, 'failed to sign key:', self.tmpkeyring.context.stderr
                                                 self.resume_capture()
                                                 md.destroy()
                         else:
