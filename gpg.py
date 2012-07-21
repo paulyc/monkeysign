@@ -330,6 +330,17 @@ class Keyring():
                 raise GpgProcotolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
         return keys
 
+    def encrypt_data(self, data, recipient):
+        """encrypt data using asymetric encryption
+
+        returns the encrypted data or False if it failed.
+        """
+        self.context.call_command(['recipient', recipient, '--encrypt'], data)
+        if self.context.returncode == 0:
+            return self.context.stdout
+        else:
+            return False
+
     def sign_key(self, pattern, signall = False):
         """sign a OpenPGP public key
 
