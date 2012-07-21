@@ -34,8 +34,6 @@ def parse_args():
     parser.add_option('-n', '--dry-run', dest='dryrun', default=False, action='store_true',
                       help='do not actually do anything')
     parser.add_option('-u', '--user', dest='user', help='user id to sign the key with')
-    parser.add_option('-a', '--all', dest='alluids', default=False, action='store_true',
-                      help='sign all uids on key')
     parser.add_option('-l', '--local', dest='local', default=False, action='store_true',
                       help='import in normal keyring a local certification')
     parser.add_option('-k', '--keyserver', dest='keyserver',
@@ -91,8 +89,6 @@ class MonkeysignCli():
 
         if options.local:
             raise NotImplementedError('local key signing not implemented yet')
-        if not options.alluids:
-            raise NotImplementedError('per uid signatures not supported yet, please use -a for now')
 
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
@@ -122,7 +118,6 @@ class MonkeysignCli():
         self.copy_secrets()
 
         # 3. for every user id (or all, if -a is specified)
-        # @todo select the uid
         # 3.1. sign the uid, using gpg-agent
         self.sign_key()
 
@@ -184,21 +179,34 @@ class MonkeysignCli():
             print str(keys[key])
             print
 
-            print 'Sign key? [y/N] ',
-            ans = sys.stdin.readline()
-            while ans == "\n":
-                print 'Sign key? [y/N] ',
-                ans = sys.stdin.readline()
+            alluids = self.yes_no('Sign all identities? [y/N] ', False)
 
-            if ans.lower() != "y\n":
-                print >>sys.stderr, 'aborting keysigning as requested'
-                continue
+            if alluids:
+                pattern = keys[key].fpr
+            else:
+                allowed_uids = []
+                for uid in keys[key].uidslist:
+                    allowed_uids.append(uid.uid)
+                pattern = raw_input('Specify the identity to sign: ')
+                while pattern not in allowed_uids:
+                    print "invalid uid"
+                    pattern = raw_input('Specify the identity to sign: ')
 
             if not self.options.dryrun:
-                if not self.tmpkeyring.sign_key(keys[key].fpr, options.alluids):
+                if not self.yes_no('Really sign key? [y/N] ', False):
+                    print >>sys.stderr, 'aborting key signing as requested'
+                    continue
+                if not self.tmpkeyring.sign_key(pattern, alluids):
                     print >>sys.stderr, 'key signing failed'
                 else:
                     self.signed_keys[key] = keys[key]
+
+    def yes_no(self, prompt, default = None):
+        ans = raw_input(prompt)
+        while default is None and ans.lower() not in ["y", "n"]:
+            ans = raw_input(prompt)
+        if default: return default
+        else: return ans.lower() == 'y'
 
     def export_key(self):
         self.tmpkeyring.context.set_option('armor')
