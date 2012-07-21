@@ -130,11 +130,31 @@ class MonkeysignCli():
 
     def sign_key(self):
         """sign the key uids, as specified"""
-        if self.options.verbose: print >>sys.stderr, 'signing key'
-        if not self.options.dryrun:
-            if not self.tmpkeyring.sign_key(self.pattern, options.alluids):
-                print >>sys.stderr, 'key signing failed'
+
+        keys = self.tmpkeyring.get_keys(self.pattern)
+
+        print "found", len(keys), "keys matching your request"
+
+        for key in keys:
+            print 'Signing the following key'
+            print
+            print str(keys[key])
+            print
+
+            print 'Sign key? [y/N] ',
+            ans = sys.stdin.readline()
+            while ans == "\n":
+                print 'Sign key? [y/N] ',
+                ans = sys.stdin.readline()
+
+            if ans.lower() != "y\n":
+                print >>sys.stderr, 'aborting keysigning as requested'
                 sys.exit(6)
+
+            if not self.options.dryrun:
+                if not self.tmpkeyring.sign_key(keys[key].fpr, options.alluids):
+                    print >>sys.stderr, 'key signing failed'
+                    sys.exit(7)
 
     def export_key(self):
         raise NotImplementedError('key encryption')
