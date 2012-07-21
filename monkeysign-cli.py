@@ -89,8 +89,6 @@ class MonkeysignCli():
         self.pattern = pattern
         self.signed_keys = {}
 
-        if options.user is None:
-            raise NotImplementedError('no default key detection code, please provide a user to sign keys with -u')
         if options.local:
             raise NotImplementedError('local key signing not implemented yet')
         if not options.alluids:
@@ -102,6 +100,19 @@ class MonkeysignCli():
         if options.debug:
             self.tmpkeyring.context.debug = sys.stderr
         if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
+
+        if options.user is None:
+            keys = self.keyring.get_keys(None, True)
+            for fpr, key in keys.iteritems():
+                if not key.invalid and not key.disabled and not key.expired and not key.revoked:
+                    options.user = key.uids.values()[0].uid
+                    break
+
+            if options.user is None:
+                print >>sys.stderr, 'no default secret key found, abort!'
+                sys.exit(1)
+
+        print "Using your identity:", options.user
 
         # 1. fetch the key into a temporary keyring
         self.find_key()
