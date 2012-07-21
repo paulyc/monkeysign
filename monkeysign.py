@@ -33,7 +33,17 @@ class Gpg():
         debug = False
 
         def __init__(self, homedir=None):
-                """f"""
+                """constructor for the gpg context
+
+                this mostly sets options, and allows passing in a
+                different homedir, that will be added to the option
+                right here and there.
+
+                by default, we do not create or destroy the keyring,
+                although later function calls on the object may modify
+                the keyring (or other keyrings, if the homedir option
+                is modified.
+                """
                 self.options = { 'status-fd': 2,
                                  'command-fd': 0,
                                  'no-tty': None,
@@ -123,6 +133,7 @@ class Gpg():
                 return proc.returncode == 0
 
         def version(self, type='short'):
+                """return the version of the GPG binary"""
                 self.call_command(['version'])
                 if type is not 'short': raise TypeError('invalid type')
                 m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
@@ -213,6 +224,18 @@ class Gpg():
                 return self.call_command(['sign-key', fpr], "y\ny\n")
 
         def seek_pattern(self, fd, pattern):
+                """iterate over file descriptor until certain pattern is found
+
+                fd is a file descriptor
+                pattern a string describing a regular expression to match
+
+                this will skip lines not matching pattern until the
+                pattern is found. it will raise an IOError if the
+                pattern is not found and EOF is reached.
+
+                this may hang for streams that do not send EOF or are
+                waiting for input.
+                """
                 line = fd.readline()
                 while line and not re.search(pattern, line):
                         if self.debug: print >>self.debug, "skipped:", line,
@@ -221,9 +244,22 @@ class Gpg():
                 if self.debug: print >>self.debug, "FOUND:", line,
 
         def seek(self, fd, pattern):
+                """look for a specific GNUPG status line in the output
+
+                this is a stub for seek_pattern()
+                """
                 return self.seek_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
         def expect_pattern(self, fd, pattern):
+                """make sure the next line matches the provided pattern
+
+                in contrast with seek_pattern(), this will *not* skip
+                non-matching lines and instead raise an exception if
+                such a line is found.
+
+                this therefore looks only at the next line, but may
+                also hang like seek_pattern()
+                """
                 line = fd.readline()
                 if re.search(pattern, line):
                         if self.debug: print >>self.debug, "FOUND:", line,
@@ -232,6 +268,10 @@ class Gpg():
                         raise IOError("unexpected pattern: '%s', was expecting '%s'" % (line, pattern))
 
         def expect(self, fd, pattern):
+                """look for a specific GNUPG status on the next line of output
+
+                this is a stub for expect()
+                """
                 return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
         def sign_uid(self, uid):
