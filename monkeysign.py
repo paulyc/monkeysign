@@ -189,8 +189,7 @@ class Gpg():
             if pattern: command += [pattern]
             self.call_command(command)
             if self.returncode == 0:
-                key = OpenPGPkey()
-                key.parse_gpg_list(self.stdout)
+                key = OpenPGPkey(self.stdout)
                 keys[key.fpr] = key
             elif self.returncode == 2:
                 return None
@@ -201,8 +200,7 @@ class Gpg():
             if pattern: command += [pattern]
             self.call_command(command)
             if self.returncode == 0:
-                key = OpenPGPkey()
-                key.parse_gpg_list(self.stdout)
+                key = OpenPGPkey(self.stdout)
                 if key.fpr in keys:
                     keys[key.fpr].parse_gpg_list(self.stdout)
                     del key
@@ -383,7 +381,7 @@ class OpenPGPkey():
     # the list of subkeys associated with this key
     subkeys = {}
 
-    def __init__(self):
+    def __init__(self, data=None):
         self.purpose = { 'encrypt': True, # if the public key part can be used to encrypt data
                          'sign': True,    # if the private key part can be used to sign data
                          'certify': True, # if the private key part can be used to sign other keys
@@ -391,6 +389,8 @@ class OpenPGPkey():
                          }
         self.uids = {}
         self.subkeys = {}
+        if data is not None:
+            self.parse_gpg_list(data)
 
     def keyid(self, l=8):
         if self.fpr is None:
