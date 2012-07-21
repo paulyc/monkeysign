@@ -197,8 +197,8 @@ class MonkeysignScan(gtk.Window):
 
                         # Disable video capture
                         self.zbar.set_video_enabled(False)
-                        self.tmpkeyring.set_option('keyserver', self.keyserver)
-                        command = self.tmpkeyring.build_command(['recv-keys', self.fpr])
+                        self.tmpkeyring.context.set_option('keyserver', self.keyserver)
+                        command = self.tmpkeyring.context.build_command(['recv-keys', self.fpr])
                         self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
                         self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
                         message = gtk.Label("Retrieving public key from server...")
