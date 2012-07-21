@@ -7,6 +7,7 @@ Tests that require network access should go in test_network.py.
 """
 
 import sys, os, shutil
+from StringIO import StringIO
 import unittest
 import tempfile
 
@@ -58,6 +59,17 @@ class TestContext(unittest.TestCase):
     def test_version(self):
         """make sure version() returns something"""
         self.assertTrue(self.gpg.version())
+
+    def test_seek_debug(self):
+        """test if seek actually respects debug"""
+        self.gpg.debug = True # should yield an attribute error, that's fine
+        with self.assertRaises(AttributeError):
+            self.gpg.seek(StringIO('test'), 'test')
+        # now within a keyring?
+        k = TempKeyring()
+        k.context.debug = True
+        with self.assertRaises(AttributeError):
+            k.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
 
 class TestTempKeyring(unittest.TestCase):
     """Test the TempKeyring class."""
