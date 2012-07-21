@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 """Sign a key in a safe fashion.
 
@@ -180,9 +181,27 @@ class MonkeysignCli():
 
         for fpr in self.signed_keys:
             data = self.tmpkeyring.export_data(fpr)
+            print "resulting signature"
+            print data
             encrypted = self.tmpkeyring.encrypt_data(data, self.pattern)
-            print "resulting signature, encrypted to the user"
-            print encrypted
+            # next step, mailing the key, is a huge PITA
+            # caff sets up a proper multi-part MIME email, a bit like this:
+            # layer 1: multipart/encrypted; protocol="application/pgp-encrypted";
+            # part 1: Content-Type: application/pgp-encrypted; name="signedkey.msg"
+            #         Content-Disposition: attachment; filename="signedkey.msg"
+            #   this part contains nothing but "Version: 1"
+            # part 2: Content-Type: application/octet-stream; name="msg.asc"
+            #         Content-Disposition: inline; filename="msg.asc"
+            #         Content-Transfer-Encoding: 7bit
+            #   this part contains the encrypted message, the second layer
+            # layer 2: Content-Type: multipart/mixed; boundary="----------=_1342631253-16575-0"
+            # part 1: Content-Type: text/plain; charset="utf-8"
+            #   this part has a friendly message saying wtf is going on
+            # part 2: Content-Type: application/pgp-keys; name="0x792152527B75921E.4.signed-by-0xCCD2ED94D21739E9.asc"
+            #         Content-Disposition: attachment; filename="0x792152527B75921E.4.signed-by-0xCCD2ED94D21739E9.asc"
+            #         Content-Transfer-Encoding: 7bit
+            #         Content-Description: PGP Key 0x792152527B75921E, uid Antoine Beaupré <anarcat@orangeseeds.org> (4), signed by 0xCCD2ED94D21739E9
+            #   this part has the actual key block
 
 if __name__ == '__main__':
     (options, args) = parse_args()
