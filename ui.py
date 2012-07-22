@@ -195,9 +195,9 @@ class MonkeysignUi(object):
 
         # detect the proper uid
         if self.options.user is None:
-            keys = self.tmpkeyring.get_keys(None, True)
+            keys = self.tmpkeyring.get_keys(None, True, False)
         else:
-            keys = self.tmpkeyring.get_keys(self.options.user, True)
+            keys = self.tmpkeyring.get_keys(self.options.user, True, False)
 
         for fpr, key in keys.iteritems():
             self.log('found secret key: %s' % key)
