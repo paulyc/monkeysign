@@ -8,7 +8,43 @@ import re
 import Image, StringIO
 import zbar, zbarpygtk
 
-from gpg import Keyring, TempKeyring
+from ui import MonkeysignUi
+
+class MonkeysignScanUi(MonkeysignUi):
+        """
+        General process
+        ===============
+
+        1. fetch the key into a temporary keyring
+        1.a) if allowed (@todo), from the keyservers
+        1.b) from the local keyring (@todo try that first?)
+        2. copy the signing key secrets into the keyring
+        3. for every user id (or all, if -a is specified)
+        3.1. sign the uid, using gpg-agent
+        3.2. export and encrypt the signature
+        3.3. mail the key to the user
+        3.4. optionnally (-l), create a local signature and import in
+        local keyring
+        4. trash the temporary keyring
+        """
+
+        def yes_no(self, prompt, default = None):
+                """we ignore default! gotta fix that"""
+                md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, prompt)
+                self.window.md += md
+                gtk.gdk.threads_enter()
+                response = md.run()
+                gtk.gdk.threads_leave()
+                return response == gtk.RESPONSE_YES
+
+        def abort(self, prompt):
+                """we don't actually abort, just exit threads and resume capture"""
+                md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, prompt)
+                gtk.gdk.threads_enter()
+                run()
+                gtk.gdk.threads_leave()
+                destroy()
+                self.window.resume_capture()
 
 class MonkeysignScan(gtk.Window):
 
@@ -20,32 +56,13 @@ class MonkeysignScan(gtk.Window):
         </menubar>
         </ui>'''
 
-        # Keyserver to use
-        keyserver = "pool.sks-keyservers.net"
-
-        # the current fingerprint being processed
-        fpr = ''
-
-        # the current signing key, guessed from secret key material for now
-        signing_key = ''
-
         def __init__(self):
                 super(MonkeysignScan, self).__init__()
 
-                self.tmpkeyring = TempKeyring()
-                self.pubkeyring = Keyring()
-
-                # get the list of secret keys and guess (the first valid one
-                #self.pubkeyring.debug = sys.stderr
-                keys = self.pubkeyring.get_keys(None, True)
-                print "keys: " + str(keys)
-                for fpr, key in keys.iteritems():
-                        if not key.invalid and not key.disabled and not key.expired and not key.revoked:
-                                self.signing_key = fpr
-                                break
-
-                if self.signing_key is None:
-                        print >>sys.stderr, 'no default secret key found, abort!'
+                (options, args) = MonkeysignScanUi.parse_args()
+                self.msui = MonkeysignScanUi(None, options)
+                self.msui.window = self
+                self.md = [] # modal dialogs to destroy
 
                 # Set up main window
                 self.set_title("Monkeysign (scan)")
@@ -150,30 +167,27 @@ class MonkeysignScan(gtk.Window):
                         """
                         self.keep_pulsing=False
                         self.dialog.destroy()
+                        self.msui.log('fetching finished')
                         if condition == 0:
-                                for fpr, key in self.tmpkeyring.get_keys(self.fpr).iteritems():
-                                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, "Would you like to certify this key/userid pair ?\n\nFingerprint : " + fpr + "\nFull key : " + str(key))
-                                                gtk.gdk.threads_enter()
-                                                response = md.run()
-                                                gtk.gdk.threads_leave()
-                                                if response == gtk.RESPONSE_YES:
-                                                        self.tmpkeyring.import_data(self.pubkeyring.export_data(self.signing_key, True))
-                                                        self.tmpkeyring.import_data(self.pubkeyring.export_data(self.signing_key))
-                                                        if self.tmpkeyring.sign_key(fpr):
-                                                                self.tmpkeyring.context.set_option('armor')
-                                                                print "key signed successfully!"
-                                                                print self.tmpkeyring.export_data(fpr)
-                                                        else:
-                                                                print >>sys.stderr, 'failed to sign key:', self.tmpkeyring.context.stderr
-                                                self.resume_capture()
-                                                md.destroy()
-                        else:
-                                md = gtk.MessageDialog(self, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, "Key " + self.fpr + " not found.")
-                                gtk.gdk.threads_enter()
-                                md.run()
-                                gtk.gdk.threads_leave()
-                                md.destroy()
+                                # 2. copy the signing key secrets into the keyring
+                                self.msui.copy_secrets()
+                                # 3. for every user id (or all, if -a is specified)
+                                # 3.1. sign the uid, using gpg-agent
+                                self.msui.sign_key()
+
+                                # 3.2. export and encrypt the signature
+                                # 3.3. mail the key to the user
+                                self.msui.export_key()
+
+                                # 3.4. optionnally (-l), create a local signature and import in
+                                #local keyring
+                                # 4. trash the temporary keyring
+
                                 self.resume_capture()
+                                for md in self.md: md.destroy()
+                        else:
+                                # 1.b) from the local keyring (@todo try that first?)
+                                self.msui.find_key()
                         return
 
                 # Look for prefix and hexadecimal 40-ascii-character fingerprint
@@ -181,7 +195,7 @@ class MonkeysignScan(gtk.Window):
 
                 if m != None:
                         # Found fingerprint
-                        self.fpr = m.group(1)
+                        self.msui.pattern = m.group(1).replace(' ', '')
 
                         # Capture and display the video frame containing QR code
                         self.zbarframe.set_shadow_type(gtk.SHADOW_NONE)
@@ -197,8 +211,11 @@ class MonkeysignScan(gtk.Window):
 
                         # Disable video capture
                         self.zbar.set_video_enabled(False)
-                        self.tmpkeyring.context.set_option('keyserver', self.keyserver)
-                        command = self.tmpkeyring.context.build_command(['recv-keys', self.fpr])
+                        # 1. fetch the key into a temporary keyring - we override the find_key() because we want to be interactive
+                        # 1.a) if allowed (@todo), from the keyservers
+                        self.msui.tmpkeyring.context.set_option('keyserver', self.msui.options.keyserver)
+                        command = self.msui.tmpkeyring.context.build_command(['recv-keys', self.msui.pattern])
+                        self.msui.log('cmd: ' + str(command))
                         self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
                         self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
                         message = gtk.Label("Retrieving public key from server...")
