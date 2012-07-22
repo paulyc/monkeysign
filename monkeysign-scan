@@ -245,7 +245,7 @@ class MonkeysignScan(gtk.Window):
 
         def destroy(self, widget, data=None):
                 self.zbar.set_video_enabled(False)
-                del self.tmpkeyring
+                del self.msui
                 gtk.main_quit()
 
 if __name__ == '__main__':
