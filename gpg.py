@@ -61,7 +61,7 @@ However, the implementation here has:
  2. a cleaner API
 """
 
-__version__ = '0.1'
+__version__ = '0.2'
 
 import os, tempfile, shutil, subprocess, re
 

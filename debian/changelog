@@ -1,3 +1,18 @@
+monkeysign (0.2) unstable; urgency=low
+
+  * only load information from private keys when doing key detection
+  * add debugging in key choosing algorithm
+  * import private keyring even in dry-run
+  * properly import re, fixing a crash
+  * add usage for monkeysign-scan
+  * fixup modules list so that the package actually works
+  * make this not crash completely if there's no video
+  * improve short description so that it matches 'key signing'
+  * fix dependencies
+  * fix typo, noticed by micah
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sun, 22 Jul 2012 13:38:00 -0400
+
 monkeysign (0.1) unstable; urgency=low
 
   * Initial Release.
