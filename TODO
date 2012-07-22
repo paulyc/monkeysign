@@ -6,7 +6,8 @@ A small list of things to do before this is officially released as
 
  * merge with monkeysphere.info
    - publish code upstream on monkeysphere.info
-   - make a webpage explaining common uses
+   - make a webpage explaining common uses?
+   - or instead make an html version of the manpage?
 
  * release process
    - update version in gpg.py and run dch -i (done)
