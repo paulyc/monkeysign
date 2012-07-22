@@ -200,9 +200,12 @@ class MonkeysignUi(object):
             keys = self.tmpkeyring.get_keys(self.options.user, True)
 
         for fpr, key in keys.iteritems():
+            self.log('found secret key: %s' % key)
             if not key.invalid and not key.disabled and not key.expired and not key.revoked:
                 self.signing_key = key
                 break
+
+        self.log('signing key chosen: %s' % key.fpr)
 
         if self.signing_key is None:
             self.abort('no default secret key found, abort!')
