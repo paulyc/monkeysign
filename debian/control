@@ -10,7 +10,7 @@ Vcs-Git: git://git.monkeysphere.info/monkeysign
 
 Package: monkeysign
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-qrencode, python-gtk2, python-pyme, python-zbarpygtk
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}, python-qrencode, python-gtk2, python-zbar, python-zbarpygtk
 Description: OpenPGP key exchange for humans
  monkeysign is a tool to overhaul the OpenPGP keysigning experience
  and bring it closer to something that most primates can understand.
