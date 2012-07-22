@@ -28,6 +28,19 @@ class MonkeysignScanUi(MonkeysignUi):
         4. trash the temporary keyring
         """
 
+        def main(self, pattern, options = {}):
+                MonkeysignUi.main(self, pattern, options)
+
+                # threads *must* be properly initialized to use zbarpygtk
+                gtk.gdk.threads_init()
+                gtk.gdk.threads_enter()
+
+                window = MonkeysignScan()
+                window.msui = self
+
+                gtk.main()
+                gtk.gdk.threads_leave()
+
         def yes_no(self, prompt, default = None):
                 """we ignore default! gotta fix that"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, prompt)
@@ -59,9 +72,6 @@ class MonkeysignScan(gtk.Window):
         def __init__(self):
                 super(MonkeysignScan, self).__init__()
 
-                (options, args) = MonkeysignScanUi.parse_args()
-                self.msui = MonkeysignScanUi(None, options)
-                self.msui.window = self
                 self.md = [] # modal dialogs to destroy
 
                 # Set up main window
@@ -249,10 +259,6 @@ class MonkeysignScan(gtk.Window):
                 gtk.main_quit()
 
 if __name__ == '__main__':
-        # threads *must* be properly initialized to use zbarpygtk
-        gtk.gdk.threads_init()
-        gtk.gdk.threads_enter()
-
-        MonkeysignScan()
-        gtk.main()
-        gtk.gdk.threads_leave()
+        (options, args) = MonkeysignScanUi.parse_args()
+        # we ignore the key passed on the commandline
+        MonkeysignScanUi(None, options)
