@@ -15,7 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from optparse import OptionParser, TitledHelpFormatter
+from optparse import OptionParser, IndentedHelpFormatter
 
 from gpg import Keyring, TempKeyring
 
@@ -76,7 +76,7 @@ class MonkeysignUi(object):
     @classmethod
     def parse_args(self):
         """parse the commandline arguments"""
-        parser = OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog)
+        parser = OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
         parser.add_option('-d', '--debug', dest='debug', default=False, action='store_true',
                           help='request debugging information from GPG engine (lots of garbage)')
         parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
@@ -304,6 +304,12 @@ Sign all identities? [y/N] \
                     self.warn('key signing failed')
                 else:
                     self.signed_keys[key] = keys[key]
+
+class NowrapHelpFormatter(IndentedHelpFormatter):
+    """A non-wrapping formatter for OptionParse."""
+
+    def _format_text(self, text):
+        return text
 
 class MonkeysignCli(MonkeysignUi):
     """Sign a key in a safe fashion.
