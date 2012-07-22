@@ -4,16 +4,12 @@ Blockers
 A small list of things to do before this is officially released as
 0.1.
 
- o [anarcat] finish monkeysign-scan
-   - migrate the MIME handling code to a common class or to the library?
-   - may require merging with monkeysign-cli (below)
-
  * merge with monkeysphere.info
    - publish code upstream on monkeysphere.info
    - make a webpage explaining common uses
 
  * release process
-   - signed and annotated tag
+   - signed and annotated tag (done)
    - create and publish tarball
    - add announcement on website and blog
 
@@ -50,7 +46,6 @@ The software should be tagged and release even without those.
  * add a manpage
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
  * merge monkeysign-scan and monkeysign-cli
-   - use a parent class for argument passing and Gpg wrappers
    - detect if the zbar libraries and X11 are present
  * merge monkeysign-scan and monkeysign-gen
    - display the qrcode in monkeysign-scan
