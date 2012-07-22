@@ -22,7 +22,7 @@ exchanged keys with!
     author='Antoine Beaupré',
     author_email='anarcat@debian.org',
     url='http://web.monkeysphere.info/',
-    py_modules=['gpg'],
+    py_modules=['gpg, ui'],
     scripts=['monkeysign-cli', 'monkeysign-scan', 'monkeysign-gen'],
     classifiers=[
         'Development Status :: 4 - Beta',
