@@ -15,10 +15,10 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from optparse import OptionParser, IndentedHelpFormatter
-
+# gpg interface
 from gpg import Keyring, TempKeyring
 
+# mail functions
 from email.mime.multipart import MIMEMultipart
 from email.mime.message import MIMEMessage
 from email.mime.application import MIMEApplication
@@ -27,7 +27,10 @@ from email.mime.text import MIMEText
 import smtplib
 import subprocess
 
+# system libraries
+from optparse import OptionParser, IndentedHelpFormatter
 import sys
+import re
 
 class MonkeysignUi(object):
     """User interface abstraction for monkeysign.
