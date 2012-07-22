@@ -11,7 +11,7 @@ import zbar, zbarpygtk
 from ui import MonkeysignUi
 
 class MonkeysignScanUi(MonkeysignUi):
-    """Sign a key in a safe fashion.
+        """Sign a key in a safe fashion.
 
 This command will fire up a graphical interface and turn on the webcam
 (if available) on this computer.
