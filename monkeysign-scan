@@ -11,22 +11,20 @@ import zbar, zbarpygtk
 from ui import MonkeysignUi
 
 class MonkeysignScanUi(MonkeysignUi):
-        """
-        General process
-        ===============
+    """Sign a key in a safe fashion.
 
-        1. fetch the key into a temporary keyring
-        1.a) if allowed (@todo), from the keyservers
-        1.b) from the local keyring (@todo try that first?)
-        2. copy the signing key secrets into the keyring
-        3. for every user id (or all, if -a is specified)
-        3.1. sign the uid, using gpg-agent
-        3.2. export and encrypt the signature
-        3.3. mail the key to the user
-        3.4. optionnally (-l), create a local signature and import in
-        local keyring
-        4. trash the temporary keyring
-        """
+This command will fire up a graphical interface and turn on the webcam
+(if available) on this computer.
+
+The webcam is used to capture an OpenPGP fingerprint represented as a
+qrcode (or whatever the zbar library can parse) and then go through a
+signing process.
+
+The signature is then encrypted and mailed to the user. This leave the
+choice of publishing the certification to that person and makes sure
+that person owns the identity signed. This script assumes you have
+gpg-agent configure to prompt for passwords.
+"""
 
         def main(self, pattern, options = {}):
                 MonkeysignUi.main(self, pattern, options)

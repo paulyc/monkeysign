@@ -30,6 +30,31 @@ import subprocess
 import sys
 
 class MonkeysignUi(object):
+    """User interface abstraction for monkeysign.
+
+    This aims to factor out a common pattern to sign keys that is used
+    regardless of the UI used.
+
+    This is mostly geared at console/text-based and X11 interfaces,
+    but could also be ported to other interfaces (touch-screen/phone
+    interfaces would be interesting).
+
+    The actual process is in main(), which outlines what the
+    subclasses of this should be doing.
+
+    You should have a docstring in derived classes, as it will be
+    added to the 'usage' output.
+
+    You should also set the usage and epilog parameters, see
+    parse_args().
+    """
+
+    # what gets presented to the user in the usage (first and last lines)
+    # default is to use the OptionParser's defaults
+    # the 'docstring' above is the long description
+    usage=None
+    epilog=None
+
     # the options that determine how we operate, from the parse_args()
     options = {}
 
@@ -51,8 +76,7 @@ class MonkeysignUi(object):
     @classmethod
     def parse_args(self):
         """parse the commandline arguments"""
-        parser = OptionParser(description=self.__doc__, usage='%prog [options] <keyid>', 
-                              epilog='<keyid>: a GPG fingerprint or key id')
+        parser = OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog)
         parser.add_option('-d', '--debug', dest='debug', default=False, action='store_true',
                           help='request debugging information from GPG engine (lots of garbage)')
         parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
@@ -290,6 +314,10 @@ user. This leave the choice of publishing the certification to that
 person and makes sure that person owns the identity signed. This
 script assumes you have gpg-agent configure to prompt for passwords.
 """
+
+    # override default options to allow passing a keyid
+    usage = usage='%prog [options] <keyid>'
+    epilog='<keyid>: a GPG fingerprint or key id'
 
     def main(self, pattern, options = {}):
         """main code execution loop
