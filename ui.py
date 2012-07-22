@@ -157,7 +157,7 @@ class MonkeysignUi(object):
             # 1.b) from the local keyring (@todo try that first?)
             self.log('looking for key %s in your keyring' % self.pattern)
             if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
-                self.abort('could not find key %s in your keyring, and no keyserve defined' % self.pattern)
+                self.abort('could not find key %s in your keyring, and no keyserver defined' % self.pattern)
 
 
     def copy_secrets(self):
