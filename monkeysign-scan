@@ -110,6 +110,8 @@ class MonkeysignScan(gtk.Window):
                         self.video_cb.set_active(0)
                 else:
                         camframe = gtk.Frame()
+                        self.zbarframe = camframe
+                        self.zbar = zbarpygtk.Gtk()
                         error_icon = gtk.Image()
                         error_icon.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
                         vbox = gtk.VBox()
