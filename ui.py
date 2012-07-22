@@ -164,7 +164,7 @@ class MonkeysignUi(object):
         """import secret keys from your keyring"""
         self.log('copying your private key to temporary keyring in' + self.tmpkeyring.tmphomedir)
         if not self.options.dryrun:
-            if not self.tmpkeyring.import_data(self.keyring.export_data(options.user, True)):
+            if not self.tmpkeyring.import_data(self.keyring.export_data(self.options.user, True)):
                 self.abort('could not find private key material, do you have a GPG key?')
 
         # detect the proper uid
@@ -191,8 +191,8 @@ class MonkeysignUi(object):
         self.tmpkeyring.context.set_option('armor')
         self.tmpkeyring.context.set_option('always-trust')
 
-        if options.user is not None and '@' in options.user:
-            from_user = options.user
+        if self.options.user is not None and '@' in self.options.user:
+            from_user = self.options.user
         else:
             from_user = self.signing_key.uidslist[0].uid
 
