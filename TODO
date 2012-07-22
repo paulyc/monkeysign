@@ -9,6 +9,7 @@ A small list of things to do before this is officially released as
    - make a webpage explaining common uses
 
  * release process
+   - update version in gpg.py and run dch -i (done)
    - signed and annotated tag (done)
    - create and publish tarball
    - add announcement on website and blog
