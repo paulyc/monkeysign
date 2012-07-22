@@ -18,6 +18,13 @@ Nice to haves
 
 The software should be tagged and release even without those.
 
+ o [anarcat] decide if we should copy gpg.conf in the tmp keyring
+ * add a manpage
+   - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
+ * merge monkeysign-scan and monkeysign-cli
+   - detect if the zbar libraries and X11 are present
+ * merge monkeysign-scan and monkeysign-gen
+   - display the qrcode in monkeysign-scan
  o [anarcat] make sure we can apply improvements to python-gnupg
  o [anarcat] decide to merge or split from pythong-gnupg
    - for merge arguments:
@@ -43,11 +50,5 @@ The software should be tagged and release even without those.
    - use threads?
    - move the TempKeyring class to a monkeysign lib?
  * see if monkeysphere is interested in automatically generated tarballs
- * add a manpage
-   - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
- * merge monkeysign-scan and monkeysign-cli
-   - detect if the zbar libraries and X11 are present
- * merge monkeysign-scan and monkeysign-gen
-   - display the qrcode in monkeysign-scan
  * get rid of the pyme dependencies
    - just removing monkeysign-gen should be enough
