@@ -101,6 +101,25 @@ class MonkeysignUi(object):
         # this is implicit in the garbage collection, but tell the user anyways
         self.log('deleting the temporary keyring ' + self.tmpkeyring.tmphomedir)
 
+    def main(self, pattern, options = {}):
+        """
+        General process
+        ===============
+
+        1. fetch the key into a temporary keyring
+        1.a) if allowed (@todo), from the keyservers
+        1.b) from the local keyring (@todo try that first?)
+        2. copy the signing key secrets into the keyring
+        3. for every user id (or all, if -a is specified)
+        3.1. sign the uid, using gpg-agent
+        3.2. export and encrypt the signature
+        3.3. mail the key to the user
+        3.4. optionnally (-l), create a local signature and import in
+        local keyring
+        4. trash the temporary keyring
+        """
+        pass # we allow for interactive process
+
     def abort(self, message):
         """show a message to the user and abort program"""
         self.warn(message)
@@ -276,23 +295,7 @@ script assumes you have gpg-agent configure to prompt for passwords.
         """main code execution loop
 
         we expect to have the commandline parsed for us
-
-        General process
-        ===============
-
-        1. fetch the key into a temporary keyring
-        1.a) if allowed (@todo), from the keyservers
-        1.b) from the local keyring (@todo try that first?)
-        2. copy the signing key secrets into the keyring
-        3. for every user id (or all, if -a is specified)
-        3.1. sign the uid, using gpg-agent
-        3.2. export and encrypt the signature
-        3.3. mail the key to the user
-        3.4. optionnally (-l), create a local signature and import in
-        local keyring
-        4. trash the temporary keyring
         """
-
         # 1. fetch the key into a temporary keyring
         self.find_key()
 
