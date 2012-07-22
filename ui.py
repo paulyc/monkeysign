@@ -27,6 +27,8 @@ from email.mime.text import MIMEText
 import smtplib
 import subprocess
 
+import sys
+
 class MonkeysignUi(object):
     # the options that determine how we operate, from the parse_args()
     options = {}
