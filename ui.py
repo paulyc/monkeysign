@@ -210,7 +210,7 @@ class MonkeysignUi(object):
         if self.signing_key is None:
             self.abort('no default secret key found, abort!')
 
-        # export public key material
+        # export public key material associated with the above
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.signing_key.fpr)):
             self.abort('could not find public key material, do you have a GPG key?')
 
