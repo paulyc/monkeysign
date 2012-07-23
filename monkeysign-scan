@@ -36,8 +36,8 @@ gpg-agent configure to prompt for passwords.
                 gtk.gdk.threads_init()
                 gtk.gdk.threads_enter()
 
-                window = MonkeysignScan()
-                window.msui = self
+                self.window = MonkeysignScan()
+                self.window.msui = self
 
                 gtk.main()
                 gtk.gdk.threads_leave()
