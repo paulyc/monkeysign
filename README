@@ -12,14 +12,29 @@ No more reciting tedious strings of hexadecimal characters.  And, you
 can build a little rogue's gallery of the people that you have met and
 exchanged keys with!
 
-Requirements:
+Monkeysign was written by Jerome Charaoui and Antoine Beaupré and is
+licensed under GPLv3.
+
+Requirements
+------------
+
+The following Python packages are required for the GUI to work.
 
  * python-qrencode
  * python-gtk2
- * python-pyme
+ * python-zbar
  * python-zbarpygtk
 
-License: GPLv3 or later
+If they are not available, the commandline signing tool should still
+work but doesn't recognize QR codes.
 
-Authors: Jerome Charaoui and Antoine Beaupré
+Of course, all this depends on the GnuPG program.
 
+Installing
+----------
+
+To install monkeysign, run:
+
+    setup.py install
+
+There is also a Debian package available.
