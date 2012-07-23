@@ -226,7 +226,8 @@ class MonkeysignScan(gtk.Window):
                         self.zbar.set_video_enabled(False)
                         # 1. fetch the key into a temporary keyring - we override the find_key() because we want to be interactive
                         # 1.a) if allowed (@todo), from the keyservers
-                        self.msui.tmpkeyring.context.set_option('keyserver', self.msui.options.keyserver)
+                        if self.msui.options.keyserver is not None:
+                                self.msui.tmpkeyring.context.set_option('keyserver', self.msui.options.keyserver)
                         command = self.msui.tmpkeyring.context.build_command(['recv-keys', self.msui.pattern])
                         self.msui.log('cmd: ' + str(command))
                         self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
