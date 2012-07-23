@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 
-import sys, os, stat, gobject, subprocess
-import gtk, pygtk; pygtk.require('2.0')
-import pango
+import sys, os, stat, subprocess
 import re
-
-import Image, StringIO
-import zbar, zbarpygtk
+import StringIO
+import gtk
 
 from ui import MonkeysignUi
 
@@ -28,6 +25,12 @@ gpg-agent configure to prompt for passwords.
 
         def main(self, pattern, options = {}):
                 MonkeysignUi.main(self, pattern, options)
+
+                import gobject
+                import pygtk; pygtk.require('2.0')
+                import pango
+                import Image
+                import zbar, zbarpygtk
 
                 # threads *must* be properly initialized to use zbarpygtk
                 gtk.gdk.threads_init()
