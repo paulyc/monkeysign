@@ -9,6 +9,8 @@ Release process
 Next major release objectives
 =============================
 
+ o [anarcat] decide if we should copy gpg.conf in the tmp keyring
+ * make options configuration accessible from the GUI (preferences?)
  * add a manpage
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
  * merge monkeysign-scan and monkeysign-cli
@@ -25,7 +27,6 @@ The software should be tagged and release even without those.
    - publish code upstream on monkeysphere.info
    - make a webpage explaining common uses?
    - or instead make an html version of the manpage?
- o [anarcat] decide if we should copy gpg.conf in the tmp keyring
  o [anarcat] make sure we can apply improvements to python-gnupg
  o [anarcat] decide to merge or split from pythong-gnupg
    - for merge arguments:
