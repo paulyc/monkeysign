@@ -312,7 +312,7 @@ class Keyring():
 
         Returns true if the command succeeded.
         """
-        if keyserver:
+        if keyserver is not None:
             self.context.set_option('keyserver', keyserver)
         self.context.call_command(['recv-keys', fpr])
         return self.context.returncode == 0
