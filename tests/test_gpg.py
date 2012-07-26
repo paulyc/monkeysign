@@ -222,14 +222,11 @@ class TestKeyringWithKeys(TestKeyringBase):
     def test_encrypt_decrypt_data_armored_untrusted(self):
         """test if we can encrypt data to our private key (and decrypt it)"""
         plaintext = 'i come in peace'
-        self.gpg.context.debug = sys.stderr
 
         self.gpg.context.set_option('always-trust') # evil?
         self.gpg.context.set_option('armor')
         cyphertext = self.gpg.encrypt_data(plaintext, '96F47C6A')
         self.assertTrue(cyphertext)
-
-        self.gpg.context.debug = False
 
         p = self.gpg.decrypt_data(cyphertext)
         self.assertTrue(p)
