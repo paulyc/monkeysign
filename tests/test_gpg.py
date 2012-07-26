@@ -124,8 +124,7 @@ class TestKeyringBasics(TestKeyringBase):
 
     def test_import_fail(self):
         """test that import_data() throws an error on wrong data"""
-        with self.assertRaises(IOError):
-            self.assertFalse(self.gpg.import_data(''))
+        self.assertFalse(self.gpg.import_data(''))
 
     def test_export(self):
         """test that we can export data similar to what we import
@@ -180,10 +179,7 @@ class TestKeyringBasics(TestKeyringBase):
         looking if there is really no output
         """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        with self.assertRaises(GpgProcotolError):
-            self.gpg.sign_key('7B75921E')
-            self.assertEqual(self.gpg.context.stdout, '')
-            self.assertEqual(self.gpg.context.stderr, '')
+        self.assertFalse(self.gpg.sign_key('7B75921E'))
 
 class TestKeyringWithKeys(TestKeyringBase):
     def setUp(self):

@@ -432,7 +432,14 @@ class Keyring():
             self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
 
         # we fallthrough here if there's only one key to sign
-        print >>proc.stdin, 'y'
+        try:
+            print >>proc.stdin, 'y'
+        except IOError as e:
+            if e.errno == 32:
+                # broken pipe, probably that key is missing
+                return False
+            else:
+                pass
         self.context.expect(proc.stderr, 'GOT_IT')
         # expect the passphrase confirmation
         try:
