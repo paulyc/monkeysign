@@ -6,8 +6,10 @@ Release process
  * create and publish tarball
  * add announcement on website and blog
 
-Next major release objectives
-=============================
+1.0 blockers
+============
+
+The following needs to be fixed before 1.0 is released.
 
  o [anarcat] decide if we should copy gpg.conf in the tmp keyring
  * make options configuration accessible from the GUI (preferences?)
@@ -17,16 +19,14 @@ Next major release objectives
    - detect if the zbar libraries and X11 are present
  * merge monkeysign-scan and monkeysign-gen
    - display the qrcode in monkeysign-scan
+ * get rid of the pyme dependencies
+   - just removing monkeysign-gen should be enough
 
 Nice to haves
 =============
 
 The software should be tagged and release even without those.
 
- * merge with monkeysphere.info
-   - publish code upstream on monkeysphere.info
-   - make a webpage explaining common uses?
-   - or instead make an html version of the manpage?
  o [anarcat] make sure we can apply improvements to python-gnupg
  o [anarcat] decide to merge or split from pythong-gnupg
    - for merge arguments:
@@ -52,5 +52,3 @@ The software should be tagged and release even without those.
    - use threads?
    - move the TempKeyring class to a monkeysign lib?
  * see if monkeysphere is interested in automatically generated tarballs
- * get rid of the pyme dependencies
-   - just removing monkeysign-gen should be enough
