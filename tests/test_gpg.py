@@ -240,6 +240,17 @@ class TestKeyringWithKeys(TestKeyringBase):
         #self.assertTrue(self.fpr)
         pass
 
+    def test_multi_secrets(self):
+        """test if we get confused with multiple secret keys"""
+
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/323F39BD-secret.asc').read()))
+
+        keys = self.gpg.get_keys(None, True, False)
+        self.assertEqual(len(keys.keys()), 2)
+        #for fpr, key in keys.iteritems():
+        #    print >>sys.stderr, "key:", key
+
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
         self.key = OpenPGPkey()
