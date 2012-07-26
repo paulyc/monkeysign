@@ -6,6 +6,7 @@ monkeysign (0.3) unstable; urgency=low
   * mark this as architecture-independent, spotted by dkg
   * make setup executable
   * reference new homepage
+  * API change: functions return false instead of raising exceptions
 
  -- Antoine Beaupré <anarcat@debian.org>  Thu, 26 Jul 2012 12:41:54 -0400
 
