@@ -1,3 +1,14 @@
+monkeysign (0.3) unstable; urgency=low
+
+  * allow keyserver to be enabled while not specified
+  * do not set an empty keyserver, fixing weird keyserver errors on -scan
+  * fix window reference in UI, spotted by dkg
+  * mark this as architecture-independent, spotted by dkg
+  * make setup executable
+  * reference new homepage
+
+ -- Antoine Beaupré <anarcat@debian.org>  Thu, 26 Jul 2012 12:41:54 -0400
+
 monkeysign (0.2) unstable; urgency=low
 
   * only load information from private keys when doing key detection
