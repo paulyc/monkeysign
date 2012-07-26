@@ -329,8 +329,13 @@ class Keyring():
             if pattern: command += [pattern]
             self.context.call_command(command)
             if self.context.returncode == 0:
-                key = OpenPGPkey(self.context.stdout)
-                keys[key.fpr] = key
+                # discard trustdb data, first line of output
+                self.context.stdout = "\n".join(self.context.stdout.split("\n")[1:])
+                for keydata in self.context.stdout.split("pub:"):
+                    if not keydata: continue
+                    keydata = "pub:" + keydata
+                    key = OpenPGPkey(keydata)
+                    keys[key.fpr] = key
             elif self.context.returncode == 2:
                 return None
             else:
@@ -340,14 +345,17 @@ class Keyring():
             if pattern: command += [pattern]
             self.context.call_command(command)
             if self.context.returncode == 0:
-                key = OpenPGPkey(self.context.stdout)
-                # check if we already have that key, in which case we
-                # add to it instead of adding a new key
-                if key.fpr in keys:
-                    keys[key.fpr].parse_gpg_list(self.context.stdout)
-                    del key
-                else:
-                    keys[key.fpr] = key
+                for keydata in self.context.stdout.split("sec::"):
+                    if not keydata: continue
+                    keydata = "sec::" + keydata
+                    key = OpenPGPkey(keydata)
+                    # check if we already have that key, in which case we
+                    # add to it instead of adding a new key
+                    if key.fpr in keys:
+                        keys[key.fpr].parse_gpg_list(self.context.stdout)
+                        del key
+                    else:
+                        keys[key.fpr] = key
             elif self.context.returncode == 2:
                 return None
             else:
