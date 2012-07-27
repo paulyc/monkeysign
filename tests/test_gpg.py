@@ -264,5 +264,8 @@ sub:-:1024:1:894EE34814B46386:1342795252::::::e:""")
         actual = self.key.format_fpr()
         self.assertEqual(expected, actual)
 
+    def test_get_trust(self):
+        self.assertEqual('unknown', self.key.get_trust())
+
 if __name__ == '__main__':
     unittest.main()

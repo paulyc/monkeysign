@@ -524,11 +524,36 @@ class OpenPGPkey():
     # subkey does not expire.
     expiry = 0
 
+    # single-character trust status, see trust_map below for parsing
+    trust = None
+
     # the list of OpenPGPuids associated with this key
     uids = {}
 
     # the list of subkeys associated with this key
     subkeys = {}
+
+    trust_map = {'o': 'new', # this key is new to the system
+                 'i': 'invalid', # The key is invalid (e.g. due to a
+                                 # missing self-signature)
+                 'd': 'disabled', # The key has been disabled
+                                  # (deprecated - use the 'D' in field
+                                  # 12 instead)
+                 'r': 'revoked', # The key has been revoked
+                 'e': 'expired', # The key has expired
+                 '-': 'unknown', # Unknown trust (i.e. no value
+                                 # assigned)
+                 'q': 'undefined', # Undefined trust, '-' and 'q' may
+                                   # safely be treated as the same
+                                   # value for most purposes
+                 'n': 'none', # Don't trust this key at all
+                 'm': 'marginal', # There is marginal trust in this key
+                 'f': 'full', # The key is fully trusted
+                 'u': 'ultimate', # The key is ultimately trusted.
+                                  # This often means that the secret
+                                  # key is available, but any key may
+                                  # be marked as ultimately trusted.
+                 }
 
     def __init__(self, data=None):
         self.purpose = { 'encrypt': True, # if the public key part can be used to encrypt data
@@ -547,6 +572,9 @@ class OpenPGPkey():
             return self._keyid[-l:]
         return self.fpr[-l:]
 
+    def get_trust(self):
+        return OpenPGPkey.trust_map[self.trust]
+
     def parse_gpg_list(self, text):
         uidslist = []
         for block in text.split("\n"):
@@ -560,7 +588,7 @@ class OpenPGPkey():
             elif rectype == 'fpr':
                 self.fpr = record[9]
             elif rectype == 'pub':
-                (null, trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record
+                (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record
                 for p in self.purpose:
                     self.purpose[p] = p[0].lower() in purpose.lower()
             elif rectype == 'uid':
@@ -596,13 +624,13 @@ class OpenPGPkey():
         if uidslist: self.uidslist = uidslist
 
     def __str__(self):
-        ret = "pub    " + self.length + "R/" 
+        ret = "pub  [%s] %sR/" % (self.get_trust(), self.length)
         ret += self.keyid(8) + " " + self.creation
         if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
         ret += "\n"
         ret += '    Fingerprint = ' + self.format_fpr() + "\n"
         for uid in self.uidslist:
-            ret += "uid      [ " + uid.trust + " ] " + uid.uid + "\n"
+            ret += "uid      [%s] %s\n" % (uid.get_trust(), uid.uid)
         for subkey in self.subkeys.values():
             ret += "sub   " + subkey.length + "R/" + subkey.keyid(8) + " " + subkey.creation
             if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
@@ -632,6 +660,9 @@ class OpenPGPuid():
         self.creation = creation
         self.expire = expire
         self.uidhash = uidhash
+
+    def get_trust(self):
+        return OpenPGPkey.trust_map[self.trust]
 
 class GpgProcotolError(IOError):
     """simple exception raised when we have trouble talking with GPG
