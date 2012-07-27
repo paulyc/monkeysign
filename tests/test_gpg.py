@@ -138,19 +138,6 @@ class TestKeyringBasics(TestKeyringBase):
         k2 = self.gpg.export_data('96F47C6A')
         self.assertEqual(k1,k2)
 
-    def test_get_keys(self):
-        """test that we can list the keys after importing them
-
-        @todo we should check the data structure
-        """
-        #k1 = OpenPGPKey()
-        #k1.fingerprint = '8DC901CE64146C048AD50FBB792152527B75921E'
-        #k1.secret = False
-        # just a cute display for now
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        for fpr, key in self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E').iteritems():
-            print key
-
     def test_get_missing_secret_keys(self):
         """make sure we fail to get secret keys when they are missing"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
@@ -187,6 +174,15 @@ class TestKeyringWithKeys(TestKeyringBase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+    def test_get_keys(self):
+        """test that we can list the keys after importing them
+
+        @todo we should check the data structure
+        """
+        # just a cute display for now
+        for fpr, key in self.gpg.get_keys('96F47C6A').iteritems():
+            print key
 
     def test_sign_key_wrong_user(self):
         """make sure sign_key with a erroneous local-user fails
