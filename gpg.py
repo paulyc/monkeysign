@@ -629,8 +629,10 @@ class OpenPGPkey():
         if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
         ret += "\n"
         ret += '    Fingerprint = ' + self.format_fpr() + "\n"
+        i = 1
         for uid in self.uidslist:
-            ret += "uid      [%s] %s\n" % (uid.get_trust(), uid.uid)
+            ret += "uid %d      [%s] %s\n" % (i, uid.get_trust(), uid.uid)
+            i += 1
         for subkey in self.subkeys.values():
             ret += "sub   " + subkey.length + "R/" + subkey.keyid(8) + " " + subkey.creation
             if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
