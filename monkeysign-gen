@@ -4,11 +4,7 @@ import pygtk; pygtk.require('2.0')
 import gtk
 import pango
 
-from pyme import callbacks, core, errors
-from pyme.core import Data, Context, pubkey_algo_name
-from pyme import constants
-from pyme.constants import validity, protocol
-from pyme.constants.keylist import mode
+from gpg import Keyring
 
 import Image, StringIO
 from qrencode import encode as _qrencode
@@ -77,15 +73,9 @@ class MonkeysignGen(gtk.Window):
 		self.cb = gtk.ComboBox(self.ls)
 		self.cb.pack_start(cell, True)
 		self.cb.add_attribute(cell, 'text', 0)
-		for key in self.ultimate_keys:
-			keytext = key.subkeys[0].keyid[8:] + ':'
-			if key.uids[0].name:
-				keytext += ' ' + key.uids[0].name
-			if key.uids[0].comment:
-				keytext += ' (' + key.uids[0].comment + ')'
-			if key.uids[0].email:
-				keytext += ' <' + key.uids[0].email + '>'
-			self.ls.append([keytext,key.subkeys[0].fpr])
+		for fpr, key in self.ultimate_keys.iteritems():
+			keytext = key.keyid() + ':' + key.uidslist[0].uid
+			self.ls.append([keytext,fpr])
 		self.cb.connect("changed", self.key_changed)
 
 		# QR Code widget
@@ -144,14 +134,7 @@ class MonkeysignGen(gtk.Window):
 
 	def list_ultimate_keys(self):
 		"""Retrieve list of keys for which the user might want a QR code"""
-		keys = []
-		c = core.Context()
-		c.set_protocol(protocol.OpenPGP)
-		c.set_keylist_mode(mode.LOCAL)
-		for key in c.op_keylist_all(None, False):
-			if key.owner_trust == validity.ULTIMATE:
-				keys.append(key)
-		return keys
+		return Keyring().get_keys(None, True, False)
 
 	def make_qrcode(self, fingerprint):
 		"""Given a fingerprint, generate a QR code with appropriate prefix"""

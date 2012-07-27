@@ -20,8 +20,6 @@ The following needs to be fixed before 1.0 is released.
    - detect if the zbar libraries and X11 are present
  * merge monkeysign-scan and monkeysign-gen
    - display the qrcode in monkeysign-scan
- * get rid of the pyme dependencies
-   - just removing monkeysign-gen should be enough
  * send one email per uid even if we sign them all
    - involves calling export on a different gpg home for each uid in
    sign_keys (i think)
