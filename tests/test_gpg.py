@@ -253,15 +253,17 @@ class TestKeyringWithKeys(TestKeyringBase):
 
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
-        self.key = OpenPGPkey()
+        self.key = OpenPGPkey("""tru::1:1343350431:0:3:1:5
+pub:-:1024:1:86E4E70A96F47C6A:1342795252:::-:::scESC:
+fpr:::::::::3F94240C918E63590B04152E86E4E70A96F47C6A:
+uid:-::::1342795252::214CB0EDA28F3CA8754A4D43B7CDB7B114171B3C::Test Key <foo@example.com>:
+sub:-:1024:1:894EE34814B46386:1342795252::::::e:""")
 
     def test_no_dupe_uids(self):
-        self.key.uids[''] = OpenPGPuid('foo@example.com', 'u')
         key = OpenPGPkey()
         self.assertEqual(key.uids, {})
 
     def test_format_fpr(self):
-        self.key.fpr = '3F94240C918E63590B04152E86E4E70A96F47C6A'
         expected = '3F94 240C 918E 6359 0B04  152E 86E4 E70A 96F4 7C6A'
         actual = self.key.format_fpr()
         self.assertEqual(expected, actual)
