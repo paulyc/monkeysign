@@ -1,3 +1,14 @@
+monkeysign (0.4) unstable; urgency=low
+
+  * merge display and scanning of qrcodes
+  * really remove remaining pyme dependency
+  * list key indexes to allow choosing more clearly
+  * copy the gpg.conf in temporary keyring
+  * fix keyserver operation in GUI
+  * implement UID choosing in GUI
+
+ -- Antoine Beaupré <anarcat@debian.org>  Wed, 01 Aug 2012 02:33:29 -0400
+
 monkeysign (0.3) unstable; urgency=low
 
   * allow keyserver to be enabled while not specified
