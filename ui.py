@@ -184,22 +184,19 @@ class MonkeysignUi(object):
     def find_key(self):
         """find the key to be signed somewhere"""
         self.keyring.context.set_option('export-options', 'export-minimal')
-        if self.options.keyserver:
-            # 1.a) if allowed, from the keyservers
-            self.log('fetching key %s from keyservers' % self.pattern)
+        # 1.a) if allowed, from the keyservers
+        self.log('fetching key %s from keyservers' % self.pattern)
 
-            if not re.search('^[0-9A-F]*$', self.pattern): # this is not a keyid
-                # the problem here is that we need to implement --search-keys, and it's a pain
-                raise NotImplementedError('please provide a keyid or fingerprint, uids are not supported yet')
+        if not re.search('^[0-9A-F]*$', self.pattern): # this is not a keyid
+            # the problem here is that we need to implement --search-keys, and it's a pain
+            raise NotImplementedError('please provide a keyid or fingerprint, uids are not supported yet')
 
-            if not self.tmpkeyring.fetch_keys(self.pattern) \
-                    and not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern, True)):
-                self.abort('failed to get key %s from keyservers or from your keyring, aborting' % pattern)
-        else:
+        if not self.tmpkeyring.fetch_keys(self.pattern):
+            self.log('failed to get key %s from keyservers' % pattern)
             # 1.b) from the local keyring (@todo try that first?)
             self.log('looking for key %s in your keyring' % self.pattern)
             if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
-                self.abort('could not find key %s in your keyring, and no keyserver defined' % self.pattern)
+                self.abort('could not find key %s in your keyring' % self.pattern)
 
 
     def copy_secrets(self):
