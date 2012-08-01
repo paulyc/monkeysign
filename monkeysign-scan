@@ -79,6 +79,8 @@ class MonkeysignScan(gtk.Window):
                 <menu action="Edit">
                         <menuitem action="Copy"/>
                 </menu>
+                <menu action="Keys">
+                </menu>
         </menubar>
         </ui>'''
 
@@ -103,11 +105,11 @@ class MonkeysignScan(gtk.Window):
                                 ('Print', gtk.STOCK_PRINT, '_Print', None, None, self.print_op),
                                 ('Edit', None, '_Edit'),
                                 ('Copy', gtk.STOCK_COPY, '_Copy', None, 'Copy image to clipboard', self.clip_qrcode),
+                                ('Keys', None, '_Keys'),
                                 ('Quit', gtk.STOCK_QUIT, '_Quit', None, None, self.destroy),
                                 ])
                 uimanager.insert_action_group(actiongroup, 0)
                 uimanager.add_ui_from_string(self.ui)
-                menubar = uimanager.get_widget('/MenuBar')
 
                 # Video device list combo box
                 video_found = False
@@ -152,16 +154,21 @@ class MonkeysignScan(gtk.Window):
                         camframe.add(vbox)
 
 		# Ultimate keys list
-                self.ultimate_keys = Keyring().get_keys(None, True, False) # Keep ultimately trusted keys in memory
+                self.ultimate_keys = Keyring().get_keys(None, True, False).values() # Keep ultimately trusted keys in memory
 		cell = gtk.CellRendererText()
 		cell.props.ellipsize = pango.ELLIPSIZE_END
-		self.ls = gtk.ListStore(str, str)
-		self.cb = gtk.ComboBox(self.ls)
-		self.cb.pack_start(cell, True)
-		self.cb.add_attribute(cell, 'text', 0)
-		for fpr, key in self.ultimate_keys.iteritems():
+                i = 0
+                actions = []
+		for key in self.ultimate_keys:
 			keytext = key.keyid() + ':' + key.uidslist[0].uid
-			self.ls.append([keytext,fpr])
+                        uimanager.add_ui_from_string('<ui><menubar name="MenuBar"><menu action="Keys"><menuitem action="%s"/></menu></menubar></ui>' % key.fpr)
+                        actions += [(key.fpr, None, keytext, None, None, i)]
+                        i += 1
+                actiongroup.add_radio_actions(actions, 0, self.key_changed, actions)
+                # the radio buttons to choose the key to display
+                self.keys_radio = actiongroup.get_action(self.ultimate_keys[0].fpr)
+                assert(self.keys_radio)
+                self.keys_radio.activate()
 
                 # QR code display
                 self.pixbuf = None # Hold QR code in pixbuf
@@ -178,9 +185,6 @@ class MonkeysignScan(gtk.Window):
 
 		self.last_allocation = self.get_allocation()
 
-		# Select first key
-		self.cb.set_active(0)
-
                 # Setup window layout
                 mainvbox = gtk.VBox()
                 mainhbox = gtk.HBox()
@@ -188,18 +192,16 @@ class MonkeysignScan(gtk.Window):
                 lvbox.pack_start(self.video_cb, False, False)
                 lvbox.pack_start(self.zbarframe, False, False, 5)
                 mainhbox.pack_start(lvbox, False, False, 10)
-                mainvbox.pack_start(menubar, False, False)
+                mainvbox.pack_start(uimanager.get_widget('/MenuBar'), False, False)
                 mainvbox.pack_start(mainhbox, False, False, 10)
                 self.add(mainvbox)
 
 		# Setup window layout
 		hbox = gtk.HBox(False, 2)
 		vbox = gtk.VBox(False, 2)
-		vbox.pack_start(self.cb, False, False, 3)
 		self.swin = gtk.ScrolledWindow()
 		self.swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.swin.add_with_viewport(self.qrcode)
-		self.cb.connect("changed", self.key_changed)
 		vbox.pack_start(self.swin, True, True, 0)
 		hbox_btns = gtk.HBox(False, 2)
 		hbox_btns.pack_start(save, False, False, 3)
@@ -208,7 +210,6 @@ class MonkeysignScan(gtk.Window):
 		halign.add(hbox_btns)
 		vbox.pack_start(halign, False, False, 3)
 		hbox.pack_start(vbox, True, True, 10)
-		mainhbox.pack_start(menubar, False)
 		mainhbox.pack_start(hbox, True, True, 10)
 
                 # Start the show
@@ -220,10 +221,14 @@ class MonkeysignScan(gtk.Window):
 			self.last_allocation = self.get_allocation()
 			self.key_changed()
 
-	def key_changed(self, widget=None):
+        def key_changed(self, action=None, current=None, user_data=None):
 		"""When another key is chosen, generate new QR code"""
-		i = self.cb.get_active_iter()
-		fpr = self.cb.get_model().get_value(i, 1)
+                if action:
+                        i = action.get_current_value()
+                else:
+                        # probably initialising?
+                        i = 0
+                fpr = self.ultimate_keys[i].fpr
 		self.pixbuf = self.image_to_pixbuf(self.make_qrcode(fpr))
 		self.qrcode.set_from_pixbuf(self.pixbuf)
 
@@ -251,7 +256,7 @@ class MonkeysignScan(gtk.Window):
 
 	def save_qrcode(self, widget=None):
 		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
-		key = self.ultimate_keys[self.cb.get_active()]
+		key = self.ultimate_keys[self.keys_radio.get_active()]
 		image = self.make_qrcode(key.subkeys[0].fpr)
 		dialog = gtk.FileChooserDialog("Save QR code", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
 		dialog.set_default_response(gtk.RESPONSE_OK)
@@ -270,7 +275,7 @@ class MonkeysignScan(gtk.Window):
 		self.clip.set_image(self.pixbuf)
 
 	def print_op(self, widget=None):
-		keyid = self.ultimate_keys[self.cb.get_active()].subkeys[0].keyid[8:]
+		keyid = self.ultimate_keys[self.keys_radio.get_active()].subkeys[0].keyid[8:]
 		print_op = gtk.PrintOperation()
 		print_op.set_job_name('Monkeysign-'+keyid)
 		print_op.set_n_pages(1)
