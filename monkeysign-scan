@@ -151,14 +151,8 @@ class MonkeysignScan(gtk.Window):
                         vbox.set_size_request(320, 320)
                         camframe.add(vbox)
 
-                # QR code display
-                self.pixbuf = None # Hold QR code in pixbuf
-                self.last_allocation = gtk.gdk.Rectangle() # Remember last allocation when resizing
-                self.ultimate_keys = Keyring().get_keys(None, True, False) # Keep ultimately trusted keys in memory
-                self.printsettings = None # Initialise print settings
-                self.connect("expose-event", self.expose_event) # hook up to resize events
-
 		# Ultimate keys list
+                self.ultimate_keys = Keyring().get_keys(None, True, False) # Keep ultimately trusted keys in memory
 		cell = gtk.CellRendererText()
 		cell.props.ellipsize = pango.ELLIPSIZE_END
 		self.ls = gtk.ListStore(str, str)
@@ -168,6 +162,13 @@ class MonkeysignScan(gtk.Window):
 		for fpr, key in self.ultimate_keys.iteritems():
 			keytext = key.keyid() + ':' + key.uidslist[0].uid
 			self.ls.append([keytext,fpr])
+
+                # QR code display
+                self.pixbuf = None # Hold QR code in pixbuf
+                self.last_allocation = gtk.gdk.Rectangle() # Remember last allocation when resizing
+                self.printsettings = None # Initialise print settings
+                self.connect("expose-event", self.expose_event) # hook up to resize events
+
                 self.qrcode = gtk.Image() # QR Code widget
                 save = gtk.Button(stock=gtk.STOCK_SAVE) # Save button
                 save.connect("clicked", self.save_qrcode);
