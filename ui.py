@@ -248,6 +248,9 @@ Sign all identities? [y/N] \
                     self.options.to = keys[key].uids.values()[0].uid
             else:
                 pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
+                if not pattern:
+                    self.log("no identity chosen")
+                    return False
                 if not self.options.to:
                     self.options.to = pattern
 

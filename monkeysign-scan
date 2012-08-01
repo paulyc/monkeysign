@@ -65,6 +65,35 @@ gpg-agent configure to prompt for passwords.
                 destroy()
                 self.window.resume_capture()
 
+        def choose_uid(self, prompt, key):
+                md = gtk.Dialog("Choose UID", self.window, gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+                # simple explanation
+                l = gtk.Label("Choose the UID to sign")
+                md.vbox.pack_start(l)
+                l.show()
+                # list of uids
+                self.uid_radios = None
+                for uid in key.uidslist:
+                        r = gtk.RadioButton(self.uid_radios, uid.uid)
+                        r.show()
+                        md.vbox.pack_start(r)
+                        if self.uid_radios is None:
+                                self.uid_radios = r
+                                self.uid_radios.set_active(True)
+
+                gtk.gdk.threads_enter()
+                response = md.run()
+                gtk.gdk.threads_leave()
+
+                label = None
+                if response == gtk.RESPONSE_ACCEPT:
+                        self.log("okay, signing")
+                        label = [ r for r in self.uid_radios.get_group() if r.get_active()][0].get_label()
+                else:
+                        self.log("user denied signature")
+                md.destroy()
+                return label
+
 class MonkeysignScan(gtk.Window):
 
         ui = '''<ui>
