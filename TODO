@@ -50,4 +50,3 @@ The software should be tagged and release even without those.
    - support streams of I/O
    - use threads?
    - move the TempKeyring class to a monkeysign lib?
- * see if monkeysphere is interested in automatically generated tarballs
