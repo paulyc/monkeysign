@@ -31,6 +31,8 @@ import subprocess
 from optparse import OptionParser, IndentedHelpFormatter
 import sys
 import re
+import os
+import shutil
 
 class MonkeysignUi(object):
     """User interface abstraction for monkeysign.
@@ -121,6 +123,19 @@ class MonkeysignUi(object):
             self.tmpkeyring.context.debug = sys.stderr
         if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
 
+        # copy the gpg.conf from the real keyring
+        home = os.environ['HOME'] + '/.gnupg'
+        if 'GNUPGHOME' in os.environ:
+            home = os.environ['GNUPGHOME']
+        try:
+            shutil.copy(home + '/gpg.conf', self.tmpkeyring.tmphomedir)
+            self.log("copied your gpg.conf in temporary keyring")
+        except IOError as e:
+            # no such file or directory is alright: it means the use
+            # has no gpg.conf (because we are certain the tmphomedir
+            # exists at this point)
+            if e.errno != 2:
+                pass
         try:
             self.main(pattern, options)
         except NotImplementedError as e:

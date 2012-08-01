@@ -12,7 +12,6 @@ Release process
 
 The following needs to be fixed before 1.0 is released.
 
- o [anarcat] decide if we should copy gpg.conf in the tmp keyring
  * make options configuration accessible from the GUI (preferences?)
  * add a manpage
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
