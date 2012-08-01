@@ -50,10 +50,10 @@ gpg-agent configure to prompt for passwords.
         def yes_no(self, prompt, default = None):
                 """we ignore default! gotta fix that"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, prompt)
-                self.window.md += md
                 gtk.gdk.threads_enter()
                 response = md.run()
                 gtk.gdk.threads_leave()
+                md.destroy()
                 return response == gtk.RESPONSE_YES
 
         def abort(self, prompt):
@@ -62,7 +62,7 @@ gpg-agent configure to prompt for passwords.
                 gtk.gdk.threads_enter()
                 md.run()
                 gtk.gdk.threads_leave()
-                destroy()
+                md.destroy()
                 self.window.resume_capture()
 
         def choose_uid(self, prompt, key):
