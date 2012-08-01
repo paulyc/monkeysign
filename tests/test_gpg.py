@@ -150,6 +150,11 @@ class TestKeyringBasics(TestKeyringBase):
         self.secret = self.gpg.export_data('96F47C6A', True)
         self.assertTrue(self.secret)
 
+    def test_list_imported_secrets(self):
+        """make sure we can print imported secrets"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.get_keys(None, True, False))
+
     def test_empty_keyring(self):
         """a test should work on an empty keyring
 
@@ -266,6 +271,16 @@ sub:-:1024:1:894EE34814B46386:1342795252::::::e:""")
 
     def test_get_trust(self):
         self.assertEqual('unknown', self.key.get_trust())
+
+class TestSecretOpenPGPkey(unittest.TestCase):
+    def setUp(self):
+        self.key = OpenPGPkey("""sec::1024:17:586073B34023702F:1110320887:1268438180:::::::::
+fpr:::::::::C9E1F1230DBE47D57BAB3C60586073B34023702F:
+uid:::::::2451063FCBB4D262938687C2D8F6B949B0A3AF01::The Anarcat <anarcat@anarcat.ath.cx>:
+ssb::2048:16:C016FF12EB8D47BB:1110320966::::::::::""")
+
+    def test_print(self):
+        print self.key
 
 if __name__ == '__main__':
     unittest.main()

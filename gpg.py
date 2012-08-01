@@ -591,6 +591,8 @@ class OpenPGPkey():
                 (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record
                 for p in self.purpose:
                     self.purpose[p] = p[0].lower() in purpose.lower()
+                if self.trust == '':
+                    self.trust = '-'
             elif rectype == 'uid':
                 (rectype, trust, null  , null, null, creation, expiry, uidhash, null, uid, null) = record
                 uid = OpenPGPuid(uid, trust, creation, expiry, uidhash)
@@ -603,8 +605,10 @@ class OpenPGPkey():
                     subkey.purpose[p] = p[0].lower() in purpose.lower()
                 self.subkeys[subkey._keyid] = subkey
             elif rectype == 'sec':
-                (null, trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
+                (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
                 self.secret = True
+                if self.trust == '':
+                    self.trust = '-'
             elif rectype == 'ssb':
                 subkey = OpenPGPkey()
                 (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime, wtf, wtf, wtf) = record
@@ -659,6 +663,8 @@ class OpenPGPuid():
     def __init__(self, uid, trust, creation = 0, expire = None, uidhash = ''):
         self.uid = uid
         self.trust = trust
+        if self.trust == '':
+            self.trust = '-'
         self.creation = creation
         self.expire = expire
         self.uidhash = uidhash
