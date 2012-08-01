@@ -60,7 +60,7 @@ gpg-agent configure to prompt for passwords.
                 """we don't actually abort, just exit threads and resume capture"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, prompt)
                 gtk.gdk.threads_enter()
-                run()
+                md.run()
                 gtk.gdk.threads_leave()
                 destroy()
                 self.window.resume_capture()
