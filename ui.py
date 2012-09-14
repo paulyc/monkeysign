@@ -187,7 +187,7 @@ class MonkeysignUi(object):
         # 1.a) if allowed, from the keyservers
         self.log('fetching key %s from keyservers' % self.pattern)
 
-        if not re.search('^[0-9A-F]*$', self.pattern): # this is not a keyid
+        if not re.search('^[0-9A-F]*$', self.pattern, re.IGNORECASE): # this is not a keyid
             # the problem here is that we need to implement --search-keys, and it's a pain
             raise NotImplementedError('please provide a keyid or fingerprint, uids are not supported yet')
 
