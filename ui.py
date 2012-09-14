@@ -280,7 +280,7 @@ Sign all identities? [y/N] \
             # introduction and the signed key material
             text = MIMEText('your pgp key, yay', 'plain', 'utf-8')
             filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
-            key = MIMEBase('application', 'php-keys', name=filename)
+            key = MIMEBase('application', 'pgp-keys', name=filename)
             key.add_header('Content-Disposition', 'attachment', filename=filename)
             key.add_header('Content-Transfer-Encoding', '7bit')
             key.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
