@@ -10,7 +10,12 @@ Release process
 1.0 blockers
 ============
 
-The following needs to be fixed before 1.0 is released.
+ * -l (local sign) support
+
+2.0 blockers
+============
+
+The following needs to be fixed before 2.0 is released.
 
  * make options configuration accessible from the GUI (preferences?)
  * add a manpage
@@ -21,10 +26,14 @@ The following needs to be fixed before 1.0 is released.
    - involves calling export on a different gpg home for each uid in
    sign_keys (i think)
 
-Nice to haves
-=============
+The merge question
+==================
 
-The software should be tagged and release even without those.
+This software has a primitive GPG Python API that duplicates the work
+of at least two other libraries. The `pythong-gnupg` library is
+particularily similar and communication was started to consider the
+possibility of merging. This section details how we should deal with
+this.
 
  o [anarcat] make sure we can apply improvements to python-gnupg
  o [anarcat] decide to merge or split from pythong-gnupg
