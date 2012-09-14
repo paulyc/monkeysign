@@ -384,7 +384,7 @@ class Keyring():
         else:
             return False
 
-    def sign_key(self, pattern, signall = False):
+    def sign_key(self, pattern, signall = False, local = False):
         """sign a OpenPGP public key
 
         By default it looks up and signs a specific uid, but it can
@@ -402,8 +402,8 @@ class Keyring():
         # we iterate over the keys matching the provided
         # keyid, but we should really load those uids from the
         # output of --sign-key
-        if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command(['sign-key', pattern])
-        proc = subprocess.Popen(self.context.build_command(['sign-key', pattern]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+        if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command([['sign-key', 'lsign-key'][local], pattern])
+        proc = subprocess.Popen(self.context.build_command([['sign-key', 'lsign-key'][local], pattern]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
 
         # if there are multiple uids to sign, we'll get this point, and a whole other interface
         multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')

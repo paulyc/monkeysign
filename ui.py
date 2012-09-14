@@ -113,9 +113,6 @@ class MonkeysignUi(object):
         self.pattern = pattern
         self.signed_keys = {}
 
-        if options.local:
-            self.abort('local key signing not implemented yet')
-
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
         self.keyring = Keyring() # the real keyring
@@ -261,6 +258,14 @@ Sign all identities? [y/N] \
                     self.warn('key signing failed')
                 else:
                     self.signed_keys[key] = keys[key]
+                if self.options.local:
+                    self.tmpkeyring.context.set_option('export-options', 'export-minimal')
+
+                    # this is inefficient - we could save a copy if we would fetch the key directly
+                    if not self.keyring.import_data(self.tmpkeyring.export_data(self.pattern)):
+                        self.abort('could not import public key back into public keyring, something is wrong')
+                    if not self.keyring.sign_key(pattern, alluids, True):
+                        self.warn('local key signing failed')
 
     def export_key(self):
         self.tmpkeyring.context.set_option('armor')
