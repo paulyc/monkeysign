@@ -284,7 +284,8 @@ Sign all identities? [y/N] \
             key.add_header('Content-Disposition', 'attachment', filename=filename)
             key.add_header('Content-Transfer-Encoding', '7bit')
             key.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
-            message = MIMEMultipart('mixed', [text, data])
+            key.set_payload(data)
+            message = MIMEMultipart('mixed', None, [text, key])
             encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.pattern)
 
             # the second layer up, made of two parts: a version number
