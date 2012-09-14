@@ -118,6 +118,7 @@ class MonkeysignUi(object):
         self.keyring = Keyring() # the real keyring
         if options.debug:
             self.tmpkeyring.context.debug = sys.stderr
+            self.keyring.context.debug = sys.stderr
         if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
 
         # copy the gpg.conf from the real keyring
