@@ -4,7 +4,8 @@ Release process
  * make sure tests pass
  * update version in gpg.py and run dch -i
  * signed and annotated tag
- * create and publish tarball
+ * build and upload Debian package
+ * publish tarball
  * add announcement on website and blog
 
 1.0 blockers
