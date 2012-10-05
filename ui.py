@@ -260,6 +260,7 @@ Sign all identities? [y/N] \
                 else:
                     self.signed_keys[key] = keys[key]
                 if self.options.local:
+                    self.log("making a non-exportable signature")
                     self.tmpkeyring.context.set_option('export-options', 'export-minimal')
 
                     # this is inefficient - we could save a copy if we would fetch the key directly
