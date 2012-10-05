@@ -24,7 +24,7 @@ exchanged keys with!
     author_email='anarcat@debian.org',
     url='http://web.monkeysphere.info/',
     py_modules=['gpg', 'ui'],
-    scripts=['monkeysign-cli', 'monkeysign-scan'],
+    scripts=['msign-cli', 'msign'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
