@@ -37,11 +37,9 @@ script assumes you have gpg-agent configure to prompt for passwords."""
 
         # 3.2. export and encrypt the signature
         # 3.3. mail the key to the user
-        self.export_key()
-
         # 3.4. optionnally (-l), create a local signature and import in
         #local keyring
-        # @todo
+        self.export_key()
 
         # 4. trash the temporary keyring
         # implicit
