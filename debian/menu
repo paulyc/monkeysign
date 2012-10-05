@@ -1,2 +1,2 @@
 ?package(monkeysign):needs="X11" section="Applications/System/Security"\
-  title="monkeysign" command="/usr/bin/monkeysign-scan"
+  title="monkeysign" command="/usr/bin/msign"
