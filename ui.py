@@ -166,7 +166,9 @@ class MonkeysignUi(object):
         sys.exit(1)
 
     def warn(self, message):
-        """display an error message"""
+        """display an warning message
+
+this should not interrupt the flow of the program, but must be visible to the user"""
         print message
 
     def log(self, message):
