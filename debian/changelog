@@ -1,3 +1,15 @@
+monkeysign (0.5) unstable; urgency=low
+
+  * non-exportable signatures (--local) support
+  * simplify the monkeysign-scan UI
+  * rename monkeysign-scan to msign and monkeysign-cli to msign-cli to
+    avoid tab-completion conflict with monkeysphere executables, at the
+    request of Monkeysphere developers
+  * usability: make sure arguments are case-insensitive
+  * fix email format so it's actually readable
+
+ -- Antoine Beaupré <anarcat@debian.org>  Fri, 05 Oct 2012 11:14:37 +0200
+
 monkeysign (0.4) unstable; urgency=low
 
   * merge display and scanning of qrcodes
