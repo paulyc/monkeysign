@@ -314,18 +314,18 @@ Sign all identities? [y/N] \
             msg['To'] = self.options.to
 
             if self.options.smtpserver is not None:
-                self.warn('sending message through SMTP server %s to %s' % (self.options.smtpserver, self.options.to))
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
                 server.sendmail(from_user, self.options.to, msg.as_string())
                 server.set_debuglevel(1)
                 server.quit()
+                self.warn('sent message through SMTP server %s to %s' % (self.options.smtpserver, self.options.to))
                 return True
             elif not self.options.nomail:
-                self.warn('sending message through sendmail to ' + self.options.to)
                 if self.options.dryrun: return True
                 p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
                 p.communicate(msg.as_string())
+                self.warn('sent message through sendmail to ' + self.options.to)
             else:
                 # okay, no mail, just dump the exported key then
                 self.warn("""\
