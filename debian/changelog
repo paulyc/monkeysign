@@ -1,3 +1,12 @@
+monkeysign (0.6) unstable; urgency=low
+
+  * fix warnings in the graphical interface
+  * make qr-code detection be case-insensitive
+  * fix syntax error
+  * follow executable renames properly
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 06 Oct 2012 16:08:48 +0200
+
 monkeysign (0.5) unstable; urgency=low
 
   * non-exportable signatures (--local) support
