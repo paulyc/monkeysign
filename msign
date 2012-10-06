@@ -65,6 +65,14 @@ gpg-agent configure to prompt for passwords.
                 md.destroy()
                 self.window.resume_capture()
 
+        def warn(self, prompt):
+                """display the message but let things go"""
+                md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK, prompt)
+                gtk.gdk.threads_enter()
+                md.run()
+                gtk.gdk.threads_leave()
+                md.destroy()
+
         def choose_uid(self, prompt, key):
                 md = gtk.Dialog("Choose UID", self.window, gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
                 # simple explanation
