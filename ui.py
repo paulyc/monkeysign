@@ -231,7 +231,7 @@ this should not interrupt the flow of the program, but must be visible to the us
 
         keys = self.tmpkeyring.get_keys(self.pattern)
 
-        self.log("found", len(keys), "keys matching your request")
+        self.log("found %d keys matching your request" % len(keys))
 
         for key in keys:
             alluids = self.yes_no("""\
