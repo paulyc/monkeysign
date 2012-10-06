@@ -78,6 +78,25 @@ class MonkeysignUi(object):
     # temporary, to keep track of the OpenPGPkey we are signing
     signing_key = None
 
+    # the email subject
+    # @todo make this translatable
+    email_subject = "Your signed OpenPGP key"
+
+    # the email body
+    # @todo make this translatable
+    email_body = """
+Please find attached your signed PGP key. You can import the signed
+key by running each through `gpg --import`.
+
+Note that your key was not uploaded to any keyservers. If you want
+this new signature to be available to others, please upload it
+yourself.  With GnuPG this can be done using:
+
+    gpg --keyserver pool.sks-keyservers.net --send-key <keyid>
+
+Regards,
+"""
+
     @classmethod
     def parse_args(self):
         """parse the commandline arguments"""
@@ -287,7 +306,7 @@ Sign all identities? [y/N] \
             # first layer, seen from within:
             # an encrypted MIME message, made of two parts: the
             # introduction and the signed key material
-            text = MIMEText('your pgp key, yay', 'plain', 'utf-8')
+            text = MIMEText(self.email_body, 'plain', 'utf-8')
             filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
             key = MIMEBase('application', 'pgp-keys', name=filename)
             key.add_header('Content-Disposition', 'attachment', filename=filename)
@@ -307,7 +326,7 @@ Sign all identities? [y/N] \
             p2.add_header('Content-Transfer-Encoding', '7bit')
             p2.set_payload(encrypted)
             msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
-            msg['Subject'] = 'Your signed OpenPGP key'
+            msg['Subject'] = self.email_subject
             msg['From'] = from_user
             msg.preamble = 'This is a multi-part message in PGP/MIME format...'
             # take the first uid, not ideal
