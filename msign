@@ -401,7 +401,7 @@ class MonkeysignScan(gtk.Window):
                         self.dialog.vbox.pack_start(self.progressbar, False, False, 5)
                         self.dialog.set_size_request(250, 100)
                         self.keep_pulsing = True
-                        proc = subprocess.Popen(command)
+                        proc = subprocess.Popen(command, 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
                         gobject.child_watch_add(proc.pid, watch_out_callback)
                         gobject.timeout_add(100, update_progress_callback)
                         if self.dialog.run() == gtk.RESPONSE_CANCEL:
