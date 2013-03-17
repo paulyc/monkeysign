@@ -169,7 +169,7 @@ class Context():
         we can optionnally watch for a confirmation pattern on the
         statusfd.
         """
-        proc = subprocess.Popen(self.build_command(command), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+        proc = subprocess.Popen(self.build_command(command), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         (self.stdout, self.stderr) = proc.communicate(stdin)
         self.returncode = proc.returncode
         if self.debug:
@@ -403,7 +403,7 @@ class Keyring():
         # keyid, but we should really load those uids from the
         # output of --sign-key
         if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command([['sign-key', 'lsign-key'][local], pattern])
-        proc = subprocess.Popen(self.context.build_command([['sign-key', 'lsign-key'][local], pattern]), 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
+        proc = subprocess.Popen(self.context.build_command([['sign-key', 'lsign-key'][local], pattern]), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # if there are multiple uids to sign, we'll get this point, and a whole other interface
         multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
