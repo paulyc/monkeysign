@@ -50,7 +50,9 @@ this.
  * if merging, apply those improvements to python-gnupg
    - add key signing support
    - split the "context" and "keyring" classes
-   - monkeysign also needs to be ported
+   - port monkeysign to python-gnupg
+   - make sure python-gnupg is secure (ie. that it doesn't use
+     popen([...], shell=True), see https://github.com/isislovecruft/python-gnupg
  * if not merging, take those improvements from python-gnupg
    - improve test suite
    - add abstract status handlers that react on a main read loop
