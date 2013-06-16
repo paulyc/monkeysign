@@ -263,8 +263,6 @@ Sign all identities? [y/N] \
 
             if alluids:
                 pattern = keys[key].fpr
-                if not self.options.to:
-                    self.options.to = keys[key].uids.values()[0].uid
             else:
                 pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
                 if not pattern:
@@ -300,7 +298,8 @@ Sign all identities? [y/N] \
             from_user = self.signing_key.uidslist[0].uid
 
         if len(self.signed_keys) < 1: self.warn('no key signed, nothing to export')
-        for fpr in self.signed_keys:
+        
+        for fpr, key in self.signed_keys.items():
             data = self.tmpkeyring.export_data(fpr)
 
             # first layer, seen from within:
@@ -308,12 +307,12 @@ Sign all identities? [y/N] \
             # introduction and the signed key material
             text = MIMEText(self.email_body, 'plain', 'utf-8')
             filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
-            key = MIMEBase('application', 'pgp-keys', name=filename)
-            key.add_header('Content-Disposition', 'attachment', filename=filename)
-            key.add_header('Content-Transfer-Encoding', '7bit')
-            key.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
-            key.set_payload(data)
-            message = MIMEMultipart('mixed', None, [text, key])
+            keypart = MIMEBase('application', 'pgp-keys', name=filename)
+            keypart.add_header('Content-Disposition', 'attachment', filename=filename)
+            keypart.add_header('Content-Transfer-Encoding', '7bit')
+            keypart.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
+            keypart.set_payload(data)
+            message = MIMEMultipart('mixed', None, [text, keypart])
             encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.pattern)
 
             # the second layer up, made of two parts: a version number
@@ -330,27 +329,27 @@ Sign all identities? [y/N] \
             msg['From'] = from_user
             msg.preamble = 'This is a multi-part message in PGP/MIME format...'
             # take the first uid, not ideal
-            msg['To'] = self.options.to
+            msg['To'] = self.options.to or key.uids.values()[0].uid
 
             if self.options.smtpserver is not None:
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
-                server.sendmail(from_user, self.options.to, msg.as_string())
+                server.sendmail(from_user, msg['To'], msg.as_string())
                 server.set_debuglevel(1)
                 server.quit()
-                self.warn('sent message through SMTP server %s to %s' % (self.options.smtpserver, self.options.to))
+                self.warn('sent message through SMTP server %s to %s' % (self.options.smtpserver, msg['To']))
                 return True
             elif not self.options.nomail:
                 if self.options.dryrun: return True
                 p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
                 p.communicate(msg.as_string())
-                self.warn('sent message through sendmail to ' + self.options.to)
+                self.warn('sent message through sendmail to ' + msg['To'])
             else:
                 # okay, no mail, just dump the exported key then
                 self.warn("""\
-not sending email, as requested, here's the signed key:
+not sending email to %s, as requested, here's the signed key:
 
-%s""" % data)
+%s""" % (msg['To'], data))
 
 class NowrapHelpFormatter(IndentedHelpFormatter):
     """A non-wrapping formatter for OptionParse."""
