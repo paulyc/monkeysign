@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # gpg interface
-from gpg import Keyring, TempKeyring
+from monkeysign.gpg import Keyring, TempKeyring
 
 # mail functions
 from email.mime.multipart import MIMEMultipart

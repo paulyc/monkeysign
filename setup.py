@@ -3,7 +3,7 @@
 
 from distutils.core import setup
 
-from gpg import __version__ as version
+from monkeysign import __version__ as version
 
 setup(name = 'monkeysign',
     description='OpenPGP key exchange for humans',
@@ -23,7 +23,7 @@ exchanged keys with!
     author='Antoine Beaupré',
     author_email='anarcat@debian.org',
     url='http://web.monkeysphere.info/',
-    py_modules=['gpg', 'ui'],
+    packages=['monkeysign'],
     scripts=['msign-cli', 'msign'],
     classifiers=[
         'Development Status :: 4 - Beta',

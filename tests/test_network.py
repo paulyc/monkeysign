@@ -12,7 +12,7 @@ import unittest
 import sys, os
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from gpg import TempKeyring
+from monkeysign.gpg import TempKeyring
 
 class TestGpgNetwork(unittest.TestCase):
     """Seperate test cases for functions that hit the network"""

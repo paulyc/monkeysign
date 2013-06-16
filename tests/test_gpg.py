@@ -13,7 +13,7 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid, GpgProcotolError
+from monkeysign.gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid, GpgProcotolError
 
 class TestContext(unittest.TestCase):
     """Tests for the Context class.
