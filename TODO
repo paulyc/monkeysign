@@ -2,7 +2,7 @@ Release process
 ===============
 
  * make sure tests pass
- * update version in gpg.py and run dch -i
+ * update version in monkeysign/__init__.py and run dch -i
  * signed and annotated tag
  * build and upload Debian package
  * publish tarball
@@ -11,8 +11,9 @@ Release process
 1.0 blockers
 ============
 
- * merge monkeysign-scan and monkeysign-cli
-   - detect if the zbar libraries and X11 are present
+ * send one email per uid even if we sign them all
+   - involves calling export on a different gpg home for each uid in
+   sign_keys (i think)
 
 2.0 blockers
 ============
@@ -22,9 +23,6 @@ The following needs to be fixed before 2.0 is released.
  * make options configuration accessible from the GUI (preferences?)
  * add a manpage
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
- * send one email per uid even if we sign them all
-   - involves calling export on a different gpg home for each uid in
-   sign_keys (i think)
 
 The merge question
 ==================
