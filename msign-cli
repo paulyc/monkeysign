@@ -1,14 +1,1 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import sys
-import os
-
-from monkeysign.cli import MonkeysignCli
-
-if __name__ == '__main__':
-    (options, args) = MonkeysignCli.parse_args()
-    if len(args) != 1:
-        print >>sys.stderr, 'wrong number of arguments'
-        sys.exit(1)
-    MonkeysignCli(args[0], options)
+msign

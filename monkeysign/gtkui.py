@@ -32,9 +32,7 @@ that person owns the identity signed. This script assumes you have
 gpg-agent configure to prompt for passwords.
 """
 
-        def main(self, pattern, options = {}):
-                MonkeysignUi.main(self, pattern, options)
-
+        def main(self):
                 # threads *must* be properly initialized to use zbarpygtk
                 gtk.gdk.threads_init()
                 gtk.gdk.threads_enter()

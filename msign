@@ -1,8 +1,19 @@
 #!/usr/bin/env python
 
-from monkeysign.gtkui import MonkeysignScanUi
+import sys
+import os
+
+p, m = os.path.split(sys.argv[0])
+
+if m == 'msign-cli':
+    from monkeysign.cli import MonkeysignCli as ui
+else:
+    try:
+        from monkeysign.gtkui import MonkeysignScanUi as ui
+    except (ImportError):
+        print "some modules missing for scanning functionality, going commandline-only"
+        from monkeysign.cli import MonkeysignCli as ui
 
 if __name__ == '__main__':
-        (options, args) = MonkeysignScanUi.parse_args()
-        # we ignore the key passed on the commandline
-        MonkeysignScanUi(None, options)
+    (options, args) = ui.parse_args()
+    ui(options, args)

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import sys
+
 from monkeysign.ui import MonkeysignUi
 
 class MonkeysignCli(MonkeysignUi):
@@ -15,11 +17,14 @@ script assumes you have gpg-agent configure to prompt for passwords."""
     usage = usage='%prog [options] <keyid>'
     epilog='<keyid>: a GPG fingerprint or key id'
 
-    def main(self, pattern, options = {}):
+    def main(self):
         """main code execution loop
 
         we expect to have the commandline parsed for us
         """
+        if len(self.pattern) != 1:
+            sys.exit('wrong number of arguments')
+
         # 1. fetch the key into a temporary keyring
         self.find_key()
 

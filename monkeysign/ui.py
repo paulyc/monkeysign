@@ -120,7 +120,7 @@ Regards,
 
         return parser.parse_args()
 
-    def __init__(self, pattern, options = {}):
+    def __init__(self, options, pattern):
         self.options = options
         try:
             self.log('Initializing UI')
@@ -154,13 +154,13 @@ Regards,
             if e.errno != 2:
                 pass
         try:
-            self.main(pattern, options)
+            self.main()
         except NotImplementedError as e:
             self.abort(str(e))
         # this is implicit in the garbage collection, but tell the user anyways
         self.log('deleting the temporary keyring ' + self.tmpkeyring.tmphomedir)
 
-    def main(self, pattern, options = {}):
+    def main(self):
         """
         General process
         ===============
