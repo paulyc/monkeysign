@@ -214,7 +214,7 @@ this should not interrupt the flow of the program, but must be visible to the us
             # 1.b) from the local keyring (@todo try that first?)
             self.log('looking for key %s in your keyring' % self.pattern)
             if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
-                self.abort('could not find key %s in your keyring' % self.pattern)
+                self.abort('could not find key %s in your keyring or keyservers' % self.pattern)
 
 
     def copy_secrets(self):
