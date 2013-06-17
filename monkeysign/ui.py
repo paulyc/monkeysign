@@ -181,8 +181,7 @@ Regards,
 
     def abort(self, message):
         """show a message to the user and abort program"""
-        self.warn(message)
-        sys.exit(1)
+        sys.exit(message)
 
     def warn(self, message):
         """display an warning message
