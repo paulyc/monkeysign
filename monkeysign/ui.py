@@ -211,7 +211,7 @@ this should not interrupt the flow of the program, but must be visible to the us
             raise NotImplementedError('please provide a keyid or fingerprint, uids are not supported yet')
 
         if not self.tmpkeyring.fetch_keys(self.pattern):
-            self.log('failed to get key %s from keyservers' % pattern)
+            self.log('failed to get key %s from keyservers' % self.pattern)
             # 1.b) from the local keyring (@todo try that first?)
             self.log('looking for key %s in your keyring' % self.pattern)
             if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
