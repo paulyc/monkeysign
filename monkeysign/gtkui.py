@@ -285,7 +285,7 @@ class MonkeysignScan(gtk.Window):
 		image = self.make_qrcode(key.fpr)
 		dialog = gtk.FileChooserDialog("Save QR code", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
 		dialog.set_default_response(gtk.RESPONSE_OK)
-		dialog.set_current_name(key.keyid[8:] + '.png')
+		dialog.set_current_name(key.keyid() + '.png')
 		dialog.show()
 		response = dialog.run()
 		if response == gtk.RESPONSE_OK:
@@ -300,7 +300,7 @@ class MonkeysignScan(gtk.Window):
 		self.clip.set_image(self.pixbuf)
 
 	def print_op(self, widget=None):
-		keyid = self.ultimate_keys[self.mykey.get_active()].subkeys[0].keyid[8:]
+		keyid = self.ultimate_keys[self.mykey.get_active()].subkeys[0].keyid()
 		print_op = gtk.PrintOperation()
 		print_op.set_job_name('Monkeysign-'+keyid)
 		print_op.set_n_pages(1)
