@@ -12,6 +12,7 @@ import sys
 sys.path.append(os.path.dirname(__file__) + '/..')
 
 from monkeysign.ui import MonkeysignUi
+from monkeysign.gpg import TempKeyring
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
@@ -30,6 +31,19 @@ class BasicTests(BaseTestCase):
         self.assertFalse(os.path.exists(self.tmphomedir))
 
     def test_find_key(self):
+        """this should find the key on the keyservers"""
+        self.ui.find_key()
+
+class FakeKeyringTests(BaseTestCase):
+    def setUp(self):
+        """we setup a fake keyring with the public key to sign and add our private keys"""
+        BaseTestCase.setUp(self)
+        self.ui = MonkeysignUi(self.options, '96F47C6A')
+        self.ui.keyring = TempKeyring()
+        self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
+
+    def test_find_key(self):
+        """test if we can find a key on the local keyring"""
         self.ui.find_key()
 
 class NonExistantKeyTests(BaseTestCase):
