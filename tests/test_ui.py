@@ -25,6 +25,7 @@ class BasicTests(BaseTestCase):
         BaseTestCase.setUp(self)
         self.ui = MonkeysignUi(self.options, '7B75921E')
         self.tmphomedir = self.ui.tmpkeyring.tmphomedir
+        self.ui.keyring = TempKeyring()
 
     def test_cleanup(self):
         del self.ui
