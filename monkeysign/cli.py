@@ -22,7 +22,8 @@ script assumes you have gpg-agent configure to prompt for passwords."""
 
         we expect to have the commandline parsed for us
         """
-        if len(self.pattern) != 1:
+
+        if self.pattern is None:
             sys.exit('wrong number of arguments')
 
         # 1. fetch the key into a temporary keyring

@@ -129,7 +129,16 @@ Regards,
             self.options.log = sys.stderr
             self.log('Initializing UI')
 
-        self.pattern = pattern
+        # XXX: a bit clunky because the cli expects this to be the
+        # output of parse_args() while the GTK ui expects this to be
+        # populated as a string, later
+        if len(pattern) == 1:
+            self.pattern = pattern[0]
+        elif len(pattern) < 1:
+            self.pattern = None
+        else:
+            sys.exit('wrong number of arguments')
+
         self.signed_keys = {}
 
         # setup environment and options
