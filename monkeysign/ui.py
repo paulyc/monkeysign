@@ -193,7 +193,7 @@ Regards,
         local keyring
         4. trash the temporary keyring
         """
-        pass # we allow for interactive process
+        pass # we don't do anything because we allow for interactive process
 
     def abort(self, message):
         """show a message to the user and abort program"""
