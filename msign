@@ -3,9 +3,9 @@
 import sys
 import os
 
-p, m = os.path.split(sys.argv[0])
+directory, basename = os.path.split(sys.argv[0])
 
-if m == 'msign-cli':
+if basename == 'msign-cli':
     from monkeysign.cli import MonkeysignCli as ui
 else:
     try:
