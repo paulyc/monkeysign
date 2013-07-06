@@ -121,8 +121,10 @@ Regards,
         # the regular keyring we suck secrets and maybe the key to be signed from
         self.keyring = Keyring()
 
-        # the temporary keyring we operate in
-        self.tmpkeyring = TempKeyring()
+        # the temporary keyring we operate in, actually initialized in prepare()
+        # this is because we want the constructor to jsut initialise
+        # data structures and not write any data
+        self.tmpkeyring = None
 
         # the fingerprints that we actually signed
         self.signed_keys = {}
@@ -135,6 +137,24 @@ Regards,
         # set a default logging mechanism
         self.logfile = sys.stderr
         self.log('Initializing UI')
+
+        # create the temporary keyring
+        # XXX: i would prefer this to be done outside the constructor
+        self.prepare()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        # this is implicit in the garbage collection, but tell the user anyways
+        self.log('deleting the temporary keyring ' + self.tmpkeyring.tmphomedir)
+
+        if type is NotImplementedError:
+            ui.abort(str(exc_value))
+
+    def prepare(self):
+        # initialize the temporary keyring directory
+        self.tmpkeyring = TempKeyring()
 
         if self.options.debug:
             self.tmpkeyring.context.debug = self.logfile
@@ -155,12 +175,6 @@ Regards,
             # exists at this point)
             if e.errno != 2:
                 pass
-        try:
-            self.main()
-        except NotImplementedError as e:
-            self.abort(str(e))
-        # this is implicit in the garbage collection, but tell the user anyways
-        self.log('deleting the temporary keyring ' + self.tmpkeyring.tmphomedir)
 
     def main(self):
         """
