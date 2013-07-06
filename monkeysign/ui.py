@@ -317,9 +317,7 @@ Sign all identities? [y/N] \
         if len(self.signed_keys) < 1: self.warn('no key signed, nothing to export')
         
         for fpr, key in self.signed_keys.items():
-            data = self.tmpkeyring.export_data(fpr)
-
-            msg = self.create_mail(self.pattern, data, from_user, self.options.to or key.uids.values()[0].uid)
+            msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
 
             if self.options.smtpserver is not None:
                 if self.options.dryrun: return True
@@ -337,11 +335,11 @@ Sign all identities? [y/N] \
             else:
                 # okay, no mail, just dump the exported key then
                 self.warn("""\
-not sending email to %s, as requested, here's the signed key:
+not sending email to %s, as requested, here's the email message:
 
-%s""" % (msg['To'], data))
+%s""" % (msg['To'], msg))
 
-    def create_mail(self, recipient, data, mailfrom, mailto):
+    def create_mail(self, recipient, mailfrom, mailto):
         """create the email to be sent"""
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
@@ -352,7 +350,7 @@ not sending email to %s, as requested, here's the signed key:
         keypart.add_header('Content-Disposition', 'attachment', filename=filename)
         keypart.add_header('Content-Transfer-Encoding', '7bit')
         keypart.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
-        keypart.set_payload(data)
+        keypart.set_payload(self.tmpkeyring.export_data(recipient))
         message = MIMEMultipart('mixed', None, [text, keypart])
         encrypted = self.tmpkeyring.encrypt_data(message.as_string(), recipient)
 

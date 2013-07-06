@@ -84,11 +84,9 @@ this duplicates tests from the gpg code, but is necessary to test later function
         # XXX: this duplicates code from export_key(), not good.
         self.ui.tmpkeyring.context.set_option('armor')
         self.ui.tmpkeyring.context.set_option('always-trust')
-        from_user = self.ui.signing_key.uidslist[0].uid
 
         for fpr, key in self.ui.signed_keys.items():
-            data = self.ui.tmpkeyring.export_data(fpr)
-            msg = self.ui.create_mail(self.ui.pattern, data, from_user, 'devnull@localhost')
+            msg = self.ui.create_mail(fpr, 'unittests@localhost', 'devnull@localhost')
             self.assertIsNotNone(msg)
 
 class KeyserverTests(BaseTestCase):
