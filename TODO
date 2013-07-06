@@ -1,11 +1,12 @@
 Release process
 ===============
 
- * make sure tests pass
- * update version in monkeysign/__init__.py and run dch -i
- * signed and annotated tag
- * build and upload Debian package
- * publish tarball
+ * make sure tests pass (`./test.py`)
+ * update version in `monkeysign/__init__.py` and run `dch -i -D unstable`
+ * signed and annotated tag (`git tag -s -u keyid x.y`)
+ * build Debian package (`git-buildpackage`)
+ * install and test Debian package (`dpkg -i ../build-area/monkeysign_*.deb`)
+ * upload Debian package
  * add announcement on website and blog
 
 1.0 blockers
