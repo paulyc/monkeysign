@@ -85,6 +85,20 @@ this duplicates tests from the gpg code, but is necessary to test later function
             msg = self.ui.create_mail(fpr, 'unittests@localhost', 'devnull@localhost')
             self.assertIsNotNone(msg)
 
+    @unittest.expectedFailure
+    def test_create_mail_multiple(self):
+        """test if exported keys contain the right uid
+
+not yet implemented, see the TODO in export_key() for more details"""
+        self.test_sign_key()
+
+        for fpr, key in self.ui.signed_keys.items():
+            oldmsg = None
+            for uid in key.uids.values():
+                msg = self.ui.create_mail(uid, 'unittests@localhost', 'devnull@localhost')
+                if oldmsg is not None:
+                    self.assertNotEqual(oldmsg, msg)
+
 class KeyserverTests(BaseTestCase):
     args = [ '--keyserver', 'pool.sks-keyservers.net' ]
     pattern = '7B75921E'

@@ -12,8 +12,9 @@ Release process
 ============
 
  * send one email per uid even if we sign them all
-   - involves calling export on a different gpg home for each uid in
-   sign_keys (i think)
+   - the way caff does this is by deleting irrelevant key uids,
+   unfortunately our gpg library doesn't support the deluid command
+   (nor does python-gnupg)
  * make translatable (look at the gameclock for inspiration)
 
 2.0 blockers

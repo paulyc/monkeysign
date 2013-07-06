@@ -314,6 +314,11 @@ Sign all identities? [y/N] \
         if len(self.signed_keys) < 1: self.warn('no key signed, nothing to export')
         
         for fpr, key in self.signed_keys.items():
+            # TODO: here we need to use uid instead of fpr, and iterate
+            # over the chosen uids, instead of sending all
+            # signatures. this may require create_mail() to work on
+            # *another* temporary keyring and may also need support
+            # for the deluid command in the gpg module.
             msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
 
             if self.options.smtpserver is not None and not self.options.nomail:
