@@ -14,6 +14,7 @@ Release process
  * send one email per uid even if we sign them all
    - involves calling export on a different gpg home for each uid in
    sign_keys (i think)
+ * make translatable (look at the gameclock for inspiration)
 
 2.0 blockers
 ============
