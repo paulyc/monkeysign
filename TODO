@@ -21,6 +21,7 @@ Release process
 
 The following needs to be fixed before 2.0 is released.
 
+ * merge with python-gnupg (see below)
  * make options configuration accessible from the GUI (preferences?)
  * add a manpage
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
@@ -34,8 +35,7 @@ particularily similar and communication was started to consider the
 possibility of merging. This section details how we should deal with
 this.
 
- o [anarcat] make sure we can apply improvements to python-gnupg
- o [anarcat] decide to merge or split from pythong-gnupg
+ * decide to merge or split from pythong-gnupg (done: we merge)
    - for merge arguments:
      - gnupg has more history and authors
      - has more features (see below)
@@ -46,17 +46,17 @@ this.
      - i just spend about 20 hours in two days on this project
      - python-gnupg doesn't seem to have a VCS
      - hosted on code.google.com, BSD license (minor)
- * if merging, apply those improvements to python-gnupg
+ * apply those improvements to python-gnupg
    - add key signing support
    - split the "context" and "keyring" classes
    - port monkeysign to python-gnupg
    - make sure python-gnupg is secure (ie. that it doesn't use
-     popen([...], shell=True), see https://github.com/isislovecruft/python-gnupg
- * if not merging, take those improvements from python-gnupg
-   - improve test suite
-   - add abstract status handlers that react on a main read loop
-     instead of expect-like functionality
-   - add support for verification, key generation and deletion
-   - support streams of I/O
-   - use threads?
-   - move the TempKeyring class to a monkeysign lib?
+     popen([...], shell=True), see below
+
+It seems that we have a new upstream for python-gnupg that resolves
+most problems documented here:
+
+https://github.com/isislovecruft/python-gnupg
+
+We are in contact with upstream and they are open to merging in
+changes, so we will go in that direction.
