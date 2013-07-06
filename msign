@@ -14,6 +14,5 @@ else:
         print "some modules missing for scanning functionality, going commandline-only"
         from monkeysign.cli import MonkeysignCli as ui
 
-if __name__ == '__main__':
-    with ui() as u:
-        u.main()
+with ui() as u:
+    u.main()

@@ -14,6 +14,18 @@ sys.path.append(os.path.dirname(__file__) + '/..')
 from monkeysign.ui import MonkeysignUi
 from monkeysign.gpg import TempKeyring
 
+class CliTestCase(unittest.TestCase):
+    def setUp(self):
+        self.argv = sys.argv
+        sys.argv = [ 'msign-cli', '--dry-run', '--no-mail' ]
+
+    def test_call_usage(self):
+        with self.assertRaises(SystemExit):
+            execfile(os.path.dirname(__file__) + '/../msign')
+
+    def tearDown(self):
+        sys.argv = self.argv
+
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
         self.args = [ '--dry-run', '--no-mail' ]
