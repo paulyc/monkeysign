@@ -41,6 +41,12 @@ class BasicTests(BaseTestCase):
         del self.ui
         self.assertFalse(os.path.exists(self.tmphomedir))
 
+class KeyserverTests(BaseTestCase):
+    def setUp(self):
+        BaseTestCase.setUp(self)
+        self.ui = MonkeysignUi(self.args + [ '--keyserver', 'pool.sks-keyservers.net', '7B75921E' ])
+        self.ui.keyring = TempKeyring()
+
     def test_find_key(self):
         """this should find the key on the keyservers"""
         self.ui.find_key()
