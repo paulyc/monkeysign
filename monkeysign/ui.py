@@ -149,8 +149,8 @@ Regards,
         # this is implicit in the garbage collection, but tell the user anyways
         self.log('deleting the temporary keyring ' + self.tmpkeyring.tmphomedir)
 
-        if type is NotImplementedError:
-            ui.abort(str(exc_value))
+        if exc_type is NotImplementedError:
+            self.abort(str(exc_value))
 
     def prepare(self):
         # initialize the temporary keyring directory
