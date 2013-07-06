@@ -97,8 +97,7 @@ yourself.  With GnuPG this can be done using:
 Regards,
 """
 
-    @classmethod
-    def parse_args(self):
+    def parse_args(self, args):
         """parse the commandline arguments"""
         parser = OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
         parser.add_option('-d', '--debug', dest='debug', default=False, action='store_true',
@@ -118,36 +117,34 @@ Regards,
         parser.add_option('-t', '--to', dest='to', 
                           help='Override destination email for testing (default is to use the first uid on the key or send email to each uid chosen)')
 
-        return parser.parse_args()
-
-    def __init__(self, options, pattern):
-        self.options = options
-        try:
-            self.log('Initializing UI')
-        except AttributeError:
-            # set a default logging mechanism
-            self.options.log = sys.stderr
-            self.log('Initializing UI')
+        (self.options, self.pattern) = parser.parse_args(args=args)
 
         # XXX: a bit clunky because the cli expects this to be the
         # output of parse_args() while the GTK ui expects this to be
         # populated as a string, later
-        if len(pattern) == 1:
-            self.pattern = pattern[0]
-        elif len(pattern) < 1:
+        if len(self.pattern) == 1:
+            self.pattern = self.pattern[0]
+        elif len(self.pattern) < 1:
             self.pattern = None
         else:
             sys.exit('wrong number of arguments')
+
+    def __init__(self, args = None):
+        self.parse_args(args)
+
+        # set a default logging mechanism
+        self.options.log = sys.stderr
+        self.log('Initializing UI')
 
         self.signed_keys = {}
 
         # setup environment and options
         self.tmpkeyring = tmpkeyring = TempKeyring()
         self.keyring = Keyring() # the real keyring
-        if options.debug:
+        if self.options.debug:
             self.tmpkeyring.context.debug = sys.stderr
             self.keyring.context.debug = sys.stderr
-        if options.keyserver is not None: tmpkeyring.context.set_option('keyserver', options.keyserver)
+        if self.options.keyserver is not None: tmpkeyring.context.set_option('keyserver', self.options.keyserver)
 
         # copy the gpg.conf from the real keyring
         home = os.environ['HOME'] + '/.gnupg'

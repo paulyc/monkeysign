@@ -15,5 +15,4 @@ else:
         from monkeysign.cli import MonkeysignCli as ui
 
 if __name__ == '__main__':
-    (options, args) = ui.parse_args()
-    ui(options, args)
+    ui()
