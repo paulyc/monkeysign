@@ -40,6 +40,12 @@ gpg-agent configure to prompt for passwords.
                 self.window = MonkeysignScan()
                 self.window.msui = self
 
+                # XXX: this probably belongs lower in the stack,
+                # because we don't want to create a temporary keyring
+                # just when we start the graphical UI, but instead
+                # really when we sign
+                MonkeysignUi.main(self)
+
                 gtk.main()
                 gtk.gdk.threads_leave()
 

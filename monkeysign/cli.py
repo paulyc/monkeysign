@@ -26,6 +26,8 @@ script assumes you have gpg-agent configure to prompt for passwords."""
         if self.pattern is None:
             sys.exit('wrong number of arguments')
 
+        MonkeysignUi.main(self)
+
         # 1. fetch the key into a temporary keyring
         self.find_key()
 
