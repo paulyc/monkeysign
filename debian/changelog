@@ -5,6 +5,9 @@ monkeysign (0.7) unstable; urgency=low
   * unit tests extended to cover user interface
   * import keys from the local keyring before looking at the keyserver
   * fix print/save exports (thanks Simon!)
+  * don't depend on a graphical interface
+  * update copyright dates
+  * mark as priority: optional instead of extra
 
  -- Antoine Beaupré <anarcat@debian.org>  Sat, 06 Jul 2013 00:36:05 -0400
 

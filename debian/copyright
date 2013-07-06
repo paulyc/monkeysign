@@ -4,11 +4,11 @@ Source: git://git.monkeysphere.info/monkeysign
 
 Files: *
 Copyright: 2010 Jerome Charaoui
-           2010-2012 Antoine Beaupré
+           2010-2013 Antoine Beaupré
 License: GPL-3.0+
 
 Files: debian/*
-Copyright: 2012 Antoine Beaupré <anarcat@debian.org>
+Copyright: 2013 Antoine Beaupré <anarcat@debian.org>
 License: GPL-3.0+
 
 License: GPL-3.0+
