@@ -9,7 +9,7 @@ monkeysign (0.7) unstable; urgency=low
   * update copyright dates and notices
   * mark as priority: optional instead of extra
 
- -- Antoine Beaupré <anarcat@debian.org>  Sat, 06 Jul 2013 00:36:05 -0400
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 06 Jul 2013 01:07:28 -0400
 
 monkeysign (0.6) unstable; urgency=low
 
