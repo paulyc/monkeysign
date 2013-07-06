@@ -28,7 +28,7 @@ class CliTestCase(unittest.TestCase):
 
 class BaseTestCase(unittest.TestCase):
     def setUp(self):
-        self.args = [ '--dry-run', '--no-mail' ]
+        self.args = sys.argv[1:] + [ '--dry-run', '--no-mail' ]
 
 class BasicTests(BaseTestCase):
     def setUp(self):
