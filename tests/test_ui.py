@@ -81,10 +81,6 @@ this duplicates tests from the gpg code, but is necessary to test later function
         """test if the exported keys are signed"""
         self.test_sign_key()
 
-        # XXX: this duplicates code from export_key(), not good.
-        self.ui.tmpkeyring.context.set_option('armor')
-        self.ui.tmpkeyring.context.set_option('always-trust')
-
         for fpr, key in self.ui.signed_keys.items():
             msg = self.ui.create_mail(fpr, 'unittests@localhost', 'devnull@localhost')
             self.assertIsNotNone(msg)

@@ -306,9 +306,6 @@ Sign all identities? [y/N] \
                         self.warn('local key signing failed')
 
     def export_key(self):
-        self.tmpkeyring.context.set_option('armor')
-        self.tmpkeyring.context.set_option('always-trust')
-
         if self.options.user is not None and '@' in self.options.user:
             from_user = self.options.user
         else:
@@ -341,6 +338,12 @@ not sending email to %s, as requested, here's the email message:
 
     def create_mail(self, recipient, mailfrom, mailto):
         """create the email to be sent"""
+
+        # prepare for email transport
+        self.tmpkeyring.context.set_option('armor')
+        # XXX: why is this necessary?
+        self.tmpkeyring.context.set_option('always-trust')
+
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
         # introduction and the signed key material
