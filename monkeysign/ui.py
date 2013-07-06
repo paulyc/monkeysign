@@ -319,34 +319,7 @@ Sign all identities? [y/N] \
         for fpr, key in self.signed_keys.items():
             data = self.tmpkeyring.export_data(fpr)
 
-            # first layer, seen from within:
-            # an encrypted MIME message, made of two parts: the
-            # introduction and the signed key material
-            text = MIMEText(self.email_body, 'plain', 'utf-8')
-            filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
-            keypart = MIMEBase('application', 'pgp-keys', name=filename)
-            keypart.add_header('Content-Disposition', 'attachment', filename=filename)
-            keypart.add_header('Content-Transfer-Encoding', '7bit')
-            keypart.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
-            keypart.set_payload(data)
-            message = MIMEMultipart('mixed', None, [text, keypart])
-            encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.pattern)
-
-            # the second layer up, made of two parts: a version number
-            # and the first layer, encrypted
-            p1 = MIMEBase('application', 'pgp-encrypted', filename='signedkey.msg')
-            p1.add_header('Content-Disposition','attachment', filename='signedkey.msg')
-            p1.set_payload('Version: 1')
-            p2 = MIMEBase('application', 'octet-stream', filename='msg.asc')
-            p2.add_header('Content-Disposition', 'inline', filename='msg.asc')
-            p2.add_header('Content-Transfer-Encoding', '7bit')
-            p2.set_payload(encrypted)
-            msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
-            msg['Subject'] = self.email_subject
-            msg['From'] = from_user
-            msg.preamble = 'This is a multi-part message in PGP/MIME format...'
-            # take the first uid, not ideal
-            msg['To'] = self.options.to or key.uids.values()[0].uid
+            msg = self.create_mail(self.pattern, data, from_user, self.options.to or key.uids.values()[0].uid)
 
             if self.options.smtpserver is not None:
                 if self.options.dryrun: return True
@@ -367,6 +340,38 @@ Sign all identities? [y/N] \
 not sending email to %s, as requested, here's the signed key:
 
 %s""" % (msg['To'], data))
+
+    def create_mail(self, recipient, data, mailfrom, mailto):
+        """create the email to be sent"""
+        # first layer, seen from within:
+        # an encrypted MIME message, made of two parts: the
+        # introduction and the signed key material
+        text = MIMEText(self.email_body, 'plain', 'utf-8')
+        filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
+        keypart = MIMEBase('application', 'pgp-keys', name=filename)
+        keypart.add_header('Content-Disposition', 'attachment', filename=filename)
+        keypart.add_header('Content-Transfer-Encoding', '7bit')
+        keypart.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
+        keypart.set_payload(data)
+        message = MIMEMultipart('mixed', None, [text, keypart])
+        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), recipient)
+
+        # the second layer up, made of two parts: a version number
+        # and the first layer, encrypted
+        p1 = MIMEBase('application', 'pgp-encrypted', filename='signedkey.msg')
+        p1.add_header('Content-Disposition','attachment', filename='signedkey.msg')
+        p1.set_payload('Version: 1')
+        p2 = MIMEBase('application', 'octet-stream', filename='msg.asc')
+        p2.add_header('Content-Disposition', 'inline', filename='msg.asc')
+        p2.add_header('Content-Transfer-Encoding', '7bit')
+        p2.set_payload(encrypted)
+        msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
+        msg['Subject'] = self.email_subject
+        msg['From'] = mailfrom
+        msg.preamble = 'This is a multi-part message in PGP/MIME format...'
+        # take the first uid, not ideal
+        msg['To'] = mailto
+        return msg
 
 class NowrapHelpFormatter(IndentedHelpFormatter):
     """A non-wrapping formatter for OptionParse."""
