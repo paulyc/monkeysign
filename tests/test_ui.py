@@ -31,7 +31,7 @@ class BaseTestCase(unittest.TestCase):
     args = []
 
     def setUp(self):
-        self.args += sys.argv[1:] + [ '--dry-run', '--no-mail' ]
+        self.args = [ '--dry-run', '--no-mail' ] + self.args + [ x for x in sys.argv[1:] if x.startswith('-') ]
         if self.pattern is not None:
             self.args += [ self.pattern ]
         self.ui = MonkeysignUi(self.args)
