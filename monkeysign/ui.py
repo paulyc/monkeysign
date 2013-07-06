@@ -60,24 +60,6 @@ class MonkeysignUi(object):
     usage=None
     epilog=None
 
-    # the options that determine how we operate, from the parse_args()
-    options = {}
-
-    # the key we are signing, can be a keyid or a uid pattern
-    pattern = None
-
-    # the regular keyring we suck secrets and maybe the key to be signed from
-    keyring = None
-
-    # the temporary keyring we operate in
-    tmpkeyring = None
-
-    # the fingerprints that we actually signed
-    signed_keys = None
-
-    # temporary, to keep track of the OpenPGPkey we are signing
-    signing_key = None
-
     # the email subject
     # @todo make this translatable
     email_subject = "Your signed OpenPGP key"
@@ -130,21 +112,35 @@ Regards,
             sys.exit('wrong number of arguments')
 
     def __init__(self, args = None):
+        # the options that determine how we operate, from the parse_args()
+        self.options = {}
+
+        # the key we are signing, can be a keyid or a uid pattern
+        self.pattern = None
+
+        # the regular keyring we suck secrets and maybe the key to be signed from
+        self.keyring = Keyring()
+
+        # the temporary keyring we operate in
+        self.tmpkeyring = TempKeyring()
+
+        # the fingerprints that we actually signed
+        self.signed_keys = {}
+
+        # temporary, to keep track of the OpenPGPkey we are signing
+        self.signing_key = None
+
         self.parse_args(args)
 
         # set a default logging mechanism
-        self.options.log = sys.stderr
+        self.logfile = sys.stderr
         self.log('Initializing UI')
 
-        self.signed_keys = {}
-
-        # setup environment and options
-        self.tmpkeyring = tmpkeyring = TempKeyring()
-        self.keyring = Keyring() # the real keyring
         if self.options.debug:
-            self.tmpkeyring.context.debug = sys.stderr
-            self.keyring.context.debug = sys.stderr
-        if self.options.keyserver is not None: tmpkeyring.context.set_option('keyserver', self.options.keyserver)
+            self.tmpkeyring.context.debug = self.logfile
+            self.keyring.context.debug = self.logfile
+        if self.options.keyserver is not None:
+            self.tmpkeyring.context.set_option('keyserver', self.options.keyserver)
 
         # copy the gpg.conf from the real keyring
         home = os.environ['HOME'] + '/.gnupg'
@@ -197,7 +193,7 @@ this should not interrupt the flow of the program, but must be visible to the us
 
     def log(self, message):
         """log an informational message if verbose"""
-        if self.options.verbose and self.options.log: print >>self.options.log, message
+        if self.options.verbose: print >>self.logfile, message
 
     def yes_no(self, prompt, default = None):
         raise NotImplementedError('prompting not implemented in base class')
