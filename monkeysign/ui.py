@@ -319,7 +319,7 @@ Sign all identities? [y/N] \
         for fpr, key in self.signed_keys.items():
             msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
 
-            if self.options.smtpserver is not None:
+            if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
                 server.sendmail(from_user, msg['To'], msg.as_string())
