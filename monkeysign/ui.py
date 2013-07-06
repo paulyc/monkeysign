@@ -209,11 +209,12 @@ this should not interrupt the flow of the program, but must be visible to the us
         """log an informational message if verbose"""
         if self.options.verbose: print >>self.logfile, message
 
-    def yes_no(self, prompt, default = None):
-        raise NotImplementedError('prompting not implemented in base class')
+    def yes_no(self, prompt, default = True):
+        """default UI is not interactive, so we assume yes all the time"""
+        return True
 
     def choose_uid(self, prompt, uids):
-        raise NotImplementedError('prompting not implemented in base class')
+        raise NotImplementedError('choosing not implemented in base class')
 
     def find_key(self):
         """find the key to be signed somewhere"""
