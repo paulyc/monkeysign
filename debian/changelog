@@ -1,3 +1,11 @@
+monkeysign (0.7.1) unstable; urgency=low
+
+  * fix binary package dependency on python
+  * update to debhelper 9
+  * update to standards 3.9.4, no change
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sun, 07 Jul 2013 09:58:56 -0400
+
 monkeysign (0.7) unstable; urgency=low
 
   * fix crash when key not found on keyservers
