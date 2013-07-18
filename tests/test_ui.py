@@ -47,12 +47,8 @@ class CliTestCase(CliBaseTest):
             execfile(os.path.dirname(__file__) + '/../msign')
 
 class CliTestDialog(CliBaseTest):
-    def test_sign_fake_keyring(self):
-        """test if we can sign a key on a fake keyring"""
-
-        def handle_alarm(signum, frame):
-            raise AlarmException
-
+    def setUp(self):
+        CliBaseTest.setUp(self)
         self.gpg = TempKeyring()
         os.environ['GNUPGHOME'] = self.gpg.tmphomedir
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
@@ -60,52 +56,38 @@ class CliTestDialog(CliBaseTest):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         
         sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
-        
+
+    def handle_alarm(signum, frame):
+        raise AlarmException
+
+    def write_to_callback(self, stdin, callback):
         r, w = os.pipe()
         pid = os.fork()
         if pid:
             # parent
             os.close(w)
             os.dup2(r, 0) # make stdin read from the child
-            execfile(os.path.dirname(__file__) + '/../msign')
+            callback(self)
         else:
             # child
             os.close(r)
             w = os.fdopen(w, 'w')
-            w.write("y\n") # say yes!
+            w.write(stdin) # say whatever is needed to msign-cli
             w.flush()
             os._exit(0)
+
+    def test_sign_fake_keyring(self):
+        """test if we can sign a key on a fake keyring"""
+        def callback(self):
+            execfile(os.path.dirname(__file__) + '/../msign')
+        self.write_to_callback("y\n", callback) # just say yes
 
     def test_two_empty_responses(self):
         """test what happens when we answer nothing twice"""
-
-        def handle_alarm(signum, frame):
-            raise AlarmException
-
-        self.gpg = TempKeyring()
-        os.environ['GNUPGHOME'] = self.gpg.tmphomedir
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        
-        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
-        
-        r, w = os.pipe()
-        pid = os.fork()
-        if pid:
-            # parent
-            os.close(w)
-            os.dup2(r, 0) # make stdin read from the child
-            # the child closing after the second \n should kick a EOF error
+        def callback(self):
             with self.assertRaises(EOFError):
                 execfile(os.path.dirname(__file__) + '/../msign')
-        else:
-            # child
-            os.close(r)
-            w = os.fdopen(w, 'w')
-            w.write("\n\n") # say yes!
-            w.flush()
-            os._exit(0)
+        self.write_to_callback("\n\n", callback) # just say yes
 
 class BaseTestCase(unittest.TestCase):
     pattern = None
