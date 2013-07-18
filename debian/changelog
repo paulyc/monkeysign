@@ -1,3 +1,13 @@
+monkeysign (0.8) unstable; urgency=low
+
+  * refactor unit test suite to allow testing the commandline tool
+    interactively
+  * don't fail on empty input when choosing uid (Closes: #716675)
+  * we also explain how to refuse signing a key better
+  * optimise network tests so they timeout (so fail) faster
+
+ -- Antoine Beaupré <anarcat@debian.org>  Wed, 17 Jul 2013 22:52:02 -0400
+
 monkeysign (0.7.1) unstable; urgency=low
 
   * fix binary package dependency on python
