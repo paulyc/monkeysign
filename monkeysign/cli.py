@@ -78,7 +78,7 @@ script assumes you have gpg-agent configure to prompt for passwords."""
             allowed_uids.append(uid.uid)
 
         pattern = raw_input(prompt)
-        while pattern not in allowed_uids and not pattern.isdigit() and int(pattern)-1 not in range(0,len(allowed_uids)):
+        while not (pattern in allowed_uids or (pattern.isdigit() and int(pattern)-1 in range(0,len(allowed_uids)))):
             print "invalid uid"
             pattern = raw_input(prompt)
         if pattern.isdigit():

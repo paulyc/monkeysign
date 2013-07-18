@@ -23,11 +23,15 @@ Test suite for the basic user interface class.
 import unittest
 import os
 import sys
+import signal
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
 from monkeysign.ui import MonkeysignUi
 from monkeysign.gpg import TempKeyring
+
+class AlarmException(IOError):
+    pass
 
 class CliTestCase(unittest.TestCase):
     def setUp(self):
@@ -37,6 +41,66 @@ class CliTestCase(unittest.TestCase):
     def test_call_usage(self):
         with self.assertRaises(SystemExit):
             execfile(os.path.dirname(__file__) + '/../msign')
+
+    def test_sign_fake_keyring(self):
+        """test if we can sign a key on a fake keyring"""
+
+        def handle_alarm(signum, frame):
+            raise AlarmException
+
+        self.gpg = TempKeyring()
+        os.environ['GNUPGHOME'] = self.gpg.tmphomedir
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        
+        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
+        
+        r, w = os.pipe()
+        pid = os.fork()
+        if pid:
+            # parent
+            os.close(w)
+            os.dup2(r, 0) # make stdin read from the child
+            execfile(os.path.dirname(__file__) + '/../msign')
+        else:
+            # child
+            os.close(r)
+            w = os.fdopen(w, 'w')
+            w.write("y\n") # say yes!
+            w.flush()
+            os._exit(0)
+
+    def test_two_empty_responses(self):
+        """test what happens when we answer nothing twice"""
+
+        def handle_alarm(signum, frame):
+            raise AlarmException
+
+        self.gpg = TempKeyring()
+        os.environ['GNUPGHOME'] = self.gpg.tmphomedir
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        
+        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
+        
+        r, w = os.pipe()
+        pid = os.fork()
+        if pid:
+            # parent
+            os.close(w)
+            os.dup2(r, 0) # make stdin read from the child
+            # the child closing after the second \n should kick a EOF error
+            with self.assertRaises(EOFError):
+                execfile(os.path.dirname(__file__) + '/../msign')
+        else:
+            # child
+            os.close(r)
+            w = os.fdopen(w, 'w')
+            w.write("\n\n") # say yes!
+            w.flush()
+            os._exit(0)
 
     def tearDown(self):
         sys.argv = self.argv
