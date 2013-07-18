@@ -23,15 +23,11 @@ Test suite for the basic user interface class.
 import unittest
 import os
 import sys
-import signal
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
 from monkeysign.ui import MonkeysignUi
 from monkeysign.gpg import TempKeyring
-
-class AlarmException(IOError):
-    pass
 
 class CliBaseTest(unittest.TestCase):
     def setUp(self):
