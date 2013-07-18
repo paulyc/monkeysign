@@ -38,6 +38,9 @@ class CliTestCase(unittest.TestCase):
         self.argv = sys.argv
         sys.argv = [ 'msign-cli', '--dry-run', '--no-mail' ]
 
+    def tearDown(self):
+        sys.argv = self.argv
+
     def test_call_usage(self):
         with self.assertRaises(SystemExit):
             execfile(os.path.dirname(__file__) + '/../msign')
@@ -101,9 +104,6 @@ class CliTestCase(unittest.TestCase):
             w.write("\n\n") # say yes!
             w.flush()
             os._exit(0)
-
-    def tearDown(self):
-        sys.argv = self.argv
 
 class BaseTestCase(unittest.TestCase):
     pattern = None
