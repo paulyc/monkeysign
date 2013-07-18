@@ -63,7 +63,10 @@ class CliTestDialog(CliBaseTest):
             # parent
             os.close(w)
             os.dup2(r, 0) # make stdin read from the child
+            oldstdout = sys.stdout
+            sys.stdout = open('/dev/null', 'w') # silence output
             callback(self)
+            sys.stdout = oldstdout
         else:
             # child
             os.close(r)
