@@ -33,7 +33,7 @@ from monkeysign.gpg import TempKeyring
 class AlarmException(IOError):
     pass
 
-class CliTestCase(unittest.TestCase):
+class CliBaseTest(unittest.TestCase):
     def setUp(self):
         self.argv = sys.argv
         sys.argv = [ 'msign-cli', '--dry-run', '--no-mail' ]
@@ -41,10 +41,12 @@ class CliTestCase(unittest.TestCase):
     def tearDown(self):
         sys.argv = self.argv
 
+class CliTestCase(CliBaseTest):
     def test_call_usage(self):
         with self.assertRaises(SystemExit):
             execfile(os.path.dirname(__file__) + '/../msign')
 
+class CliTestDialog(CliBaseTest):
     def test_sign_fake_keyring(self):
         """test if we can sign a key on a fake keyring"""
 
