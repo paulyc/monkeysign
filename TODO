@@ -7,7 +7,8 @@ Release process
  * build Debian package (`git-buildpackage`)
  * install and test Debian package (`dpkg -i ../build-area/monkeysign_*.deb`)
  * upload Debian package
- * add announcement on website and blog
+ * push commits and tags to the git repository
+ * add announcement on website
 
 1.0 blockers
 ============
