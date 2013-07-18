@@ -281,7 +281,7 @@ Sign all identities? [y/N] \
             if alluids:
                 pattern = keys[key].fpr
             else:
-                pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
+                pattern = self.choose_uid('Choose the identity to sign', keys[key])
                 if not pattern:
                     self.log("no identity chosen")
                     return False

@@ -94,9 +94,9 @@ gpg-agent configure to prompt for passwords.
                 md.destroy()
 
         def choose_uid(self, prompt, key):
-                md = gtk.Dialog("Choose UID", self.window, gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
+                md = gtk.Dialog(prompt, self.window, gtk.DIALOG_DESTROY_WITH_PARENT, (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT))
                 # simple explanation
-                l = gtk.Label("Choose the UID to sign")
+                l = gtk.Label(prompt)
                 md.vbox.pack_start(l)
                 l.show()
                 # list of uids
