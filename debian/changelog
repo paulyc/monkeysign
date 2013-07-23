@@ -1,3 +1,12 @@
+monkeysign (0.9) unstable; urgency=low
+
+  * refactor unit tests again to optimise UI tests and test mail generation
+  * fix error handling in encryption/decryption (Closes: #717622)
+  * rename msign-cli to monkeysign and msign to monkeyscan (Closes: #717623)
+  * handle interruptions cleanly when choosing user IDs (see: #716675)
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 23 Jul 2013 10:56:50 -0400
+
 monkeysign (0.8) unstable; urgency=low
 
   * refactor unit test suite to allow testing the commandline tool
