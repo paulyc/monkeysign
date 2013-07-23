@@ -1,4 +1,4 @@
-#!/usr/bin/pytho
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 #    Copyright (C) 2012-2013 Antoine Beaupré <anarcat@orangeseeds.org>
@@ -193,3 +193,6 @@ class NonExistantKeyTests(BaseTestCase):
         """find_key() should exit if the key can't be found on keyservers or local keyring"""
         with self.assertRaises(SystemExit):
             self.ui.find_key()
+
+if __name__ == '__main__':
+    unittest.main()
