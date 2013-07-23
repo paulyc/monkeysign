@@ -363,24 +363,24 @@ class Keyring():
     def encrypt_data(self, data, recipient):
         """encrypt data using asymetric encryption
 
-        returns the encrypted data or False if it failed.
+        returns the encrypted data or raise a GpgRuntimeError if it fails
         """
         self.context.call_command(['recipient', recipient, '--encrypt'], data)
         if self.context.returncode == 0:
             return self.context.stdout
         else:
-            return False
+            raise GpgRuntimeError(self.context.returncode, "encryption to %s failed: %s." % (recipient, self.context.stderr.split("\n")[-2]))
 
     def decrypt_data(self, data):
         """decrypt data using asymetric encryption
 
-        returns the plaintext data or False if it failed.
+        returns the plaintext data or raise a GpgRuntimeError if it failed.
         """
         self.context.call_command(['--decrypt'], data)
         if self.context.returncode == 0:
             return self.context.stdout
         else:
-            return False
+            raise GpgRuntimeError(self.context.returncode, "decryption failed: %s" % self.context.stderr.split("\n")[-2])
 
     def sign_key(self, pattern, signall = False, local = False):
         """sign a OpenPGP public key
@@ -676,4 +676,7 @@ class GpgProcotolError(IOError):
     we try to pass the subprocess.popen.returncode as an errorno and a
     significant description string
     """
+    pass
+
+class GpgRuntimeError(IOError):
     pass
