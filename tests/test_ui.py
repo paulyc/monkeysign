@@ -29,6 +29,8 @@ sys.path.append(os.path.dirname(__file__) + '/..')
 from monkeysign.ui import MonkeysignUi
 from monkeysign.gpg import TempKeyring
 
+from test_lib import TestTimeLimit
+
 class CliBaseTest(unittest.TestCase):
     def setUp(self):
         self.argv = sys.argv
@@ -182,7 +184,7 @@ class FakeKeyringTests(BaseTestCase):
         """test if we can find a key on the local keyring"""
         self.ui.find_key()
 
-class NonExistantKeyTests(BaseTestCase):
+class NonExistantKeyTests(BaseTestCase, TestTimeLimit):
     """test behavior with a key that can't be found"""
 
     args = []

@@ -29,27 +29,18 @@ import signal
 sys.path.append(os.path.dirname(__file__) + '/..')
 
 from monkeysign.gpg import TempKeyring
+from test_lib import TestTimeLimit
 
-class AlarmException(IOError):
-    pass
-
-def handle_alarm(signum, frame):
-    raise AlarmException('timeout in %s' % frame.f_code.co_name)
-
-class TestGpgNetwork(unittest.TestCase):
+class TestGpgNetwork(TestTimeLimit):
     """Seperate test cases for functions that hit the network
 
 each test needs to run under a specific timeout so we don't wait on
 the network forever"""
 
-    timeout = 3
-
     def setUp(self):
         self.gpg = TempKeyring()
         self.gpg.context.set_option('keyserver', 'pool.sks-keyservers.net')
-
-        signal.signal(signal.SIGALRM, handle_alarm)
-        signal.setitimer(signal.ITIMER_REAL, self.timeout)
+        TestTimeLimit.setUp(self)
 
     def test_fetch_keys(self):
         """test key fetching from keyservers"""
@@ -63,7 +54,7 @@ the network forever"""
         self.assertTrue(self.gpg.sign_key('3CCDBB7355D1758F549354D20B123309D3366755'))
 
     def tearDown(self):
-        signal.alarm(0)
+        TestTimeLimit.tearDown(self)
         del self.gpg
 
 if __name__ == '__main__':
