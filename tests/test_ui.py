@@ -77,14 +77,14 @@ class CliTestDialog(CliBaseTest):
     def test_sign_fake_keyring(self):
         """test if we can sign a key on a fake keyring"""
         def callback(self):
-            execfile(os.path.dirname(__file__) + '/../msign')
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
         self.write_to_callback("y\n", callback) # just say yes
 
     def test_two_empty_responses(self):
         """test what happens when we answer nothing twice"""
         def callback(self):
             with self.assertRaises(EOFError):
-                execfile(os.path.dirname(__file__) + '/../msign')
+                execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
         self.write_to_callback("\n\n", callback) # just say yes
 
 class BaseTestCase(unittest.TestCase):

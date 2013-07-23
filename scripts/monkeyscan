@@ -23,9 +23,7 @@ directory, basename = os.path.split(sys.argv[0])
 
 path, directory = os.path.split(directory)
 if directory == 'scripts':
-    sys.path.insert(0, path + '/../')
-
-print "path: %s" % sys.path
+    sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 if basename == 'monkeysign':
     from monkeysign.cli import MonkeysignCli as ui
