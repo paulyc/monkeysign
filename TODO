@@ -18,6 +18,8 @@ Release process
    unfortunately our gpg library doesn't support the deluid command
    (nor does python-gnupg)
  * make translatable (look at the gameclock for inspiration)
+ * add a manpage (bug #716674)
+   - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
 
 2.0 blockers
 ============
@@ -25,9 +27,10 @@ Release process
 The following needs to be fixed before 2.0 is released.
 
  * merge with python-gnupg (see below)
- * make options configuration accessible from the GUI (preferences?)
- * add a manpage (bug #716674)
-   - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
+ * make all options accessible from the GUI (preferences?)
+ * make sure the GUI and CLI have feature parity, for example right
+   now the GUI can't do local signatures without a commandline flag
+ * maybe then: merge in a single "monkeysign" binary
 
 The merge question
 ==================
