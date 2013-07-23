@@ -32,7 +32,7 @@ from monkeysign.gpg import TempKeyring
 class CliBaseTest(unittest.TestCase):
     def setUp(self):
         self.argv = sys.argv
-        sys.argv = [ 'msign-cli', '--dry-run', '--no-mail' ]
+        sys.argv = [ 'monkeysign', '--dry-run', '--no-mail' ]
 
     def tearDown(self):
         sys.argv = self.argv
@@ -40,7 +40,7 @@ class CliBaseTest(unittest.TestCase):
 class CliTestCase(CliBaseTest):
     def test_call_usage(self):
         with self.assertRaises(SystemExit):
-            execfile(os.path.dirname(__file__) + '/../msign')
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
 
 class CliTestDialog(CliBaseTest):
     def setUp(self):
