@@ -55,9 +55,6 @@ class CliTestDialog(CliBaseTest):
         
         sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
 
-    def handle_alarm(signum, frame):
-        raise AlarmException
-
     def write_to_callback(self, stdin, callback):
         r, w = os.pipe()
         pid = os.fork()
