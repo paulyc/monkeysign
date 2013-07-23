@@ -21,14 +21,20 @@ import os
 
 directory, basename = os.path.split(sys.argv[0])
 
-if basename == 'msign-cli':
+path, directory = os.path.split(directory)
+if directory == 'scripts':
+    sys.path.insert(0, path + '/../')
+
+print "path: %s" % sys.path
+
+if basename == 'monkeysign':
     from monkeysign.cli import MonkeysignCli as ui
 else:
     try:
         from monkeysign.gtkui import MonkeysignScanUi as ui
-    except (ImportError):
-        print "some modules missing for scanning functionality, going commandline-only"
-        from monkeysign.cli import MonkeysignCli as ui
+    except ImportError as e:
+        print "some modules missing for scanning functionality: %s" % e
+        sys.exit(1)
 
 with ui() as u:
     u.main()
