@@ -28,7 +28,7 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign.gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid, GpgProcotolError
+from monkeysign.gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid, GpgProtocolError
 
 class TestContext(unittest.TestCase):
     """Tests for the Context class.
@@ -209,7 +209,7 @@ class TestKeyringWithKeys(TestKeyringBase):
 
         that is, even if all other conditions are ok"""
         self.gpg.context.set_option('local-user', '0000000F')
-        with self.assertRaises(GpgProcotolError):
+        with self.assertRaises(GpgProtocolError):
             self.gpg.sign_key('7B75921E', True)
 
     def test_sign_key_all_uids(self):

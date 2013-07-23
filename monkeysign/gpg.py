@@ -198,7 +198,7 @@ class Context():
             if self.debug: print >>self.debug, "FOUND:", line,
             return match
         else:
-            raise GpgProcotolError(self.returncode, "could not find pattern '%s' in input" % pattern)
+            raise GpgProtocolError(self.returncode, "could not find pattern '%s' in input" % pattern)
 
     def seek(self, fd, pattern):
         """look for a specific GNUPG status line in the output
@@ -287,7 +287,7 @@ class Keyring():
         try:
             self.context.seek(fd, 'IMPORT_OK')
             self.context.seek(fd, 'IMPORT_RES')
-        except GpgProcotolError:
+        except GpgProtocolError:
             return False
         return True
 
@@ -357,7 +357,7 @@ class Keyring():
             elif self.context.returncode == 2:
                 return None
             else:
-                raise GpgProcotolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
+                raise GpgProtocolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
         return keys
 
     def encrypt_data(self, data, recipient):
@@ -450,7 +450,7 @@ class Keyring():
         # expect the passphrase confirmation
         try:
             self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
-        except GpgProcotolError:
+        except GpgProtocolError:
             return False
         if multiuid:
             # we save the resulting key in uid selection mode
@@ -670,7 +670,7 @@ class OpenPGPuid():
     def get_trust(self):
         return OpenPGPkey.trust_map[self.trust]
 
-class GpgProcotolError(IOError):
+class GpgProtocolError(IOError):
     """simple exception raised when we have trouble talking with GPG
 
     we try to pass the subprocess.popen.returncode as an errorno and a
