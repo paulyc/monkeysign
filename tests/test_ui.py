@@ -145,6 +145,7 @@ this duplicates tests from the gpg code, but is necessary to test later function
         for fpr, key in self.ui.signed_keys.items():
             msg = self.ui.create_mail(fpr, 'unittests@localhost', 'devnull@localhost')
             self.assertIsNotNone(msg)
+            self.assertRegexpMatches(msg.as_string(), "BEGIN PGP MESSAGE")
 
     @unittest.expectedFailure
     def test_create_mail_multiple(self):
