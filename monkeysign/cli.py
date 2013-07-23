@@ -32,14 +32,18 @@ script assumes you have gpg-agent configure to prompt for passwords."""
     usage = usage='%prog [options] <keyid>'
     epilog='<keyid>: a GPG fingerprint or key id'
 
+    def parse_args(self, args):
+        """override main parsing: we absolutely need an argument"""
+        parser = MonkeysignUi.parse_args(self, args)
+        if self.pattern is None:
+            parser.print_usage()
+            sys.exit('wrong number of arguments, use -h for full help')
+
     def main(self):
         """main code execution loop
 
         we expect to have the commandline parsed for us
         """
-
-        if self.pattern is None:
-            sys.exit('wrong number of arguments')
 
         MonkeysignUi.main(self)
 

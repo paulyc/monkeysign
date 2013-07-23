@@ -109,7 +109,10 @@ Regards,
         elif len(self.pattern) < 1:
             self.pattern = None
         else:
-            sys.exit('wrong number of arguments')
+            parser.print_usage()
+            sys.exit('wrong number of arguments, use -h for full help')
+        # make sure parser can be accessed outside of this function
+        return parser
 
     def __init__(self, args = None):
         # the options that determine how we operate, from the parse_args()
