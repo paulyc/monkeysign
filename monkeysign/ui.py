@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # gpg interface
-from monkeysign.gpg import Keyring, TempKeyring
+from monkeysign.gpg import Keyring, TempKeyring, GpgRuntimeError
 
 # mail functions
 from email.mime.multipart import MIMEMultipart
@@ -319,7 +319,11 @@ Sign all identities? [y/N] \
             # signatures. this may require create_mail() to work on
             # *another* temporary keyring and may also need support
             # for the deluid command in the gpg module.
-            msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
+            try:
+                msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
+            except GpgRuntimeError as e:
+                self.warn('failed to create email: %s' % e)
+                break
 
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
