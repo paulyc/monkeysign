@@ -351,6 +351,8 @@ not sending email to %s, as requested, here's the email message:
     def create_mail(self, recipient, mailfrom, mailto):
         """create the email to be sent"""
 
+        # TODO: move into EmailFactory
+
         # prepare for email transport
         self.tmpkeyring.context.set_option('armor')
         # XXX: why is this necessary?
@@ -368,6 +370,15 @@ not sending email to %s, as requested, here's the email message:
 
 class EmailFactory:
     """this class regroups different functions to generate emails"""
+
+    # TODO: this should be a real factory, ie. a class generating an
+    # object that will represent the email and when turned into a
+    # string, will be the actual mail. therefore those functions
+    # shouldn't be static.
+    #
+    # the challenge is that we need a gpg context to encrypt the
+    # email, but at least we should be able to take that context as
+    # part of the constructor
 
     @staticmethod
     def create_mail_from_block(data, body = ''):
