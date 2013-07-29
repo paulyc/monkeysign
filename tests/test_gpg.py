@@ -117,6 +117,8 @@ class TestKeyringBase(unittest.TestCase):
         self.tmp = tempfile.mkdtemp(prefix="pygpg-")
         self.gpg = Keyring(self.tmp)
         self.assertEqual(self.gpg.context.options['homedir'], self.tmp)
+        # to avoid rebuilding the trust base after uid changes and so on
+        self.gpg.context.set_option('always-trust')
 
     def tearDown(self):
         """trash the temporary directory we created"""
@@ -284,6 +286,22 @@ class TestKeyringWithKeys(TestKeyringBase):
         for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
             for u, uid in key.uids.iteritems():
                 self.assertNotEqual(userid, uid.uid)
+
+    def test_del_uid_except(self):
+        """see if we can easily delete all uids except a certain one"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
+        keys = self.gpg.get_keys('7B75921E')
+        todelete = []
+        for fpr, key in keys.iteritems():
+            for u, uid in key.uids.iteritems():
+                if userid != uid.uid:
+                    todelete.append(uid.uid)
+        for uid in todelete:
+            self.gpg.del_uid(fpr, uid)
+        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertEqual(userid, uid.uid)
 
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
