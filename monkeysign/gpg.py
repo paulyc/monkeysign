@@ -384,6 +384,31 @@ class Keyring():
         else:
             raise GpgRuntimeError(self.context.returncode, "decryption failed: %s" % self.context.stderr.split("\n")[-2])
 
+    def del_uid(self, fingerprint, pattern):
+        if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command(['edit-key', fingerprint])
+        proc = subprocess.Popen(self.context.build_command(['edit-key', fingerprint]), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # start copy-paste from sign_key()
+        self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+        while True:
+            m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
+            if m and m.group(1) == pattern:
+                # XXX: we don't have the +1 that sign_key has, why?
+                index = int(m.group(2))
+                break
+        print >>proc.stdin, str(index)
+        self.context.expect(proc.stderr, 'GOT_IT')
+        self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+        # end of copy-paste from sign_key()
+        print >>proc.stdin, 'deluid'
+        self.context.expect(proc.stderr, 'GOT_IT')
+        self.context.expect(proc.stderr, 'GET_BOOL keyedit.remove.uid.okay')
+        print >>proc.stdin, 'y'
+        self.context.expect(proc.stderr, 'GOT_IT')
+        self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
+        print >>proc.stdin, 'save'
+        self.context.expect(proc.stderr, 'GOT_IT')
+        return proc.wait() == 0
+
     def sign_key(self, pattern, signall = False, local = False):
         """sign a OpenPGP public key
 

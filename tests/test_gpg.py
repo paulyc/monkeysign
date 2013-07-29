@@ -267,6 +267,23 @@ class TestKeyringWithKeys(TestKeyringBase):
         #for fpr, key in keys.iteritems():
         #    print >>sys.stderr, "key:", key
 
+    def test_deluid(self):
+        userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        found = False
+        keys = self.gpg.get_keys('7B75921E')
+        for fpr, key in keys.iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertIsInstance(uid, OpenPGPuid)
+                if userid == uid.uid:
+                    found = True
+                    break
+        self.assertTrue(found, "that we can find the userid before removing it")
+        self.assertTrue(self.gpg.del_uid(fpr, userid))
+        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertNotEqual(userid, uid.uid)
+
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
         self.key = OpenPGPkey("""tru::1:1343350431:0:3:1:5
