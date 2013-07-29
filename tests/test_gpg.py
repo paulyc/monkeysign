@@ -267,7 +267,8 @@ class TestKeyringWithKeys(TestKeyringBase):
         #for fpr, key in keys.iteritems():
         #    print >>sys.stderr, "key:", key
 
-    def test_deluid(self):
+    def test_del_uid(self):
+        """test uid deletion, gpg.del_uid()"""
         userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         found = False
