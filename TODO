@@ -20,6 +20,11 @@ Release process
  * make translatable (look at the gameclock for inspiration)
  * add a manpage (bug #716674)
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
+ * harmonize error handling: some functions in gpg rely on exceptions,
+   other on truth return values. we prefer exceptions as it allows us
+   to propagate error messages to the UI, but make sure to generate a
+   RuntimeError, and not a ProtocolError, which are unreadable to the
+   user.
 
 2.0 blockers
 ============
