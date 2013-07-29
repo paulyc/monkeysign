@@ -223,6 +223,8 @@ class Context():
         if self.debug:
             if match: print >>self.debug, "FOUND:", line,
             else: print >>self.debug, "SKIPPED:", line,
+        if not match:
+            raise GpgProtocolError(self.returncode, 'expected "%s", found "%s"' % (pattern, line))
         return match
 
     def expect(self, fd, pattern):
@@ -404,7 +406,10 @@ class Keyring():
         proc = subprocess.Popen(self.context.build_command([['sign-key', 'lsign-key'][local], pattern]), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # if there are multiple uids to sign, we'll get this point, and a whole other interface
-        multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+        try:
+            multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+        except GpgProtocolError:
+            return False
         if multiuid:
             if signall: # special case, sign all keys
                 print >>proc.stdin, "y"
@@ -675,6 +680,11 @@ class GpgProtocolError(IOError):
 
     we try to pass the subprocess.popen.returncode as an errorno and a
     significant description string
+
+    this error shouldn't be propagated to the user, because it will
+    contain mostly "expect" jargon from the DETAILS.txt file. the gpg
+    module should instead raise a GpgRutimeError with a user-readable
+    error message (e.g. "key not found").
     """
     pass
 
