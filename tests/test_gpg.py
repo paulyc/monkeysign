@@ -28,7 +28,7 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign.gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid, GpgProtocolError
+from monkeysign.gpg import *
 
 class TestContext(unittest.TestCase):
     """Tests for the Context class.
@@ -188,7 +188,13 @@ class TestKeyringBasics(TestKeyringBase):
         looking if there is really no output
         """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.gpg.context.debug = sys.stderr
         self.assertFalse(self.gpg.sign_key('7B75921E'))
+
+    def test_failed_revoke(self):
+        self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-revoke.asc').read())
+        with self.assertRaises(GpgRuntimeError):
+            self.gpg.sign_key('7B75921E', True)
 
 class TestKeyringWithKeys(TestKeyringBase):
     def setUp(self):
