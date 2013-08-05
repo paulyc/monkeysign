@@ -441,7 +441,7 @@ class Keyring():
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # confirm signature
                 try:
-                    self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+                    self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
                 except GpgProtocolError:
                     raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr.split("\n")[-2])
                 print >>proc.stdin, 'y'
