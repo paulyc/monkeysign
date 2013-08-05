@@ -164,6 +164,8 @@ Regards,
             self.keyring.context.debug = self.logfile
         if self.options.keyserver is not None:
             self.tmpkeyring.context.set_option('keyserver', self.options.keyserver)
+        if self.options.user is not None:
+            self.tmpkeyring.context.set_option('local-user', self.options.user)
 
         # copy the gpg.conf from the real keyring
         home = os.environ['HOME'] + '/.gnupg'
