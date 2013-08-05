@@ -465,7 +465,7 @@ class Keyring():
             print >>proc.stdin, "sign"
             self.context.expect(proc.stderr, 'GOT_IT')
             # confirm signature
-            self.context.seek(proc.stderr, 'GET_BOOL sign_uid.okay')
+            self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
 
         # we fallthrough here if there's only one key to sign
         try:
