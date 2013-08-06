@@ -487,7 +487,7 @@ class Keyring():
         try:
             self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
         except GpgProtocolError:
-            return False
+            raise GpgRuntimeError(self.context.returncode, 'password confirmation failed')
         if multiuid:
             # we save the resulting key in uid selection mode
             self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
