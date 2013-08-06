@@ -441,7 +441,7 @@ class Keyring():
         try:
             multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
         except GpgProtocolError:
-            raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr.split("\n")[-2])
+            raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr)
         if multiuid:
             if signall: # special case, sign all keys
                 print >>proc.stdin, "y"
@@ -450,7 +450,7 @@ class Keyring():
                 try:
                     self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
                 except GpgProtocolError:
-                    raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr.split("\n")[-2])
+                    raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr)
                 print >>proc.stdin, 'y'
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
@@ -478,7 +478,7 @@ class Keyring():
             try:
                 self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
             except GpgProtocolError:
-                raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr.split("\n")[-2])
+                raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr)
 
         # we fallthrough here if there's only one key to sign
         try:
