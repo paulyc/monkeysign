@@ -299,6 +299,7 @@ class Keyring():
         This exports actual OpenPGP data, by default in binary format,
         but can also be exported asci-armored by setting the 'armor'
         option."""
+        self.context.set_option('armor')
         if secret: command = ['export-secret-keys']
         else: command = ['export']
         if fpr: command += [fpr]
