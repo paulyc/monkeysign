@@ -258,12 +258,11 @@ work.
                 self.signing_key = key
                 break
 
-        self.log('signing key chosen: %s' % key.fpr)
-
         if self.signing_key is None:
             self.abort('no default secret key found, abort!')
+        self.log('signing key chosen: %s' % self.signing_key.fpr)
 
-        # export public key material associated with the above
+        # export public key material associated with detected private
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.signing_key.fpr)):
             self.abort('could not find public key material, do you have a GPG key?')
 
