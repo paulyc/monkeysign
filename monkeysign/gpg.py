@@ -273,6 +273,12 @@ class Keyring():
         self.context = Context()
         if homedir is not None:
             self.context.set_option('homedir', homedir)
+        else:
+            homedir = os.environ['HOME'] + '/.gnupg'
+            if 'GNUPGHOME' in os.environ:
+                homedir = os.environ['GNUPGHOME']
+        self.homedir = homedir
+
 
     def import_data(self, data):
         """Import OpenPGP data blocks into the keyring.
@@ -500,11 +506,10 @@ class TempKeyring(Keyring):
     def __init__(self):
         """Override the parent class to generate a temporary GPG home
         that gets destroyed at the end of operations."""
-        self.tmphomedir = tempfile.mkdtemp(prefix="pygpg-")
-        Keyring.__init__(self, self.tmphomedir)
+        Keyring.__init__(self, tempfile.mkdtemp(prefix="pygpg-"))
 
     def __del__(self):
-        shutil.rmtree(self.tmphomedir)
+        shutil.rmtree(self.homedir)
 
 class OpenPGPkey():
     """An OpenPGP key.

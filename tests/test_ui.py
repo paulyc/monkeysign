@@ -48,7 +48,7 @@ class CliTestDialog(CliBaseTest):
     def setUp(self):
         CliBaseTest.setUp(self)
         self.gpg = TempKeyring()
-        os.environ['GNUPGHOME'] = self.gpg.tmphomedir
+        os.environ['GNUPGHOME'] = self.gpg.homedir
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
@@ -97,17 +97,18 @@ class BaseTestCase(unittest.TestCase):
             self.args += [ self.pattern ]
         self.ui = MonkeysignUi(self.args)
         self.ui.keyring = TempKeyring()
+        self.ui.prepare() # needed because we changed the base keyring
 
 class BasicTests(BaseTestCase):
     pattern = '7B75921E'
 
     def setUp(self):
         BaseTestCase.setUp(self)
-        self.tmphomedir = self.ui.tmpkeyring.tmphomedir
+        self.homedir = self.ui.tmpkeyring.homedir
 
     def test_cleanup(self):
         del self.ui
-        self.assertFalse(os.path.exists(self.tmphomedir))
+        self.assertFalse(os.path.exists(self.homedir))
 
 class SigningTests(BaseTestCase):
     pattern = '7B75921E'
@@ -116,6 +117,7 @@ class SigningTests(BaseTestCase):
         """setup a basic keyring capable of signing a local key"""
         BaseTestCase.setUp(self)
         self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
@@ -131,6 +133,9 @@ this duplicates tests from the gpg code, but is necessary to test later function
 this duplicates tests from the gpg code, but is necessary to test later functions"""
         self.test_find_key()
         self.ui.copy_secrets()
+        self.assertTrue(self.ui.keyring.get_keys(None, True, False))
+        self.assertGreaterEqual(len(self.ui.keyring.get_keys(None, True, False)), 1)
+        self.assertGreaterEqual(len(self.ui.keyring.get_keys(None, True, True)), 1)
 
     def test_sign_key(self):
         """test if we can sign the keys non-interactively"""

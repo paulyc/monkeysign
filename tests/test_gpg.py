@@ -92,7 +92,6 @@ class TestTempKeyring(unittest.TestCase):
     def setUp(self):
         self.gpg = TempKeyring()
         self.assertIn('homedir', self.gpg.context.options)
-        self.assertIn('tmphomedir', self.gpg)
 
     def tearDown(self):
         del self.gpg

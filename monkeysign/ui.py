@@ -150,7 +150,7 @@ Regards,
 
     def __exit__(self, exc_type, exc_value, traceback):
         # this is implicit in the garbage collection, but tell the user anyways
-        self.log('deleting the temporary keyring ' + self.tmpkeyring.tmphomedir)
+        self.log('deleting the temporary keyring ' + self.tmpkeyring.homedir)
 
         if exc_type is NotImplementedError:
             self.abort(str(exc_value))
@@ -166,17 +166,15 @@ Regards,
             self.tmpkeyring.context.set_option('keyserver', self.options.keyserver)
         if self.options.user is not None:
             self.tmpkeyring.context.set_option('local-user', self.options.user)
+        self.tmpkeyring.context.set_option('secret-keyring', self.keyring.homedir + '/secring.gpg')
 
         # copy the gpg.conf from the real keyring
-        home = os.environ['HOME'] + '/.gnupg'
-        if 'GNUPGHOME' in os.environ:
-            home = os.environ['GNUPGHOME']
         try:
-            shutil.copy(home + '/gpg.conf', self.tmpkeyring.tmphomedir)
+            shutil.copy(self.keyring.homedir + '/gpg.conf', self.tmpkeyring.homedir)
             self.log("copied your gpg.conf in temporary keyring")
         except IOError as e:
             # no such file or directory is alright: it means the use
-            # has no gpg.conf (because we are certain the tmphomedir
+            # has no gpg.conf (because we are certain the temp homedir
             # exists at this point)
             if e.errno != 2:
                 pass
@@ -241,16 +239,18 @@ this should not interrupt the flow of the program, but must be visible to the us
                 self.abort('could not find key %s in your keyring or keyservers' % self.pattern)
 
     def copy_secrets(self):
-        """import secret keys from your keyring"""
-        self.log('copying your private key to temporary keyring in' + self.tmpkeyring.tmphomedir)
-        if not self.tmpkeyring.import_data(self.keyring.export_data(self.options.user, True)):
-            self.abort('could not find private key material, do you have a GPG key?')
+        """import secret keys (but only the public part) from your keyring
 
+we use --secret-keyring instead of copying the secret key material,
+but we still need the public part in the temporary keyring for this to
+work.
+"""
+        self.log('copying your private key to temporary keyring in' + self.tmpkeyring.homedir)
         # detect the proper uid
         if self.options.user is None:
-            keys = self.tmpkeyring.get_keys(None, True, False)
+            keys = self.keyring.get_keys(None, True, False)
         else:
-            keys = self.tmpkeyring.get_keys(self.options.user, True, False)
+            keys = self.keyring.get_keys(self.options.user, True, False)
 
         for fpr, key in keys.iteritems():
             self.log('found secret key: %s' % key)
