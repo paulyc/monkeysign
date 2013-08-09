@@ -29,7 +29,7 @@ import signal
 sys.path.append(os.path.dirname(__file__) + '/..')
 
 from monkeysign.gpg import TempKeyring
-from test_lib import TestTimeLimit
+from test_lib import TestTimeLimit, AlarmException
 
 class TestGpgNetwork(TestTimeLimit):
     """Seperate test cases for functions that hit the network
@@ -44,13 +44,19 @@ the network forever"""
 
     def test_fetch_keys(self):
         """test key fetching from keyservers"""
-        self.assertTrue(self.gpg.fetch_keys('4023702F'))
+        try:
+            self.assertTrue(self.gpg.fetch_keys('4023702F'))
+        except AlarmException:
+            raise unittest.case._ExpectedFailure(sys.exc_info())
 
     def test_special_key(self):
         """test a key that sign_key had trouble with"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertTrue(self.gpg.fetch_keys('3CCDBB7355D1758F549354D20B123309D3366755'))
+        try:
+            self.assertTrue(self.gpg.fetch_keys('3CCDBB7355D1758F549354D20B123309D3366755'))
+        except AlarmException:
+            raise unittest.case._ExpectedFailure(sys.exc_info())
         self.assertTrue(self.gpg.sign_key('3CCDBB7355D1758F549354D20B123309D3366755'))
 
     def tearDown(self):

@@ -196,8 +196,11 @@ class NonExistantKeyTests(BaseTestCase, TestTimeLimit):
 
     def test_find_key(self):
         """find_key() should exit if the key can't be found on keyservers or local keyring"""
-        with self.assertRaises(SystemExit):
-            self.ui.find_key()
+        try:
+            with self.assertRaises(SystemExit):
+                self.ui.find_key()
+        except AlarmException:
+            raise unittest.case._ExpectedFailure(sys.exc_info())
 
 if __name__ == '__main__':
     unittest.main()
