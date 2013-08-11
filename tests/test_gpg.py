@@ -301,8 +301,8 @@ class TestKeyringWithKeys(TestKeyringBase):
             for u, uid in key.uids.iteritems():
                 if userid != uid.uid:
                     todelete.append(uid.uid)
-        for uid in todelete:
-            self.gpg.del_uid(fpr, uid)
+            for uid in todelete:
+                self.gpg.del_uid(fpr, uid)
         for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
             for u, uid in key.uids.iteritems():
                 self.assertEqual(userid, uid.uid)
