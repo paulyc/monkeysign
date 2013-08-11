@@ -23,10 +23,11 @@ Test suite for the basic user interface class.
 import unittest
 import os
 import sys
+import re
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign.ui import MonkeysignUi
+from monkeysign.ui import MonkeysignUi, EmailFactory
 from monkeysign.gpg import TempKeyring
 
 from test_lib import TestTimeLimit
@@ -165,6 +166,86 @@ not yet implemented, see the TODO in export_key() for more details"""
                 msg = self.ui.create_mail(uid, 'unittests@localhost', 'devnull@localhost')
                 if oldmsg is not None:
                     self.assertNotEqual(oldmsg, msg)
+
+class EmailFactoryTest(BaseTestCase):
+    pattern = '7B75921E'
+
+    def setUp(self):
+        """setup a basic keyring capable of signing a local key"""
+        BaseTestCase.setUp(self)
+        self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+    def test_mail_key(self):
+        """test if we can generate a mail with a key inside"""
+        data = self.ui.keyring.export_data(self.pattern)
+        self.assertNotEqual(data, '')
+        message = EmailFactory.create_mail_from_block(data, self.ui.email_body)
+        match = re.compile("""Content-Type: multipart/mixed; boundary="===============%s=="
+MIME-Version: 1.0
+
+--===============%s==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+ClBsZWFzZSBmaW5kIGF0dGFjaGVkIHlvdXIgc2lnbmVkIFBHUCBrZXkuIFlvdSBjYW4gaW1wb3J0
+IHRoZSBzaWduZWQKa2V5IGJ5IHJ1bm5pbmcgZWFjaCB0aHJvdWdoIGBncGcgLS1pbXBvcnRgLgoK
+Tm90ZSB0aGF0IHlvdXIga2V5IHdhcyBub3QgdXBsb2FkZWQgdG8gYW55IGtleXNlcnZlcnMuIElm
+IHlvdSB3YW50CnRoaXMgbmV3IHNpZ25hdHVyZSB0byBiZSBhdmFpbGFibGUgdG8gb3RoZXJzLCBw
+bGVhc2UgdXBsb2FkIGl0CnlvdXJzZWxmLiAgV2l0aCBHbnVQRyB0aGlzIGNhbiBiZSBkb25lIHVz
+aW5nOgoKICAgIGdwZyAtLWtleXNlcnZlciBwb29sLnNrcy1rZXlzZXJ2ZXJzLm5ldCAtLXNlbmQt
+a2V5IDxrZXlpZD4KClJlZ2FyZHMsCg==
+
+--===============%s==
+Content-Type: application/pgp-keys; name="yourkey.asc"
+MIME-Version: 1.0
+Content-Disposition: attachment; filename="yourkey.asc"
+Content-Transfer-Encoding: 7bit
+Content-Description: PGP Key <keyid>, uid <uid> \(<idx\), signed by <keyid>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+.*
+-----END PGP PUBLIC KEY BLOCK-----
+
+--===============%s==--""" % tuple([ '[0-9]*' ] * 4), re.DOTALL)
+        self.assertRegexpMatches(message.as_string(), match)
+        return message
+
+    def test_wrap_crypted_mail(self):
+        message = self.test_mail_key()
+        # to trust the key even if we don't have a ultimate trust path
+        self.ui.keyring.context.set_option('always-trust')
+        encrypted = self.ui.keyring.encrypt_data(message.as_string(), self.pattern)
+        message = EmailFactory.wrap_crypted_mail('nobody@example.com', 'nobody@example.com', self.ui.email_subject, encrypted)
+        match = re.compile("""Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+ boundary="===============%s=="
+MIME-Version: 1.0
+Subject: Your signed OpenPGP key
+From: nobody@example.com
+To: nobody@example.com
+
+This is a multi-part message in PGP/MIME format...
+--===============%s==
+Content-Type: application/pgp-encrypted; filename="signedkey.msg"
+MIME-Version: 1.0
+Content-Disposition: attachment; filename="signedkey.msg"
+
+Version: 1
+--===============%s==
+Content-Type: application/octet-stream; filename="msg.asc"
+MIME-Version: 1.0
+Content-Disposition: inline; filename="msg.asc"
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP MESSAGE-----
+.*
+-----END PGP MESSAGE-----
+
+--===============%s==--""" % tuple(['[0-9]*'] * 4), re.DOTALL)
+        self.assertRegexpMatches(message.as_string(), match)
 
 class KeyserverTests(BaseTestCase):
     args = [ '--keyserver', 'pool.sks-keyservers.net' ]
