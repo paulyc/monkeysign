@@ -145,9 +145,7 @@ this duplicates tests from the gpg code, but is necessary to test later function
         self.assertGreaterEqual(len(self.ui.signed_keys), 1)
 
     def test_create_mail_multiple(self):
-        """test if exported keys contain the right uid
-
-not yet implemented, see the TODO in export_key() for more details"""
+        """test if exported keys contain the right uid"""
         self.test_sign_key()
 
         for fpr, key in self.ui.signed_keys.items():
@@ -173,7 +171,13 @@ class EmailFactoryTest(BaseTestCase):
         self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
-        self.email = EmailFactory(self.ui.tmpkeyring.export_data(self.pattern), self.pattern, 'nobody@example.com', 'nobody@example.com')
+        self.email = EmailFactory(self.ui.tmpkeyring.export_data(self.pattern), self.pattern, 'Antoine Beaupré <anarcat@orangeseeds.org>', 'nobody@example.com', 'nobody@example.com')
+
+    def test_cleanup_uids(self):
+        """test if we can properly remove irrelevant UIDs"""
+        for fpr, key in self.email.tmpkeyring.get_keys('7B75921E').iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertEqual(self.email.recipient, uid.uid)
 
     def test_mail_key(self):
         """test if we can generate a mail with a key inside"""

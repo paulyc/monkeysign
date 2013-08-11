@@ -263,6 +263,7 @@ Signing the following key
 Sign all identities? [y/N] \
 """ % str(keys[key]), False)
 
+            self.chosen_uid = None
             if alluids:
                 pattern = keys[key].fpr
             else:
@@ -272,6 +273,7 @@ Sign all identities? [y/N] \
                     return False
                 if not self.options.to:
                     self.options.to = pattern
+                self.chosen_uid = pattern
 
             if not self.options.dryrun:
                 if not self.yes_no('Really sign key? [y/N] ', False):
@@ -299,36 +301,45 @@ Sign all identities? [y/N] \
         if len(self.signed_keys) < 1: self.warn('no key signed, nothing to export')
         
         for fpr, key in self.signed_keys.items():
-            # TODO: here we need to use uid instead of fpr, and iterate
-            # over the chosen uids, instead of sending all
-            # signatures. this may require create_mail() to work on
-            # *another* temporary keyring and may also need support
-            # for the deluid command in the gpg module.
-            try:
-                msg = EmailFactory(self.ui.tmpkeyring.export_data(recipient), fpr, from_user, self.options.to or key.uids.values()[0].uid)
-            except GpgRuntimeError as e:
-                self.warn('failed to create email: %s' % e)
-                break
+            if self.chosen_uid is None:
+                for uid in key.uids.values():
+                    try:
+                        msg = EmailFactory(self.tmpkeyring.export_data(fpr), fpr, uid.uid, from_user, self.options.to)
+                    except GpgRuntimeError as e:
+                        self.warn('failed to create email: %s' % e)
+                        break
+                    self.sendmail(msg)
+            else:
+                try:
+                    msg = EmailFactory(self.tmpkeyring.export_data(fpr), fpr, self.chosen_uid, from_user, self.options.to)
+                except GpgRuntimeError as e:
+                    self.warn('failed to create email: %s' % e)
+                    break
+                self.sendmail(msg)
 
+    def sendmail(self, msg):
+            """actually send the email
+
+expects an EmailFactory email, but will not mail if nomail is set"""
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
-                server.sendmail(from_user, msg['To'], msg.as_string())
+                server.sendmail(msg.mailfrom, msg.mailto, msg.as_string())
                 server.set_debuglevel(1)
                 server.quit()
-                self.warn('sent message through SMTP server %s to %s' % (self.options.smtpserver, msg['To']))
+                self.warn('sent message through SMTP server %s to %s' % (self.options.smtpserver, msg.mailto))
                 return True
             elif not self.options.nomail:
                 if self.options.dryrun: return True
                 p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
                 p.communicate(msg.as_string())
-                self.warn('sent message through sendmail to ' + msg['To'])
+                self.warn('sent message through sendmail to ' + msg.mailto)
             else:
                 # okay, no mail, just dump the exported key then
                 self.warn("""\
 not sending email to %s, as requested, here's the email message:
 
-%s""" % (msg['To'], msg))
+%s""" % (msg.mailto, msg))
 
 
 class EmailFactory:
@@ -358,30 +369,44 @@ yourself.  With GnuPG this can be done using:
 Regards,
 """
 
-    def __init__(self, key, recipient, mailfrom, mailto):
+    def __init__(self, keydata, keyfpr, recipient, mailfrom, mailto):
         """email constructor
 
 we expect to find the following arguments:
 
-key: the signed public key material
+keydata: the signed public key material
+keyfpr: the fingerprint of that public key
 recipient: the recipient to encrypt the mail to
 mailfrom: who the mail originates from
 mailto: who to send the mail to (usually similar to recipient, but can be used to specify specific keyids"""
-        (self.recipient, self.mailfrom, self.mailto) = (recipient, mailfrom, mailto)
+        (self.keyfpr, self.recipient, self.mailfrom, self.mailto) = (keyfpr, recipient, mailfrom, mailto or recipient)
+        # operate over our own keyring, this allows us to remove UIDs freely
         self.tmpkeyring = TempKeyring()
         # copy data over from the UI keyring
-        self.tmpkeyring.import_data(key)
+        self.tmpkeyring.import_data(keydata)
         # prepare for email transport
         self.tmpkeyring.context.set_option('armor')
         # XXX: why is this necessary?
         self.tmpkeyring.context.set_option('always-trust')
+        # remove UIDs we don't want to send
+        self.cleanup_uids()
+
+    def cleanup_uids(self):
+        """this will remove any UID not matching the 'recipient' set in the class"""
+        for fpr, key in self.tmpkeyring.get_keys().iteritems():
+            todelete = []
+            for uid in key.uids.values():
+                if self.recipient != uid.uid:
+                    todelete.append(uid.uid)
+            for uid in todelete:
+                self.tmpkeyring.del_uid(fpr, uid)
 
     def __str__(self):
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
         # introduction and the signed key material
-        message = self.create_mail_from_block(self.tmpkeyring.export_data(self.recipient))
-        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.recipient)
+        message = self.create_mail_from_block(self.tmpkeyring.export_data(self.keyfpr))
+        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.keyfpr)
 
         # the second layer up, made of two parts: a version number
         # and the first layer, encrypted
