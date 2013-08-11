@@ -223,13 +223,13 @@ class TestKeyringWithKeys(TestKeyringBase):
         """test signature of all uids of a key"""
         self.assertTrue(self.gpg.sign_key('7B75921E', True))
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
     def test_sign_key_uid(self):
         """test signature of a single uid"""
         self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
     def test_sign_key_as_user(self):
         """normal signature with a signing user specified"""
