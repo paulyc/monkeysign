@@ -149,7 +149,7 @@ this duplicates tests from the gpg code, but is necessary to test later function
         self.test_sign_key()
 
         for fpr, key in self.ui.signed_keys.items():
-            msg = self.ui.create_mail(fpr, 'unittests@localhost', 'devnull@localhost')
+            msg = EmailFactory(self.ui.tmpkeyring.export_data(fpr), fpr, 'unittests@localhost', 'devnull@localhost')
             self.assertIsNotNone(msg)
             self.assertRegexpMatches(msg.as_string(), "BEGIN PGP MESSAGE")
 
@@ -173,16 +173,17 @@ class EmailFactoryTest(BaseTestCase):
     def setUp(self):
         """setup a basic keyring capable of signing a local key"""
         BaseTestCase.setUp(self)
-        self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+        self.email = EmailFactory(self.ui.tmpkeyring.export_data(self.pattern), self.pattern, 'nobody@example.com', 'nobody@example.com')
 
     def test_mail_key(self):
         """test if we can generate a mail with a key inside"""
-        data = self.ui.keyring.export_data(self.pattern)
+        data = self.email.tmpkeyring.export_data(self.pattern)
         self.assertNotEqual(data, '')
-        message = EmailFactory.create_mail_from_block(data, self.ui.email_body)
+        message = self.email.create_mail_from_block(data)
         match = re.compile("""Content-Type: multipart/mixed; boundary="===============%s=="
 MIME-Version: 1.0
 
@@ -215,11 +216,6 @@ Content-Description: PGP Key <keyid>, uid <uid> \(<idx\), signed by <keyid>
         return message
 
     def test_wrap_crypted_mail(self):
-        message = self.test_mail_key()
-        # to trust the key even if we don't have a ultimate trust path
-        self.ui.keyring.context.set_option('always-trust')
-        encrypted = self.ui.keyring.encrypt_data(message.as_string(), self.pattern)
-        message = EmailFactory.wrap_crypted_mail('nobody@example.com', 'nobody@example.com', self.ui.email_subject, encrypted)
         match = re.compile("""Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
  boundary="===============%s=="
 MIME-Version: 1.0
@@ -245,7 +241,7 @@ Content-Transfer-Encoding: 7bit
 -----END PGP MESSAGE-----
 
 --===============%s==--""" % tuple(['[0-9]*'] * 4), re.DOTALL)
-        self.assertRegexpMatches(message.as_string(), match)
+        self.assertRegexpMatches(self.email.as_string(), match)
 
 class KeyserverTests(BaseTestCase):
     args = [ '--keyserver', 'pool.sks-keyservers.net' ]

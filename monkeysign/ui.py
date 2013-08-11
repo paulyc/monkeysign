@@ -60,25 +60,6 @@ class MonkeysignUi(object):
     usage=None
     epilog=None
 
-    # the email subject
-    # @todo make this translatable
-    email_subject = "Your signed OpenPGP key"
-
-    # the email body
-    # @todo make this translatable
-    email_body = """
-Please find attached your signed PGP key. You can import the signed
-key by running each through `gpg --import`.
-
-Note that your key was not uploaded to any keyservers. If you want
-this new signature to be available to others, please upload it
-yourself.  With GnuPG this can be done using:
-
-    gpg --keyserver pool.sks-keyservers.net --send-key <keyid>
-
-Regards,
-"""
-
     def parse_args(self, args):
         """parse the commandline arguments"""
         parser = OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
@@ -324,7 +305,7 @@ Sign all identities? [y/N] \
             # *another* temporary keyring and may also need support
             # for the deluid command in the gpg module.
             try:
-                msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
+                msg = EmailFactory(self.ui.tmpkeyring.export_data(recipient), fpr, from_user, self.options.to or key.uids.values()[0].uid)
             except GpgRuntimeError as e:
                 self.warn('failed to create email: %s' % e)
                 break
@@ -349,45 +330,72 @@ not sending email to %s, as requested, here's the email message:
 
 %s""" % (msg['To'], msg))
 
-    def create_mail(self, recipient, mailfrom, mailto):
-        """create the email to be sent"""
 
-        # TODO: move into EmailFactory
+class EmailFactory:
+    """email generator
 
+this is a factory, ie. a class generating an object that represents
+the email and when turned into a string, is the actual
+mail.
+"""
+
+    # the email subject
+    # @todo make this translatable
+    subject = "Your signed OpenPGP key"
+
+    # the email body
+    # @todo make this translatable
+    body = """
+Please find attached your signed PGP key. You can import the signed
+key by running each through `gpg --import`.
+
+Note that your key was not uploaded to any keyservers. If you want
+this new signature to be available to others, please upload it
+yourself.  With GnuPG this can be done using:
+
+    gpg --keyserver pool.sks-keyservers.net --send-key <keyid>
+
+Regards,
+"""
+
+    def __init__(self, key, recipient, mailfrom, mailto):
+        """email constructor
+
+we expect to find the following arguments:
+
+key: the signed public key material
+recipient: the recipient to encrypt the mail to
+mailfrom: who the mail originates from
+mailto: who to send the mail to (usually similar to recipient, but can be used to specify specific keyids"""
+        (self.recipient, self.mailfrom, self.mailto) = (recipient, mailfrom, mailto)
+        self.tmpkeyring = TempKeyring()
+        # copy data over from the UI keyring
+        self.tmpkeyring.import_data(key)
         # prepare for email transport
         self.tmpkeyring.context.set_option('armor')
         # XXX: why is this necessary?
         self.tmpkeyring.context.set_option('always-trust')
 
+    def __str__(self):
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
         # introduction and the signed key material
-        message = EmailFactory.create_mail_from_block(self.tmpkeyring.export_data(recipient), self.email_body)
-        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), recipient)
+        message = self.create_mail_from_block(self.tmpkeyring.export_data(self.recipient))
+        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.recipient)
 
         # the second layer up, made of two parts: a version number
         # and the first layer, encrypted
-        return EmailFactory.wrap_crypted_mail(mailfrom, mailto, self.email_subject, encrypted)
+        return self.wrap_crypted_mail(encrypted).as_string()
 
-class EmailFactory:
-    """this class regroups different functions to generate emails"""
+    def as_string(self):
+        return self.__str__()
 
-    # TODO: this should be a real factory, ie. a class generating an
-    # object that will represent the email and when turned into a
-    # string, will be the actual mail. therefore those functions
-    # shouldn't be static.
-    #
-    # the challenge is that we need a gpg context to encrypt the
-    # email, but at least we should be able to take that context as
-    # part of the constructor
-
-    @staticmethod
-    def create_mail_from_block(data, body = ''):
+    def create_mail_from_block(self, data):
         """
         a multipart/mixed message containing a plain-text message
         explaining what this is, and a second part containing PGP data
         """
-        text = MIMEText(body, 'plain', 'utf-8')
+        text = MIMEText(self.body, 'plain', 'utf-8')
         filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
         keypart = MIMEBase('application', 'pgp-keys', name=filename)
         keypart.add_header('Content-Disposition', 'attachment', filename=filename)
@@ -396,8 +404,7 @@ class EmailFactory:
         keypart.set_payload(data)
         return MIMEMultipart('mixed', None, [text, keypart])
 
-    @staticmethod
-    def wrap_crypted_mail(mailfrom, mailto, mailsubject, encrypted):
+    def wrap_crypted_mail(self, encrypted):
         p1 = MIMEBase('application', 'pgp-encrypted', filename='signedkey.msg')
         p1.add_header('Content-Disposition','attachment', filename='signedkey.msg')
         p1.set_payload('Version: 1')
@@ -406,11 +413,11 @@ class EmailFactory:
         p2.add_header('Content-Transfer-Encoding', '7bit')
         p2.set_payload(encrypted)
         msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
-        msg['Subject'] = mailsubject
-        msg['From'] = mailfrom
+        msg['Subject'] = self.subject
+        msg['From'] = self.mailfrom
         msg.preamble = 'This is a multi-part message in PGP/MIME format...'
         # take the first uid, not ideal
-        msg['To'] = mailto
+        msg['To'] = self.mailto
         return msg
 
 class NowrapHelpFormatter(IndentedHelpFormatter):
