@@ -144,16 +144,6 @@ this duplicates tests from the gpg code, but is necessary to test later function
         self.ui.sign_key()
         self.assertGreaterEqual(len(self.ui.signed_keys), 1)
 
-    def test_create_mail(self):
-        """test if the exported keys are signed"""
-        self.test_sign_key()
-
-        for fpr, key in self.ui.signed_keys.items():
-            msg = EmailFactory(self.ui.tmpkeyring.export_data(fpr), fpr, 'unittests@localhost', 'devnull@localhost')
-            self.assertIsNotNone(msg)
-            self.assertRegexpMatches(msg.as_string(), "BEGIN PGP MESSAGE")
-
-    @unittest.expectedFailure
     def test_create_mail_multiple(self):
         """test if exported keys contain the right uid
 
@@ -163,9 +153,15 @@ not yet implemented, see the TODO in export_key() for more details"""
         for fpr, key in self.ui.signed_keys.items():
             oldmsg = None
             for uid in key.uids.values():
-                msg = self.ui.create_mail(uid, 'unittests@localhost', 'devnull@localhost')
+                msg = EmailFactory(self.ui.tmpkeyring.export_data(fpr), fpr, uid.uid, 'unittests@localhost', 'devnull@localhost')
                 if oldmsg is not None:
-                    self.assertNotEqual(oldmsg, msg)
+                    self.assertNotEqual(oldmsg.as_string(), msg.as_string())
+                    self.assertNotEqual(oldmsg.create_mail_from_block(oldmsg.tmpkeyring.export_data(fpr)).as_string(),
+                                        msg.create_mail_from_block(oldmsg.tmpkeyring.export_data(fpr)).as_string())
+                    self.assertNotEqual(oldmsg.tmpkeyring.export_data(fpr),
+                                        msg.tmpkeyring.export_data(fpr))
+                oldmsg = msg
+            self.assertIsNot(oldmsg, None)
 
 class EmailFactoryTest(BaseTestCase):
     pattern = '7B75921E'
