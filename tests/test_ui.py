@@ -79,14 +79,22 @@ class CliTestDialog(CliBaseTest):
         """test if we can sign a key on a fake keyring"""
         def callback(self):
             execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
-        self.write_to_callback("y\n", callback) # just say yes
+        self.write_to_callback("y\ny\n", callback) # just say yes
+
+    def test_sign_one_uid(self):
+        """test if we can sign only one keyid"""
+        def callback(self):
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
+        self.write_to_callback("n\n1\ny\n", callback) # just say yes
 
     def test_two_empty_responses(self):
-        """test what happens when we answer nothing twice"""
+        """test what happens when we answer nothing twice
+
+this tests for bug #716675"""
         def callback(self):
             with self.assertRaises(EOFError):
                 execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
-        self.write_to_callback("\n\n", callback) # just say yes
+        self.write_to_callback("\n\n", callback) # say 'default' twice
 
 class BaseTestCase(unittest.TestCase):
     pattern = None
