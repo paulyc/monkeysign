@@ -57,7 +57,7 @@ the network forever"""
             self.assertTrue(self.gpg.fetch_keys('3CCDBB7355D1758F549354D20B123309D3366755'))
         except AlarmException:
             raise unittest.case._ExpectedFailure(sys.exc_info())
-        self.assertTrue(self.gpg.sign_key('3CCDBB7355D1758F549354D20B123309D3366755'))
+        self.assertTrue(self.gpg.sign_key('3CCDBB7355D1758F549354D20B123309D3366755', True))
 
     def tearDown(self):
         TestTimeLimit.tearDown(self)

@@ -464,6 +464,7 @@ class Keyring():
             # select the uid
             self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
             while True:
+                # XXX: this will hang if the pattern requested is not found, we need a better way!
                 m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
                 if m and m.group(1) == pattern:
                     index = int(m.group(2)) + 1
