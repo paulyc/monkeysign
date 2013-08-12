@@ -35,7 +35,7 @@ from test_lib import TestTimeLimit
 class CliBaseTest(unittest.TestCase):
     def setUp(self):
         self.argv = sys.argv
-        sys.argv = [ 'monkeysign', '--dry-run', '--no-mail' ]
+        sys.argv = [ 'monkeysign', '--no-mail' ]
 
     def tearDown(self):
         sys.argv = self.argv
