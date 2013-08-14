@@ -13,10 +13,6 @@ Release process
 1.0 blockers
 ============
 
- * send one email per uid even if we sign them all
-   - the way caff does this is by deleting irrelevant key uids,
-   unfortunately our gpg library doesn't support the deluid command
-   (nor does python-gnupg)
  * make translatable (look at the gameclock for inspiration)
  * add a manpage (bug #716674)
    - maybe this madness? https://andialbrecht.wordpress.com/2009/03/17/creating-a-man-page-with-distutils-and-optparse/
