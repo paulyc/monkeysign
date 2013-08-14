@@ -28,7 +28,7 @@ import smtplib
 import subprocess
 
 # system libraries
-from optparse import OptionParser, IndentedHelpFormatter
+import optparse
 import sys
 import re
 import os
@@ -62,7 +62,7 @@ class MonkeysignUi(object):
 
     def parse_args(self, args):
         """parse the commandline arguments"""
-        parser = OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
+        parser = optparse.OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
         parser.add_option('-d', '--debug', dest='debug', default=False, action='store_true',
                           help='request debugging information from GPG engine (lots of garbage)')
         parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
@@ -445,7 +445,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         msg['To'] = self.mailto
         return msg
 
-class NowrapHelpFormatter(IndentedHelpFormatter):
+class NowrapHelpFormatter(optparse.IndentedHelpFormatter):
     """A non-wrapping formatter for OptionParse."""
 
     def _format_text(self, text):
