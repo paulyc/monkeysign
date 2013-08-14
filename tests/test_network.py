@@ -25,16 +25,22 @@ be ran without internet access.
 import unittest
 
 import sys, os
+import signal
 sys.path.append(os.path.dirname(__file__) + '/..')
 
 from monkeysign.gpg import TempKeyring
+from test_lib import TestTimeLimit
 
-class TestGpgNetwork(unittest.TestCase):
-    """Seperate test cases for functions that hit the network"""
+class TestGpgNetwork(TestTimeLimit):
+    """Seperate test cases for functions that hit the network
+
+each test needs to run under a specific timeout so we don't wait on
+the network forever"""
 
     def setUp(self):
         self.gpg = TempKeyring()
         self.gpg.context.set_option('keyserver', 'pool.sks-keyservers.net')
+        TestTimeLimit.setUp(self)
 
     def test_fetch_keys(self):
         """test key fetching from keyservers"""
@@ -48,6 +54,7 @@ class TestGpgNetwork(unittest.TestCase):
         self.assertTrue(self.gpg.sign_key('3CCDBB7355D1758F549354D20B123309D3366755'))
 
     def tearDown(self):
+        TestTimeLimit.tearDown(self)
         del self.gpg
 
 if __name__ == '__main__':

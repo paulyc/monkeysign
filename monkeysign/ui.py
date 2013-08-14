@@ -16,7 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # gpg interface
-from monkeysign.gpg import Keyring, TempKeyring
+from monkeysign.gpg import Keyring, TempKeyring, GpgRuntimeError
 
 # mail functions
 from email.mime.multipart import MIMEMultipart
@@ -109,7 +109,10 @@ Regards,
         elif len(self.pattern) < 1:
             self.pattern = None
         else:
-            sys.exit('wrong number of arguments')
+            parser.print_usage()
+            sys.exit('wrong number of arguments, use -h for full help')
+        # make sure parser can be accessed outside of this function
+        return parser
 
     def __init__(self, args = None):
         # the options that determine how we operate, from the parse_args()
@@ -281,7 +284,7 @@ Sign all identities? [y/N] \
             if alluids:
                 pattern = keys[key].fpr
             else:
-                pattern = self.choose_uid('Specify the identity to sign: ', keys[key])
+                pattern = self.choose_uid('Choose the identity to sign', keys[key])
                 if not pattern:
                     self.log("no identity chosen")
                     return False
@@ -319,7 +322,11 @@ Sign all identities? [y/N] \
             # signatures. this may require create_mail() to work on
             # *another* temporary keyring and may also need support
             # for the deluid command in the gpg module.
-            msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
+            try:
+                msg = self.create_mail(fpr, from_user, self.options.to or key.uids.values()[0].uid)
+            except GpgRuntimeError as e:
+                self.warn('failed to create email: %s' % e)
+                break
 
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
@@ -352,18 +359,33 @@ not sending email to %s, as requested, here's the email message:
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
         # introduction and the signed key material
-        text = MIMEText(self.email_body, 'plain', 'utf-8')
+        message = EmailFactory.create_mail_from_block(self.tmpkeyring.export_data(recipient), self.email_body)
+        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), recipient)
+
+        # the second layer up, made of two parts: a version number
+        # and the first layer, encrypted
+        return EmailFactory.wrap_crypted_mail(mailfrom, mailto, self.email_subject, encrypted)
+
+class EmailFactory:
+    """this class regroups different functions to generate emails"""
+
+    @staticmethod
+    def create_mail_from_block(data, body = ''):
+        """
+        a multipart/mixed message containing a plain-text message
+        explaining what this is, and a second part containing PGP data
+        """
+        text = MIMEText(body, 'plain', 'utf-8')
         filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
         keypart = MIMEBase('application', 'pgp-keys', name=filename)
         keypart.add_header('Content-Disposition', 'attachment', filename=filename)
         keypart.add_header('Content-Transfer-Encoding', '7bit')
         keypart.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
-        keypart.set_payload(self.tmpkeyring.export_data(recipient))
-        message = MIMEMultipart('mixed', None, [text, keypart])
-        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), recipient)
+        keypart.set_payload(data)
+        return MIMEMultipart('mixed', None, [text, keypart])
 
-        # the second layer up, made of two parts: a version number
-        # and the first layer, encrypted
+    @staticmethod
+    def wrap_crypted_mail(mailfrom, mailto, mailsubject, encrypted):
         p1 = MIMEBase('application', 'pgp-encrypted', filename='signedkey.msg')
         p1.add_header('Content-Disposition','attachment', filename='signedkey.msg')
         p1.set_payload('Version: 1')
@@ -372,7 +394,7 @@ not sending email to %s, as requested, here's the email message:
         p2.add_header('Content-Transfer-Encoding', '7bit')
         p2.set_payload(encrypted)
         msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
-        msg['Subject'] = self.email_subject
+        msg['Subject'] = mailsubject
         msg['From'] = mailfrom
         msg.preamble = 'This is a multi-part message in PGP/MIME format...'
         # take the first uid, not ideal

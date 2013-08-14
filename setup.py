@@ -39,7 +39,7 @@ exchanged keys with!
     author_email='anarcat@debian.org',
     url='http://web.monkeysphere.info/',
     packages=['monkeysign'],
-    scripts=['msign-cli', 'msign'],
+    scripts=['scripts/monkeysign', 'scripts/monkeyscan'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',

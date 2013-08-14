@@ -1,4 +1,4 @@
-#!/usr/bin/pytho
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
 #    Copyright (C) 2012-2013 Antoine Beaupré <anarcat@orangeseeds.org>
@@ -29,17 +29,63 @@ sys.path.append(os.path.dirname(__file__) + '/..')
 from monkeysign.ui import MonkeysignUi
 from monkeysign.gpg import TempKeyring
 
-class CliTestCase(unittest.TestCase):
+from test_lib import TestTimeLimit
+
+class CliBaseTest(unittest.TestCase):
     def setUp(self):
         self.argv = sys.argv
-        sys.argv = [ 'msign-cli', '--dry-run', '--no-mail' ]
-
-    def test_call_usage(self):
-        with self.assertRaises(SystemExit):
-            execfile(os.path.dirname(__file__) + '/../msign')
+        sys.argv = [ 'monkeysign', '--dry-run', '--no-mail' ]
 
     def tearDown(self):
         sys.argv = self.argv
+
+class CliTestCase(CliBaseTest):
+    def test_call_usage(self):
+        with self.assertRaises(SystemExit):
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
+
+class CliTestDialog(CliBaseTest):
+    def setUp(self):
+        CliBaseTest.setUp(self)
+        self.gpg = TempKeyring()
+        os.environ['GNUPGHOME'] = self.gpg.tmphomedir
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        
+        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
+
+    def write_to_callback(self, stdin, callback):
+        r, w = os.pipe()
+        pid = os.fork()
+        if pid:
+            # parent
+            os.close(w)
+            os.dup2(r, 0) # make stdin read from the child
+            oldstdout = sys.stdout
+            sys.stdout = open('/dev/null', 'w') # silence output
+            callback(self)
+            sys.stdout = oldstdout
+        else:
+            # child
+            os.close(r)
+            w = os.fdopen(w, 'w')
+            w.write(stdin) # say whatever is needed to msign-cli
+            w.flush()
+            os._exit(0)
+
+    def test_sign_fake_keyring(self):
+        """test if we can sign a key on a fake keyring"""
+        def callback(self):
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
+        self.write_to_callback("y\n", callback) # just say yes
+
+    def test_two_empty_responses(self):
+        """test what happens when we answer nothing twice"""
+        def callback(self):
+            with self.assertRaises(EOFError):
+                execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
+        self.write_to_callback("\n\n", callback) # just say yes
 
 class BaseTestCase(unittest.TestCase):
     pattern = None
@@ -99,6 +145,7 @@ this duplicates tests from the gpg code, but is necessary to test later function
         for fpr, key in self.ui.signed_keys.items():
             msg = self.ui.create_mail(fpr, 'unittests@localhost', 'devnull@localhost')
             self.assertIsNotNone(msg)
+            self.assertRegexpMatches(msg.as_string(), "BEGIN PGP MESSAGE")
 
     @unittest.expectedFailure
     def test_create_mail_multiple(self):
@@ -135,7 +182,7 @@ class FakeKeyringTests(BaseTestCase):
         """test if we can find a key on the local keyring"""
         self.ui.find_key()
 
-class NonExistantKeyTests(BaseTestCase):
+class NonExistantKeyTests(BaseTestCase, TestTimeLimit):
     """test behavior with a key that can't be found"""
 
     args = []
@@ -146,3 +193,6 @@ class NonExistantKeyTests(BaseTestCase):
         """find_key() should exit if the key can't be found on keyservers or local keyring"""
         with self.assertRaises(SystemExit):
             self.ui.find_key()
+
+if __name__ == '__main__':
+    unittest.main()

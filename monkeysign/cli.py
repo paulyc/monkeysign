@@ -32,14 +32,18 @@ script assumes you have gpg-agent configure to prompt for passwords."""
     usage = usage='%prog [options] <keyid>'
     epilog='<keyid>: a GPG fingerprint or key id'
 
+    def parse_args(self, args):
+        """override main parsing: we absolutely need an argument"""
+        parser = MonkeysignUi.parse_args(self, args)
+        if self.pattern is None:
+            parser.print_usage()
+            sys.exit('wrong number of arguments, use -h for full help')
+
     def main(self):
         """main code execution loop
 
         we expect to have the commandline parsed for us
         """
-
-        if self.pattern is None:
-            sys.exit('wrong number of arguments')
 
         MonkeysignUi.main(self)
 
@@ -73,14 +77,19 @@ script assumes you have gpg-agent configure to prompt for passwords."""
 
     def choose_uid(self, prompt, key):
         """present the user with a list of UIDs and let him choose one"""
-        allowed_uids = []
-        for uid in key.uidslist:
-            allowed_uids.append(uid.uid)
+        try:
+            allowed_uids = []
+            for uid in key.uidslist:
+                allowed_uids.append(uid.uid)
 
-        pattern = raw_input(prompt)
-        while pattern not in allowed_uids and not pattern.isdigit() and int(pattern)-1 not in range(0,len(allowed_uids)):
-            print "invalid uid"
-            pattern = raw_input(prompt)
-        if pattern.isdigit():
-            pattern = allowed_uids[int(pattern)-1]
-        return pattern
+                prompt += ' (1-%d or full UID, control-c to abort): ' % len(allowed_uids)
+
+                pattern = raw_input(prompt)
+                while not (pattern in allowed_uids or (pattern.isdigit() and int(pattern)-1 in range(0,len(allowed_uids)))):
+                    print "invalid uid"
+                    pattern = raw_input(prompt)
+                if pattern.isdigit():
+                    pattern = allowed_uids[int(pattern)-1]
+            return pattern
+        except KeyboardInterrupt:
+            return False
