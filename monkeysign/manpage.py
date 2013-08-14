@@ -30,8 +30,16 @@ class build_manpage(Command):
         mod_name, func_name = self.parser.split(':')
         fromlist = mod_name.split('.')
         try:
+            class_name, func_name = func_name.split('.')
+        except ValueError:
+            class_name = None
+        try:
             mod = __import__(mod_name, fromlist=fromlist)
-            self._parser = getattr(mod, func_name)()
+            if class_name is not None:
+                cls = getattr(mod, class_name)
+                self._parser = getattr(cls, func_name)()
+            else:
+                self._parser = getattr(mod, func_name)()
         except ImportError, err:
             raise
         self._parser.formatter = ManPageFormatter()
