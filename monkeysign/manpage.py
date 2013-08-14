@@ -33,15 +33,12 @@ class build_manpage(Command):
             class_name, func_name = func_name.split('.')
         except ValueError:
             class_name = None
-        try:
-            mod = __import__(mod_name, fromlist=fromlist)
-            if class_name is not None:
-                cls = getattr(mod, class_name)
-                self._parser = getattr(cls, func_name)()
-            else:
-                self._parser = getattr(mod, func_name)()
-        except ImportError, err:
-            raise
+        mod = __import__(mod_name, fromlist=fromlist)
+        if class_name is not None:
+            cls = getattr(mod, class_name)
+            self._parser = getattr(cls, func_name)()
+        else:
+            self._parser = getattr(mod, func_name)()
         self._parser.formatter = ManPageFormatter()
         self._parser.formatter.set_parser(self._parser)
         self.announce('Writing man page %s' % self.output)
