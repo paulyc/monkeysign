@@ -41,6 +41,7 @@ exchanged keys with!
     url='http://web.monkeysphere.info/',
     packages=['monkeysign'],
     scripts=['scripts/monkeysign', 'scripts/monkeyscan'],
+    cmdclass={'build_manpage': monkeysign.manpage.build_manpage},
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -66,5 +67,4 @@ exchanged keys with!
         'Topic :: Security :: Cryptography',
         'Topic :: Software Development :: Libraries :: Python Modules'
     ],
-    cmdclass={'build_manpage': monkeysign.manpage.build_manpage},
 )
