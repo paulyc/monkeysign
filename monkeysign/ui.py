@@ -25,6 +25,8 @@ from email.mime.message import MIMEMessage
 from email.mime.application import MIMEApplication
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
+from email.header import Header
+from email.utils import parseaddr, formataddr
 import smtplib
 import subprocess
 
@@ -457,9 +459,11 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         p2.set_payload(encrypted)
         msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
         msg.preamble = _('This is a multi-part message in PGP/MIME format...')
-        msg['Subject'] = self.subject
-        msg['From'] = self.mailfrom
-        msg['To'] = self.mailto
+        msg['Subject'] = Header(self.subject.encode('utf-8'), 'UTF-8').encode()
+        name, address = parseaddr(self.mailfrom)
+        msg['From'] = formataddr((Header(name.encode('utf-8'), 'UTF-8').encode(), address))
+        name, address = parseaddr(self.mailto)
+        msg['To'] = formataddr((Header(name.encode('utf-8'), 'UTF-8').encode(), address))
         return msg
 
 class NowrapHelpFormatter(optparse.IndentedHelpFormatter):

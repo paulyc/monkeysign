@@ -233,7 +233,7 @@ Content-Description: PGP Key <keyid>, uid <uid> \(<idx\), signed by <keyid>
         match = re.compile("""Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
  boundary="===============%s=="
 MIME-Version: 1.0
-Subject: Your signed OpenPGP key
+Subject: .*
 From: nobody@example.com
 To: nobody@example.com
 
@@ -260,7 +260,7 @@ Content-Transfer-Encoding: 7bit
     def test_weird_from(self):
         """make sure we don't end up with spaces in our email address"""
         self.email = EmailFactory(self.ui.tmpkeyring.export_data(self.pattern), self.pattern, 'Antoine Beaupré <anarcat@orangeseeds.org>', 'Antoine Beaupré (home address) <anarcat@anarcat.ath.cx>', 'nobody@example.com')
-        match = re.compile("""From: [^ ]*$""", re.DOTALL | re.MULTILINE)
+        match = re.compile("""From: (([^ ]* )|("[^"]*" ))?<[^> ]*>$""", re.DOTALL | re.MULTILINE)
         self.assertRegexpMatches(self.email.as_string(), match)
 
 class KeyserverTests(BaseTestCase):
