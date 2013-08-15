@@ -10,6 +10,7 @@ monkeysign (1.0) unstable; urgency=low
   * provide manpages (Closes: #716674)
   * avoid showing binary garbage on export when debugging
   * properly fail if password confirmation fails
+  * user interfaces now translatable
 
  -- Antoine Beaupré <anarcat@debian.org>  Wed, 14 Aug 2013 20:51:44 -0400
 

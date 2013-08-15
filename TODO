@@ -10,11 +10,6 @@ Release process
  * push commits and tags to the git repository
  * add announcement on website
 
-1.0 blockers
-============
-
- * make translatable (look at the gameclock for inspiration)
-
 2.0 blockers
 ============
 
