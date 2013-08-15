@@ -21,6 +21,7 @@ from glob import glob
 
 from monkeysign import __version__ as version
 import monkeysign.manpage
+import monkeysign.translation
 
 setup(name = 'monkeysign',
     description='OpenPGP key exchange for humans',
@@ -42,7 +43,7 @@ exchanged keys with!
     url='http://web.monkeysphere.info/',
     packages=['monkeysign'],
     scripts=['scripts/monkeysign', 'scripts/monkeyscan'],
-    cmdclass={'build_manpage': monkeysign.manpage.build_manpage},
+    cmdclass={'build_manpage': monkeysign.manpage.build_manpage, 'build_trans': monkeysign.translation.build_trans},
     data_files=[('share/man/man1', glob('man/*.1'))],
     classifiers=[
         'Development Status :: 4 - Beta',
