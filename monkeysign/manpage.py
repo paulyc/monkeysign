@@ -107,7 +107,7 @@ class build_manpage(Command):
                 # ignore already existing directory
                 pass
             path = os.path.join(self.output, parser.prog + '.1')
-            self.announce('Writing man page to %s' % path, 2)
+            self.announce('writing man page to %s' % path, 2)
             stream = open(path, 'w')
             stream.write(''.join(manpage))
             stream.close()
