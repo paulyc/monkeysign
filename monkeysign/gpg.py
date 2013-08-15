@@ -449,7 +449,7 @@ class Keyring():
         try:
             multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
         except GpgProtocolError:
-            raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
+            multiuid = False
         if multiuid:
             if signall: # special case, sign all keys
                 print >>proc.stdin, "y"
@@ -495,7 +495,7 @@ class Keyring():
         except IOError as e:
             if e.errno == 32:
                 # broken pipe, probably that key is missing
-                return False
+                raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
             else:
                 pass
         self.context.expect(proc.stderr, 'GOT_IT')

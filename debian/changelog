@@ -11,6 +11,8 @@ monkeysign (1.0) unstable; urgency=low
   * avoid showing binary garbage on export when debugging
   * properly fail if password confirmation fails
   * user interfaces now translatable
+  * accept space-separated key fingerprints
+  * fix single UID key signing
 
  -- Antoine Beaupré <anarcat@debian.org>  Wed, 14 Aug 2013 20:51:44 -0400
 
