@@ -456,10 +456,9 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         p2.add_header('Content-Transfer-Encoding', '7bit')
         p2.set_payload(encrypted)
         msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
+        msg.preamble = _('This is a multi-part message in PGP/MIME format...')
         msg['Subject'] = self.subject
         msg['From'] = self.mailfrom
-        msg.preamble = _('This is a multi-part message in PGP/MIME format...')
-        # take the first uid, not ideal
         msg['To'] = self.mailto
         return msg
 
