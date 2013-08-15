@@ -392,6 +392,19 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         self.tmpkeyring.context.set_option('always-trust')
         # remove UIDs we don't want to send
         self.cleanup_uids()
+        # cleanup email addresses
+        self.cleanup_emails()
+
+    def cleanup_emails(self):
+        # wrap real name in quotes
+        self.mailfrom = re.sub(r'^(.*) <', r'"\1" <',
+                               # trim comment from uid
+                               re.sub(r' \([^)]*\)', r'',
+                                      self.mailfrom))
+        # same with mailto
+        self.mailto = re.sub(r'^(.*) <', r'"\1" <',
+                             re.sub(r' \([^)]*\)', r'',
+                                    self.mailto))
 
     def cleanup_uids(self):
         """this will remove any UID not matching the 'recipient' set in the class"""
@@ -403,7 +416,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
             for uid in todelete:
                 self.tmpkeyring.del_uid(fpr, uid)
 
-    def __str__(self):
+    def get_message(self):
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
         # introduction and the signed key material
@@ -412,7 +425,10 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
 
         # the second layer up, made of two parts: a version number
         # and the first layer, encrypted
-        return self.wrap_crypted_mail(encrypted).as_string().decode('utf-8')
+        return self.wrap_crypted_mail(encrypted)
+
+    def __str__(self):
+        return self.get_message().as_string().decode('utf-8')
 
     def as_string(self):
         return self.__str__()

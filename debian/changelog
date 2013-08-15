@@ -13,6 +13,8 @@ monkeysign (1.0) unstable; urgency=low
   * user interfaces now translatable
   * accept space-separated key fingerprints
   * fix single UID key signing
+  * proper formatting of UIDs with comments (removed) and spaces (wrapped)
+    for emails
 
  -- Antoine Beaupré <anarcat@debian.org>  Wed, 14 Aug 2013 20:51:44 -0400
 
