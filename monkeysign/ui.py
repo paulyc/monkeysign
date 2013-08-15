@@ -60,7 +60,8 @@ class MonkeysignUi(object):
     usage=None
     epilog=None
 
-    def parse_args(self, args):
+    @classmethod
+    def parser(self):
         """parse the commandline arguments"""
         parser = optparse.OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
         parser.add_option('-d', '--debug', dest='debug', default=False, action='store_true',
@@ -79,7 +80,10 @@ class MonkeysignUi(object):
                           help='Do not send email at all. (Default is to use sendmail.)')
         parser.add_option('-t', '--to', dest='to', 
                           help='Override destination email for testing (default is to use the first uid on the key or send email to each uid chosen)')
+        return parser
 
+    def parse_args(self, args):
+        parser = self.parser()
         (self.options, self.pattern) = parser.parse_args(args=args)
 
         # XXX: a bit clunky because the cli expects this to be the

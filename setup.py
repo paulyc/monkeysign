@@ -19,6 +19,7 @@
 from distutils.core import setup
 
 from monkeysign import __version__ as version
+import monkeysign.manpage
 
 setup(name = 'monkeysign',
     description='OpenPGP key exchange for humans',
@@ -64,5 +65,6 @@ exchanged keys with!
         'Topic :: Multimedia :: Video :: Capture',
         'Topic :: Security :: Cryptography',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    ]
+    ],
+    cmdclass={'build_manpage': monkeysign.manpage.build_manpage},
 )
