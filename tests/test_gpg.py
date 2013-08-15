@@ -225,7 +225,14 @@ class TestKeyringWithKeys(TestKeyringBase):
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
         self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
-    def test_sign_key_uid(self):
+    def test_sign_key_single_uid(self):
+        """test signing a key with a single uid"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
+        self.assertTrue(self.gpg.sign_key('323F39BD', True))
+        self.gpg.context.call_command(['list-sigs', '323F39BD'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:A31E75E4323F39BD:[^:]*::::Monkeysphere second test key <bar@example.com>:[0-9]*x:')
+
+    def test_sign_key_one_uid(self):
         """test signature of a single uid"""
         self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
