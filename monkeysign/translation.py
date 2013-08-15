@@ -26,20 +26,22 @@ class build_trans(Command):
     description = 'Compile .po files into .mo files'
 
     user_options = [
-            ('build-lib', None, "lib build folder")
+            ('build-lib', None, "lib build folder"),
+            ('po-dir', 'po/', 'directory where .po files are stored, relative to the current directory'),
     ]
 
     def initialize_options(self):
         self.build_lib = None
+        self.po_dir = 'po/'
 
     def finalize_options(self):
         self.set_undefined_options('build', ('build_lib', 'build_lib'))
 
     def run(self):
-        po_dir = os.path.join(os.path.dirname(__file__), 'po/')
+        po_dir = self.po_dir
 
         appname = self.distribution.get_name()
-        self.announce('compiling po files from %s...' % po_dir, 2)
+        self.announce('compiling po files from %s' % po_dir, 2)
         uptoDate = False
         for path, names, filenames in os.walk(po_dir):
             for f in filenames:
