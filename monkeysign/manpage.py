@@ -2,6 +2,7 @@
 
 """build_manpage command -- Generate man page from setup()"""
 
+import os
 import datetime
 from distutils.command.build import build
 from distutils.core import Command
@@ -46,7 +47,6 @@ class build_manpage(Command):
             parser.formatter.set_parser(parser)
             parser.prog = scriptname
             self._parsers.append(parser)
-            self.announce('Writing man page %s' % self.output)
 
     def _markup(self, txt):
         return txt.replace('-', '\\-')
@@ -101,7 +101,14 @@ class build_manpage(Command):
             manpage.append(self._write_header(parser))
             manpage.append(self._write_options(parser))
             manpage.append(self._write_footer(parser))
-            stream = open(self.output + '/' + parser.prog + '.1', 'w')
+            try:
+                os.mkdir(self.output)
+            except OSError:
+                # ignore already existing directory
+                pass
+            path = os.path.join(self.output, parser.prog + '.1')
+            self.announce('Writing man page to %s' % path, 2)
+            stream = open(path, 'w')
             stream.write(''.join(manpage))
             stream.close()
 
