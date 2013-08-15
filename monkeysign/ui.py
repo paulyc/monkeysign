@@ -329,7 +329,7 @@ expects an EmailFactory email, but will not mail if nomail is set"""
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
-                server.sendmail(msg.mailfrom, msg.mailto, msg.as_string())
+                server.sendmail(msg.mailfrom.encode('utf-8'), msg.mailto.encode('utf-8'), msg.as_string().encode('utf-8'))
                 server.set_debuglevel(1)
                 server.quit()
                 self.warn(_('sent message through SMTP server %s to %s') % (self.options.smtpserver, msg.mailto))
@@ -337,14 +337,14 @@ expects an EmailFactory email, but will not mail if nomail is set"""
             elif not self.options.nomail:
                 if self.options.dryrun: return True
                 p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
-                p.communicate(msg.as_string())
+                p.communicate(msg.as_string().encode('utf-8'))
                 self.warn(_('sent message through sendmail to %s') % msg.mailto)
             else:
                 # okay, no mail, just dump the exported key then
                 self.warn(_("""\
 not sending email to %s, as requested, here's the email message:
 
-%s""") % (msg.mailto.decode('utf-8'), msg))
+%s""") % (msg.mailto, msg))
 
 
 class EmailFactory:
@@ -382,7 +382,8 @@ keyfpr: the fingerprint of that public key
 recipient: the recipient to encrypt the mail to
 mailfrom: who the mail originates from
 mailto: who to send the mail to (usually similar to recipient, but can be used to specify specific keyids"""
-        (self.keyfpr, self.recipient, self.mailfrom, self.mailto) = (keyfpr, recipient, mailfrom, mailto or recipient)
+        (self.keyfpr, self.recipient, self.mailfrom, self.mailto) = (keyfpr, recipient, mailfrom.decode('utf-8'), mailto or recipient)
+        self.mailto = self.mailto.decode('utf-8')
         # operate over our own keyring, this allows us to remove UIDs freely
         self.tmpkeyring = TempKeyring()
         # copy data over from the UI keyring
