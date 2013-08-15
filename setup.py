@@ -17,6 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from distutils.core import setup
+from glob import glob
 
 from monkeysign import __version__ as version
 import monkeysign.manpage
@@ -42,6 +43,7 @@ exchanged keys with!
     packages=['monkeysign'],
     scripts=['scripts/monkeysign', 'scripts/monkeyscan'],
     cmdclass={'build_manpage': monkeysign.manpage.build_manpage},
+    data_files=[('share/man/man1', glob('man/*.1'))],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
