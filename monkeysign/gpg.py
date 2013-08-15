@@ -498,7 +498,15 @@ class Keyring():
                 raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
             else:
                 pass
-        self.context.expect(proc.stderr, 'GOT_IT')
+        try:
+            self.context.expect(proc.stderr, 'GOT_IT')
+        except GpgProtocolError as e:
+            # deal with expired keys
+            # XXX: weird that this happens here and not earlier
+            if 'EXPIRED' in str(e):
+                raise GpgRuntimeError(self.context.returncode, _('key is expired, cannot sign'))
+            else:
+                raise
         # expect the passphrase confirmation
         try:
             self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
