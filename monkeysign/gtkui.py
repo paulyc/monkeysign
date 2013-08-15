@@ -35,10 +35,11 @@ from monkeysign.gpg import Keyring
 from monkeysign.ui import MonkeysignUi
 
 class MonkeysignScanUi(MonkeysignUi):
-        """Sign a key in a safe fashion.
+        """sign a key in a safe fashion using a webcam to scan for qr-codes
 
 This command will fire up a graphical interface and turn on the webcam
-(if available) on this computer.
+(if available) on this computer. It will also display a qr-code of
+your main OpenPGP key.
 
 The webcam is used to capture an OpenPGP fingerprint represented as a
 qrcode (or whatever the zbar library can parse) and then go through a
@@ -46,8 +47,10 @@ signing process.
 
 The signature is then encrypted and mailed to the user. This leave the
 choice of publishing the certification to that person and makes sure
-that person owns the identity signed. This script assumes you have
-gpg-agent configure to prompt for passwords.
+that person owns the identity signed.
+
+This program assumes you have gpg-agent configure to prompt for
+passwords.
 """
 
         def main(self):

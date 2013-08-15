@@ -20,13 +20,15 @@ import sys
 from monkeysign.ui import MonkeysignUi
 
 class MonkeysignCli(MonkeysignUi):
-    """Sign a key in a safe fashion.
+    """sign a key in a safe fashion.
 
-This command should sign a key based on the fingerprint or user id
+This command signs a key based on the fingerprint or user id
 specified on the commandline, encrypt the result and mail it to the
 user. This leave the choice of publishing the certification to that
-person and makes sure that person owns the identity signed. This
-script assumes you have gpg-agent configure to prompt for passwords."""
+person and makes sure that person owns the identity signed.
+
+This program assumes you have gpg-agent configured to prompt for
+passwords."""
 
     # override default options to allow passing a keyid
     usage = usage='%prog [options] <keyid>'
