@@ -1,0 +1,568 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-08-14 21:43-0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../monkeysign/cli.py:23
+msgid ""
+"sign a key in a safe fashion.\n"
+"\n"
+"This command signs a key based on the fingerprint or user id\n"
+"specified on the commandline, encrypt the result and mail it to the\n"
+"user. This leave the choice of publishing the certification to that\n"
+"person and makes sure that person owns the identity signed.\n"
+"\n"
+"This program assumes you have gpg-agent configured to prompt for\n"
+"passwords."
+msgstr ""
+
+#: ../monkeysign/cli.py:38
+msgid "override main parsing: we absolutely need an argument"
+msgstr ""
+
+#: ../monkeysign/cli.py:45
+msgid ""
+"main code execution loop\n"
+"\n"
+"        we expect to have the commandline parsed for us\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/cli.py:81
+msgid "present the user with a list of UIDs and let him choose one"
+msgstr ""
+
+#: ../monkeysign/gpg.py:18
+msgid ""
+"\n"
+"Native Python / GPG API\n"
+"\n"
+"This API was written to replace the GPGME bindings because the GPGME\n"
+"API has a few problems:\n"
+"\n"
+" 1. it is arcane and difficult to grasp\n"
+" 2. it is very closely bound to the internal GPG data and commandline\n"
+"    structures, which are quite confusing\n"
+" 3. GPGME doesn't actually talk to a GPG library, but interacts with\n"
+"    GPG through the commandline\n"
+" 4. GPGME developers are not willing to extend GPGME to cover private\n"
+"    key material management and consider this is outside the scope of\n"
+"    the project.\n"
+"\n"
+"The latter two points are especially problematic for this project, and\n"
+"I have therefore started working on a replacement.\n"
+"\n"
+"Operations are performed mostly through the Keyring or KeyringTmp\n"
+"class (if you do not want to access your regular keyring but an empty\n"
+"temporary one).\n"
+"\n"
+"This is how you can access keys, which are represented by the\n"
+"OpenPGPkey datastructure, but which will not look in your keyring or\n"
+"on the keyservers itself without the Keyring class.\n"
+"\n"
+"It seems that I have missed a similar project that's been around for\n"
+"quite a while (2008-2012):\n"
+"\n"
+"https://code.google.com/p/python-gnupg/\n"
+"\n"
+"The above project has a lot of similarities with this implementation,\n"
+"but is better because:\n"
+"\n"
+" 1. it actually parses most status outputs from GPG, in a clean way\n"
+" 2. uses threads so it doesn't block\n"
+" 3. supports streams\n"
+" 4. supports verification, key generation and deletion\n"
+" 5. has a cleaner and more complete test suite\n"
+"\n"
+"However, the implementation here has:\n"
+"\n"
+" 1. key signing support\n"
+" 2. a cleaner API\n"
+"\n"
+"Error handling is somewhat inconsistent here. Some functions rely on\n"
+"exceptions, other on boolean return values. We prefer exceptions as it\n"
+"allows us to propagate error messages to the UI, but make sure to\n"
+"generate a RuntimeError, and not a ProtocolError, which are unreadable\n"
+"to the user.\n"
+msgstr ""
+
+#: ../monkeysign/gpg.py:75
+msgid ""
+"Python wrapper for GnuPG\n"
+"\n"
+"    This wrapper allows for a simpler interface than GPGME or PyME to\n"
+"    GPG, and bypasses completely GPGME to interoperate directly with\n"
+"    GPG as a process.\n"
+"\n"
+"    It uses the gpg-agent to prompt for passphrases and communicates\n"
+"    with GPG over the stdin for commnads (--command-fd) and stdout for\n"
+"    status (--status-fd).\n"
+"    "
+msgstr ""
+
+#: ../monkeysign/gpg.py:112
+msgid ""
+"set an option to pass to gpg\n"
+"\n"
+"        this adds the given 'option' commandline argument with the\n"
+"        value 'value'. to pass a flag without an argument, use 'None'\n"
+"        for value\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:121
+msgid "remove an option from the gpg commandline"
+msgstr ""
+
+#: ../monkeysign/gpg.py:128
+msgid ""
+"internal helper to build a proper gpg commandline\n"
+"\n"
+"        this will add relevant arguments around the gpg binary.\n"
+"\n"
+"        like the options arguments, the command is expected to be a\n"
+"        regular gpg command with the -- stripped. the -- are added\n"
+"        before being called. this is to make the code more readable,\n"
+"        and eventually support other backends that actually make more\n"
+"        sense.\n"
+"\n"
+"        this uses build_command to create a commandline out of the\n"
+"        'options' dictionnary, and appends the provided command at the\n"
+"        end. this is because order of certain options matter in gpg,\n"
+"        where some options (like --recv-keys) are expected to be at\n"
+"        the end.\n"
+"\n"
+"        it is here that the options dictionnary is converted into a\n"
+"        list. the command argument is expected to be a list of\n"
+"        arguments that can be converted to strings. if it is not a\n"
+"        list, it is cast into a list."
+msgstr ""
+
+#: ../monkeysign/gpg.py:160
+msgid ""
+"internal wrapper to call a GPG commandline\n"
+"\n"
+"        this will call the command generated by build_command() and\n"
+"        setup a regular pipe to the subcommand.\n"
+"\n"
+"        this assumes that we have the status-fd on stdout and\n"
+"        command-fd on stdin, but could really be used in any other\n"
+"        way.\n"
+"\n"
+"        we pass the stdin argument in the standard input of gpg and we\n"
+"        keep the output in the stdout and stderr array. the exit code\n"
+"        is in the returncode variable.\n"
+"\n"
+"        we can optionnally watch for a confirmation pattern on the\n"
+"        statusfd.\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:185
+msgid ""
+"iterate over file descriptor until certain pattern is found\n"
+"\n"
+"        fd is a file descriptor\n"
+"        pattern a string describing a regular expression to match\n"
+"\n"
+"        this will skip lines not matching pattern until the pattern is\n"
+"        found. it will raise an IOError if the pattern is not found\n"
+"        and EOF is reached.\n"
+"\n"
+"        this may hang for streams that do not send EOF or are waiting\n"
+"        for input.\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:210
+msgid ""
+"look for a specific GNUPG status line in the output\n"
+"\n"
+"        this is a stub for seek_pattern()\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:217
+msgid ""
+"make sure the next line matches the provided pattern\n"
+"\n"
+"        in contrast with seek_pattern(), this will *not* skip\n"
+"        non-matching lines and instead raise an exception if such a\n"
+"        line is found.\n"
+"\n"
+"        this therefore looks only at the next line, but may also hang\n"
+"        like seek_pattern()\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:237
+msgid ""
+"look for a specific GNUPG status on the next line of output\n"
+"\n"
+"        this is a stub for expect()\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:244
+msgid "return the version of the GPG binary"
+msgstr ""
+
+#: ../monkeysign/gpg.py:250
+msgid ""
+"Keyring functionalities.\n"
+"\n"
+"    This allows various operations (e.g. listing, signing, exporting\n"
+"    data) on a keyring.\n"
+"\n"
+"    Concretely, we talk about a \"keyring\", but we really mean a set of\n"
+"    public and private keyrings and their trust databases. In\n"
+"    practice, this is the equivalent of the GNUPGHOME or --homedir in\n"
+"    GPG, and in fact this is implemented by setting a specific homedir\n"
+"    to tell GPG to operate on a specific keyring.\n"
+"\n"
+"    We actually use the --homedir parameter to gpg to set the keyring\n"
+"    we operate upon.\n"
+"    "
+msgstr ""
+
+#: ../monkeysign/gpg.py:269
+msgid ""
+"constructor for the gpg context\n"
+"\n"
+"        this mostly sets options, and allows passing in a different\n"
+"        homedir, that will be added to the option right here and\n"
+"        there.\n"
+"\n"
+"        by default, we do not create or destroy the keyring, although\n"
+"        later function calls on the object may modify the keyring (or\n"
+"        other keyrings, if the homedir option is modified.\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:290
+msgid ""
+"Import OpenPGP data blocks into the keyring.\n"
+"\n"
+"        This takes actual OpenPGP data, ascii-armored or not, gpg will\n"
+"        gladly take it. This can be signatures, public, private keys,\n"
+"        etc.\n"
+"\n"
+"        You may need to set import-flags to import non-exportable\n"
+"        signatures, however.\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:309
+msgid ""
+"Export OpenPGP data blocks from the keyring.\n"
+"\n"
+"        This exports actual OpenPGP data, by default in binary format,\n"
+"        but can also be exported asci-armored by setting the 'armor'\n"
+"        option."
+msgstr ""
+
+#: ../monkeysign/gpg.py:322
+msgid ""
+"Download keys from a keyserver into the local keyring\n"
+"\n"
+"        This expects a fingerprint (or a at least a key id).\n"
+"\n"
+"        Returns true if the command succeeded.\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:334
+msgid ""
+"load keys matching a specific patterns\n"
+"\n"
+"        this uses the (rather poor) list-keys API to load keys\n"
+"        information\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:379
+msgid ""
+"encrypt data using asymetric encryption\n"
+"\n"
+"        returns the encrypted data or raise a GpgRuntimeError if it fails\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:390
+msgid ""
+"decrypt data using asymetric encryption\n"
+"\n"
+"        returns the plaintext data or raise a GpgRuntimeError if it failed.\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:426
+msgid ""
+"sign a OpenPGP public key\n"
+"\n"
+"        By default it looks up and signs a specific uid, but it can\n"
+"        also sign all uids in one shot thanks to GPG's optimization on\n"
+"        that.\n"
+"\n"
+"        The pattern here should be a full user id if we sign a\n"
+"        specific key (default) or any pattern (fingerprint, keyid,\n"
+"        partial user id) that GPG will accept if we sign all uids.\n"
+"\n"
+"        @todo that this currently block if the pattern specifies an\n"
+"        incomplete UID and we do not sign all keys.\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:522
+msgid ""
+"An OpenPGP key.\n"
+"\n"
+"    Some of this datastructure is taken verbatim from GPGME.\n"
+"    "
+msgstr ""
+
+#: ../monkeysign/gpg.py:694
+msgid ""
+"display a clean version of the fingerprint\n"
+"\n"
+"        this is the display we usually see\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/gpg.py:723
+msgid ""
+"simple exception raised when we have trouble talking with GPG\n"
+"\n"
+"    we try to pass the subprocess.popen.returncode as an errorno and a\n"
+"    significant description string\n"
+"\n"
+"    this error shouldn't be propagated to the user, because it will\n"
+"    contain mostly \"expect\" jargon from the DETAILS.txt file. the gpg\n"
+"    module should instead raise a GpgRutimeError with a user-readable\n"
+"    error message (e.g. \"key not found\").\n"
+"    "
+msgstr ""
+
+#: ../monkeysign/gtkui.py:38
+msgid ""
+"sign a key in a safe fashion using a webcam to scan for qr-codes\n"
+"\n"
+"This command will fire up a graphical interface and turn on the webcam\n"
+"(if available) on this computer. It will also display a qr-code of\n"
+"your main OpenPGP key.\n"
+"\n"
+"The webcam is used to capture an OpenPGP fingerprint represented as a\n"
+"qrcode (or whatever the zbar library can parse) and then go through a\n"
+"signing process.\n"
+"\n"
+"The signature is then encrypted and mailed to the user. This leave the\n"
+"choice of publishing the certification to that person and makes sure\n"
+"that person owns the identity signed.\n"
+"\n"
+"This program assumes you have gpg-agent configure to prompt for\n"
+"passwords.\n"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:74
+msgid "we ignore default! gotta fix that"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:83
+msgid "we don't actually abort, just exit threads and resume capture"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:92
+msgid "display the message but let things go"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:275
+msgid "When window is resized, regenerate the QR code"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:281
+msgid "When another key is chosen, generate new QR code"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:288
+msgid ""
+"callback invoked when a new video device is selected from the\n"
+"                drop-down list.  sets the new device for the zbar widget,\n"
+"                which will eventually cause it to be opened and enabled\n"
+"                "
+msgstr ""
+
+#: ../monkeysign/gtkui.py:300
+msgid "Given a fingerprint, generate a QR code with appropriate prefix"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:310
+msgid ""
+"Use a file chooser dialog to enable user to save the current QR code as a "
+"PNG image file"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:345
+msgid "Utility function to convert a PIL image instance to Pixbuf"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:357
+msgid ""
+"callback invoked when a barcode is decoded by the zbar widget.\n"
+"                checks for an openpgp fingerprint\n"
+"                "
+msgstr ""
+
+#: ../monkeysign/gtkui.py:362
+msgid ""
+"callback invoked for pulsating progressbar\n"
+"                        "
+msgstr ""
+
+#: ../monkeysign/gtkui.py:371
+msgid ""
+"callback invoked when gpg key download is finished\n"
+"                        "
+msgstr ""
+
+#: ../monkeysign/ui.py:38
+msgid ""
+"User interface abstraction for monkeysign.\n"
+"\n"
+"    This aims to factor out a common pattern to sign keys that is used\n"
+"    regardless of the UI used.\n"
+"\n"
+"    This is mostly geared at console/text-based and X11 interfaces,\n"
+"    but could also be ported to other interfaces (touch-screen/phone\n"
+"    interfaces would be interesting).\n"
+"\n"
+"    The actual process is in main(), which outlines what the\n"
+"    subclasses of this should be doing.\n"
+"\n"
+"    You should have a docstring in derived classes, as it will be\n"
+"    added to the 'usage' output.\n"
+"\n"
+"    You should also set the usage and epilog parameters, see\n"
+"    parse_args().\n"
+"    "
+msgstr ""
+
+#: ../monkeysign/ui.py:65
+msgid "parse the commandline arguments"
+msgstr ""
+
+#: ../monkeysign/ui.py:168
+msgid ""
+"\n"
+"        General process\n"
+"        ===============\n"
+"\n"
+"        1. fetch the key into a temporary keyring\n"
+"        1.a) if allowed (@todo), from the keyservers\n"
+"        1.b) from the local keyring (@todo try that first?)\n"
+"        2. copy the signing key secrets into the keyring\n"
+"        3. for every user id (or all, if -a is specified)\n"
+"        3.1. sign the uid, using gpg-agent\n"
+"        3.2. export and encrypt the signature\n"
+"        3.3. mail the key to the user\n"
+"        3.4. optionnally (-l), create a local signature and import in\n"
+"        local keyring\n"
+"        4. trash the temporary keyring\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/ui.py:187
+msgid "show a message to the user and abort program"
+msgstr ""
+
+#: ../monkeysign/ui.py:191
+msgid ""
+"display an warning message\n"
+"\n"
+"this should not interrupt the flow of the program, but must be visible to "
+"the user"
+msgstr ""
+
+#: ../monkeysign/ui.py:197
+msgid "log an informational message if verbose"
+msgstr ""
+
+#: ../monkeysign/ui.py:201
+msgid "default UI is not interactive, so we assume yes all the time"
+msgstr ""
+
+#: ../monkeysign/ui.py:208
+msgid "find the key to be signed somewhere"
+msgstr ""
+
+#: ../monkeysign/ui.py:227
+msgid ""
+"import secret keys (but only the public part) from your keyring\n"
+"\n"
+"we use --secret-keyring instead of copying the secret key material,\n"
+"but we still need the public part in the temporary keyring for this to\n"
+"work.\n"
+msgstr ""
+
+#: ../monkeysign/ui.py:255
+msgid "sign the key uids, as specified"
+msgstr ""
+
+#: ../monkeysign/ui.py:325
+msgid ""
+"actually send the email\n"
+"\n"
+"expects an EmailFactory email, but will not mail if nomail is set"
+msgstr ""
+
+#: ../monkeysign/ui.py:350
+msgid ""
+"email generator\n"
+"\n"
+"this is a factory, ie. a class generating an object that represents\n"
+"the email and when turned into a string, is the actual\n"
+"mail.\n"
+msgstr ""
+
+#: ../monkeysign/ui.py:377
+msgid ""
+"email constructor\n"
+"\n"
+"we expect to find the following arguments:\n"
+"\n"
+"keydata: the signed public key material\n"
+"keyfpr: the fingerprint of that public key\n"
+"recipient: the recipient to encrypt the mail to\n"
+"mailfrom: who the mail originates from\n"
+"mailto: who to send the mail to (usually similar to recipient, but can be "
+"used to specify specific keyids"
+msgstr ""
+
+#: ../monkeysign/ui.py:399
+msgid "this will remove any UID not matching the 'recipient' set in the class"
+msgstr ""
+
+#: ../monkeysign/ui.py:423
+msgid ""
+"\n"
+"        a multipart/mixed message containing a plain-text message\n"
+"        explaining what this is, and a second part containing PGP data\n"
+"        "
+msgstr ""
+
+#: ../monkeysign/ui.py:453
+msgid "A non-wrapping formatter for OptionParse."
+msgstr ""
