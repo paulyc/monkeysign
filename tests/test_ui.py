@@ -37,25 +37,6 @@ class CliBaseTest(unittest.TestCase):
         self.argv = sys.argv
         sys.argv = [ 'monkeysign', '--no-mail' ]
 
-    def tearDown(self):
-        sys.argv = self.argv
-
-class CliTestCase(CliBaseTest):
-    def test_call_usage(self):
-        with self.assertRaises(SystemExit):
-            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
-
-class CliTestDialog(CliBaseTest):
-    def setUp(self):
-        CliBaseTest.setUp(self)
-        self.gpg = TempKeyring()
-        os.environ['GNUPGHOME'] = self.gpg.homedir
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        
-        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
-
     def write_to_callback(self, stdin, callback):
         r, w = os.pipe()
         pid = os.fork()
@@ -74,6 +55,25 @@ class CliTestDialog(CliBaseTest):
             w.write(stdin) # say whatever is needed to msign-cli
             w.flush()
             os._exit(0)
+
+    def tearDown(self):
+        sys.argv = self.argv
+
+class CliTestCase(CliBaseTest):
+    def test_call_usage(self):
+        with self.assertRaises(SystemExit):
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
+
+class CliTestDialog(CliBaseTest):
+    def setUp(self):
+        CliBaseTest.setUp(self)
+        self.gpg = TempKeyring()
+        os.environ['GNUPGHOME'] = self.gpg.homedir
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
 
     def test_sign_fake_keyring(self):
         """test if we can sign a key on a fake keyring"""
@@ -95,6 +95,12 @@ this tests for bug #716675"""
             with self.assertRaises(EOFError):
                 execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
         self.write_to_callback("\n\n", callback) # say 'default' twice
+
+class CliTestSpacedFingerprint(CliTestDialog):
+    def setUp(self):
+        CliTestDialog.setUp(self)
+        sys.argv.pop() # remove the uid from parent class
+        sys.argv += '8DC9 01CE 6414 6C04 8AD5  0FBB 7921 5252 7B75 921E'.split()
 
 class BaseTestCase(unittest.TestCase):
     pattern = None

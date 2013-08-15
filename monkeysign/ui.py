@@ -90,13 +90,11 @@ class MonkeysignUi(object):
         # XXX: a bit clunky because the cli expects this to be the
         # output of parse_args() while the GTK ui expects this to be
         # populated as a string, later
-        if len(self.pattern) == 1:
-            self.pattern = self.pattern[0]
-        elif len(self.pattern) < 1:
+        if len(self.pattern) < 1:
             self.pattern = None
         else:
-            parser.print_usage()
-            sys.exit(_('wrong number of arguments, use -h for full help'))
+            # accept space-separated fingerprints
+            self.pattern = "".join(self.pattern)
         # make sure parser can be accessed outside of this function
         return parser
 
