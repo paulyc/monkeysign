@@ -12,13 +12,8 @@ Release process
 
 1.0 blockers
 ============
- 
+
  * make translatable (look at the gameclock for inspiration)
- * harmonize error handling: some functions in gpg rely on exceptions,
-   other on truth return values. we prefer exceptions as it allows us
-   to propagate error messages to the UI, but make sure to generate a
-   RuntimeError, and not a ProtocolError, which are unreadable to the
-   user.
 
 2.0 blockers
 ============
@@ -30,6 +25,8 @@ The following needs to be fixed before 2.0 is released.
  * make sure the GUI and CLI have feature parity, for example right
    now the GUI can't do local signatures without a commandline flag
  * maybe then: merge in a single "monkeysign" binary
+ * if not merging: harmonize error handling in gpg.py, see the file
+   docstring for more info
 
 The merge question
 ==================

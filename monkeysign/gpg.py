@@ -59,6 +59,12 @@ However, the implementation here has:
 
  1. key signing support
  2. a cleaner API
+
+Error handling is somewhat inconsistent here. Some functions rely on
+exceptions, other on boolean return values. We prefer exceptions as it
+allows us to propagate error messages to the UI, but make sure to
+generate a RuntimeError, and not a ProtocolError, which are unreadable
+to the user.
 """
 
 import os, tempfile, shutil, subprocess, re
