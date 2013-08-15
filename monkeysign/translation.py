@@ -38,7 +38,8 @@ class build_trans(Command):
     def run(self):
         po_dir = os.path.join(os.path.dirname(__file__), 'po/')
 
-        print('Compiling po files from %s...' % po_dir),
+        appname = self.distribution.get_name()
+        self.announce('compiling po files from %s...' % po_dir, 2)
         uptoDate = False
         for path, names, filenames in os.walk(po_dir):
             for f in filenames:
@@ -46,9 +47,9 @@ class build_trans(Command):
                 if f.endswith('.po'):
                     lang = f[:len(f) - 3]
                     src = os.path.join(path, f)
-                    dest_path = os.path.join(self.build_lib, 'gameclock', 'po', lang, \
+                    dest_path = os.path.join(self.build_lib, appname, 'po', lang, \
                         'LC_MESSAGES')
-                    dest = os.path.join(dest_path, 'gameclock.mo')
+                    dest = os.path.join(dest_path, appname + '.mo')
                     if not os.path.exists(dest_path):
                         os.makedirs(dest_path)
                     if not os.path.exists(dest):
@@ -66,7 +67,7 @@ class build_trans(Command):
                             uptoDate = True
                             
         if uptoDate:
-            sys.stdout.write(' po files already upto date.  ')
-        sys.stdout.write('\b\b \nFinished compiling translation files. \n')
+            self.announce('po files already upto date.', 2)
+
 
 build.sub_commands.append(('build_trans', None))
