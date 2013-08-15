@@ -14,68 +14,74 @@ class build_manpage(Command):
     description = 'Generate man page from setup().'
 
     user_options = [
-        ('output=', 'O', 'output file'),
-        ('parser=', None, 'module path to optparser (e.g. mymod:func'),
+        ('output=', 'O', 'output directory'),
+        ('parsers=', None, 'module path to optparser (e.g. command:mymod:func)'),
         ]
 
     def initialize_options(self):
         self.output = None
-        self.parser = None
+        self.parsers = None
 
     def finalize_options(self):
         if self.output is None:
             raise DistutilsOptionError('\'output\' option is required')
-        if self.parser is None:
+        if self.parsers is None:
             raise DistutilsOptionError('\'parser\' option is required')
-        mod_name, func_name = self.parser.split(':')
-        fromlist = mod_name.split('.')
-        try:
-            class_name, func_name = func_name.split('.')
-        except ValueError:
-            class_name = None
-        mod = __import__(mod_name, fromlist=fromlist)
-        if class_name is not None:
-            cls = getattr(mod, class_name)
-            self._parser = getattr(cls, func_name)()
-        else:
-            self._parser = getattr(mod, func_name)()
-        self._parser.formatter = ManPageFormatter()
-        self._parser.formatter.set_parser(self._parser)
-        self.announce('Writing man page %s' % self.output)
         self._today = datetime.date.today()
+        self._parsers = []
+        for parser in self.parsers.split():
+            scriptname, mod_name, func_name = parser.split(':')
+            fromlist = mod_name.split('.')
+            try:
+                class_name, func_name = func_name.split('.')
+            except ValueError:
+                class_name = None
+            mod = __import__(mod_name, fromlist=fromlist)
+            if class_name is not None:
+                cls = getattr(mod, class_name)
+                parser = getattr(cls, func_name)()
+            else:
+                parser = getattr(mod, func_name)()
+            parser.formatter = ManPageFormatter()
+            parser.formatter.set_parser(parser)
+            parser.prog = scriptname
+            self._parsers.append(parser)
+            self.announce('Writing man page %s' % self.output)
 
     def _markup(self, txt):
         return txt.replace('-', '\\-')
 
-    def _write_header(self):
-        appname = self.distribution.get_name()
+    def _write_header(self, parser):
+        appname = parser.prog
         ret = []
         ret.append('.TH %s 1 %s\n' % (self._markup(appname),
                                       self._today.strftime('%Y\\-%m\\-%d')))
-        description = self._parser.get_description()
+        description = parser.get_description()
         if description:
             name = self._markup('%s - %s' % (self._markup(appname),
                                              description.splitlines()[0]))
         else:
             name = self._markup(appname)
         ret.append('.SH NAME\n%s\n' % name)
-        # override argv, we specify it later
-        self._parser.prog = ''
-        synopsis = self._parser.get_usage().lstrip(' ')
+        # override argv, we need to format it later
+        prog_bak = parser.prog
+        parser.prog = ''
+        synopsis = parser.get_usage().lstrip(' ')
+        parser.prog = prog_bak
         if synopsis:
             ret.append('.SH SYNOPSIS\n.B %s\n%s\n' % (self._markup(appname),
                                                       synopsis))
-        long_desc = self._parser.get_description()
+        long_desc = parser.get_description()
         if long_desc:
             ret.append('.SH DESCRIPTION\n%s\n' % self._markup("\n".join(long_desc.splitlines()[1:])))
         return ''.join(ret)
 
-    def _write_options(self):
+    def _write_options(self, parser):
         ret = ['.SH OPTIONS\n']
-        ret.append(self._parser.format_option_help())
+        ret.append(parser.format_option_help())
         return ''.join(ret)
 
-    def _write_footer(self):
+    def _write_footer(self, parser):
         ret = []
         appname = self.distribution.get_name()
         author = '%s <%s>' % (self.distribution.get_author(),
@@ -90,13 +96,14 @@ class build_manpage(Command):
         return ''.join(ret)
 
     def run(self):
-        manpage = []
-        manpage.append(self._write_header())
-        manpage.append(self._write_options())
-        manpage.append(self._write_footer())
-        stream = open(self.output, 'w')
-        stream.write(''.join(manpage))
-        stream.close()
+        for parser in self._parsers:
+            manpage = []
+            manpage.append(self._write_header(parser))
+            manpage.append(self._write_options(parser))
+            manpage.append(self._write_footer(parser))
+            stream = open(self.output + '/' + parser.prog + '.1', 'w')
+            stream.write(''.join(manpage))
+            stream.close()
 
 
 class ManPageFormatter(optparse.HelpFormatter):
