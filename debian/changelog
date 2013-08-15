@@ -2,7 +2,8 @@ monkeysign (1.0) unstable; urgency=low
 
   * stop copying secrets to the temporary keyring
   * make sure we use the right signing key when specified
-  * signatures on multiple UIDs now get properly sent separately (Closes: #719241)
+  * signatures on multiple UIDs now get properly sent separately
+    (Closes: #719241)
   * this includes "deluid" support on the gpg library
   * significantly refactor email creation
   * improve unit tests on commandline scripts, invalid (revoked) keys and
