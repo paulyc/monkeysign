@@ -15,8 +15,14 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import os
+import sys
+import msgfmt
+from distutils.command.build import build
+from distutils.core import Command
+
 # stolen from deluge-1.3.3 (GPL3)
-class build_trans(cmd.Command):
+class build_trans(Command):
     description = 'Compile .po files into .mo files'
 
     user_options = [
@@ -33,6 +39,7 @@ class build_trans(cmd.Command):
         po_dir = os.path.join(os.path.dirname(__file__), 'po/')
 
         print('Compiling po files from %s...' % po_dir),
+        uptoDate = False
         for path, names, filenames in os.walk(po_dir):
             for f in filenames:
                 uptoDate = False
@@ -61,3 +68,5 @@ class build_trans(cmd.Command):
         if uptoDate:
             sys.stdout.write(' po files already upto date.  ')
         sys.stdout.write('\b\b \nFinished compiling translation files. \n')
+
+build.sub_commands.append(('build_trans', None))
