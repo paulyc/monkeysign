@@ -20,6 +20,22 @@ import sys
 import msgfmt
 from distutils.command.build import build
 from distutils.core import Command
+import locale
+import gettext
+import pkg_resources
+
+# Initialize gettext, taken from deluge 1.3.3 (GPL3)
+try:
+    locale.setlocale(locale.LC_ALL, '')
+    if hasattr(locale, "bindtextdomain"):
+        locale.bindtextdomain('monkeysign', pkg_resources.resource_filename('monkeysign', "po"))
+    if hasattr(locale, "textdomain"):
+        locale.textdomain('monkeysign')
+    gettext.install('monkeysign', pkg_resources.resource_filename('monkeysign', "po"), unicode=True, names='ngettext')
+except Exception, e:
+    print "Unable to initialize translations: %s" % e
+    import __builtin__
+    __builtin__.__dict__["_"] = lambda x: x
 
 # stolen from deluge-1.3.3 (GPL3)
 class build_trans(Command):

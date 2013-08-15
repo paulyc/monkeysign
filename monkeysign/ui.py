@@ -17,6 +17,7 @@
 
 # gpg interface
 from monkeysign.gpg import Keyring, TempKeyring, GpgRuntimeError
+import monkeysign.translation
 
 # mail functions
 from email.mime.multipart import MIMEMultipart
@@ -65,21 +66,21 @@ class MonkeysignUi(object):
         """parse the commandline arguments"""
         parser = optparse.OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
         parser.add_option('-d', '--debug', dest='debug', default=False, action='store_true',
-                          help='request debugging information from GPG engine (lots of garbage)')
+                          help=_('request debugging information from GPG engine (lots of garbage)'))
         parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
-                          help='explain what we do along the way')
+                          help=_('explain what we do along the way'))
         parser.add_option('-n', '--dry-run', dest='dryrun', default=False, action='store_true',
-                          help='do not actually do anything')
-        parser.add_option('-u', '--user', dest='user', help='user id to sign the key with')
+                          help=_('do not actually do anything'))
+        parser.add_option('-u', '--user', dest='user', help=_('user id to sign the key with'))
         parser.add_option('-l', '--local', dest='local', default=False, action='store_true',
-                          help='import in normal keyring a local certification')
+                          help=_('import in normal keyring a local certification'))
         parser.add_option('-k', '--keyserver', dest='keyserver',
-                          help='keyserver to fetch keys from')
-        parser.add_option('-s', '--smtp', dest='smtpserver', help='SMTP server to use')
+                          help=_('keyserver to fetch keys from'))
+        parser.add_option('-s', '--smtp', dest='smtpserver', help=_('SMTP server to use'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
-                          help='Do not send email at all. (Default is to use sendmail.)')
+                          help=_('Do not send email at all. (Default is to use sendmail.)'))
         parser.add_option('-t', '--to', dest='to', 
-                          help='Override destination email for testing (default is to use the first uid on the key or send email to each uid chosen)')
+                          help=_('Override destination email for testing (default is to use the first uid on the key or send email to each uid chosen)'))
         return parser
 
     def parse_args(self, args):
@@ -95,7 +96,7 @@ class MonkeysignUi(object):
             self.pattern = None
         else:
             parser.print_usage()
-            sys.exit('wrong number of arguments, use -h for full help')
+            sys.exit(_('wrong number of arguments, use -h for full help'))
         # make sure parser can be accessed outside of this function
         return parser
 
@@ -124,7 +125,7 @@ class MonkeysignUi(object):
 
         # set a default logging mechanism
         self.logfile = sys.stderr
-        self.log('Initializing UI')
+        self.log(_('Initializing UI'))
 
         # create the temporary keyring
         # XXX: i would prefer this to be done outside the constructor
@@ -135,7 +136,7 @@ class MonkeysignUi(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         # this is implicit in the garbage collection, but tell the user anyways
-        self.log('deleting the temporary keyring ' + self.tmpkeyring.homedir)
+        self.log(_('deleting the temporary keyring %s') % self.tmpkeyring.homedir)
 
         if exc_type is NotImplementedError:
             self.abort(str(exc_value))
@@ -156,7 +157,7 @@ class MonkeysignUi(object):
         # copy the gpg.conf from the real keyring
         try:
             shutil.copy(self.keyring.homedir + '/gpg.conf', self.tmpkeyring.homedir)
-            self.log("copied your gpg.conf in temporary keyring")
+            self.log(_('copied your gpg.conf in temporary keyring'))
         except IOError as e:
             # no such file or directory is alright: it means the use
             # has no gpg.conf (because we are certain the temp homedir
@@ -191,7 +192,7 @@ class MonkeysignUi(object):
         """display an warning message
 
 this should not interrupt the flow of the program, but must be visible to the user"""
-        print message
+        print message.encode('utf-8')
 
     def log(self, message):
         """log an informational message if verbose"""
@@ -209,19 +210,19 @@ this should not interrupt the flow of the program, but must be visible to the us
         self.keyring.context.set_option('export-options', 'export-minimal')
 
         # 1.b) from the local keyring
-        self.log('looking for key %s in your keyring' % self.pattern)
+        self.log(_('looking for key %s in your keyring') % self.pattern)
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
-            self.log('key not in local keyring')
+            self.log(_('key not in local keyring'))
 
             # 1.a) if allowed, from the keyservers
-            self.log('fetching key %s from keyservers' % self.pattern)
+            self.log(_('fetching key %s from keyservers') % self.pattern)
 
             if not re.search('^[0-9A-F]*$', self.pattern, re.IGNORECASE): # this is not a keyid
                 # the problem here is that we need to implement --search-keys, and it's a pain
-                raise NotImplementedError('please provide a keyid or fingerprint, uids are not supported yet')
+                raise NotImplementedError(_('please provide a keyid or fingerprint, uids are not supported yet'))
 
             if not self.tmpkeyring.fetch_keys(self.pattern):
-                self.abort('could not find key %s in your keyring or keyservers' % self.pattern)
+                self.abort(_('could not find key %s in your keyring or keyservers') % self.pattern)
 
     def copy_secrets(self):
         """import secret keys (but only the public part) from your keyring
@@ -230,7 +231,7 @@ we use --secret-keyring instead of copying the secret key material,
 but we still need the public part in the temporary keyring for this to
 work.
 """
-        self.log('copying your private key to temporary keyring in' + self.tmpkeyring.homedir)
+        self.log(_('copying your private key to temporary keyring in %s') % self.tmpkeyring.homedir)
         # detect the proper uid
         if self.options.user is None:
             keys = self.keyring.get_keys(None, True, False)
@@ -238,63 +239,63 @@ work.
             keys = self.keyring.get_keys(self.options.user, True, False)
 
         for fpr, key in keys.iteritems():
-            self.log('found secret key: %s' % key)
+            self.log(_('found secret key: %s') % key)
             if not key.invalid and not key.disabled and not key.expired and not key.revoked:
                 self.signing_key = key
                 break
 
         if self.signing_key is None:
-            self.abort('no default secret key found, abort!')
-        self.log('signing key chosen: %s' % self.signing_key.fpr)
+            self.abort(_('no default secret key found, abort!'))
+        self.log(_('signing key chosen: %s') % self.signing_key.fpr)
 
         # export public key material associated with detected private
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.signing_key.fpr)):
-            self.abort('could not find public key material, do you have a GPG key?')
+            self.abort(_('could not find public key material, do you have a GPG key?'))
 
     def sign_key(self):
         """sign the key uids, as specified"""
 
         keys = self.tmpkeyring.get_keys(self.pattern)
 
-        self.log("found %d keys matching your request" % len(keys))
+        self.log(_('found %d keys matching your request') % len(keys))
 
         for key in keys:
-            alluids = self.yes_no("""\
+            alluids = self.yes_no(_("""\
 Signing the following key
 
 %s
 
 Sign all identities? [y/N] \
-""" % str(keys[key]), False)
+""") % keys[key], False)
 
             self.chosen_uid = None
             if alluids:
                 pattern = keys[key].fpr
             else:
-                pattern = self.choose_uid('Choose the identity to sign', keys[key])
+                pattern = self.choose_uid(_('Choose the identity to sign'), keys[key])
                 if not pattern:
-                    self.log("no identity chosen")
+                    self.log(_('no identity chosen'))
                     return False
                 if not self.options.to:
                     self.options.to = pattern
                 self.chosen_uid = pattern
 
             if not self.options.dryrun:
-                if not self.yes_no('Really sign key? [y/N] ', False):
+                if not self.yes_no(_('Really sign key? [y/N] '), False):
                     continue
                 if not self.tmpkeyring.sign_key(pattern, alluids):
-                    self.warn('key signing failed')
+                    self.warn(_('key signing failed'))
                 else:
                     self.signed_keys[key] = keys[key]
                 if self.options.local:
-                    self.log("making a non-exportable signature")
+                    self.log(_('making a non-exportable signature'))
                     self.tmpkeyring.context.set_option('export-options', 'export-minimal')
 
                     # this is inefficient - we could save a copy if we would fetch the key directly
                     if not self.keyring.import_data(self.tmpkeyring.export_data(self.pattern)):
-                        self.abort('could not import public key back into public keyring, something is wrong')
+                        self.abort(_('could not import public key back into public keyring, something is wrong'))
                     if not self.keyring.sign_key(pattern, alluids, True):
-                        self.warn('local key signing failed')
+                        self.warn(_('local key signing failed'))
 
     def export_key(self):
         if self.options.user is not None and '@' in self.options.user:
@@ -302,7 +303,7 @@ Sign all identities? [y/N] \
         else:
             from_user = self.signing_key.uidslist[0].uid
 
-        if len(self.signed_keys) < 1: self.warn('no key signed, nothing to export')
+        if len(self.signed_keys) < 1: self.warn(_('no key signed, nothing to export'))
         
         for fpr, key in self.signed_keys.items():
             if self.chosen_uid is None:
@@ -310,14 +311,14 @@ Sign all identities? [y/N] \
                     try:
                         msg = EmailFactory(self.tmpkeyring.export_data(fpr), fpr, uid.uid, from_user, self.options.to)
                     except GpgRuntimeError as e:
-                        self.warn('failed to create email: %s' % e)
+                        self.warn(_('failed to create email: %s') % e)
                         break
                     self.sendmail(msg)
             else:
                 try:
                     msg = EmailFactory(self.tmpkeyring.export_data(fpr), fpr, self.chosen_uid, from_user, self.options.to)
                 except GpgRuntimeError as e:
-                    self.warn('failed to create email: %s' % e)
+                    self.warn(_('failed to create email: %s') % e)
                     break
                 self.sendmail(msg)
 
@@ -331,19 +332,19 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 server.sendmail(msg.mailfrom, msg.mailto, msg.as_string())
                 server.set_debuglevel(1)
                 server.quit()
-                self.warn('sent message through SMTP server %s to %s' % (self.options.smtpserver, msg.mailto))
+                self.warn(_('sent message through SMTP server %s to %s') % (self.options.smtpserver, msg.mailto))
                 return True
             elif not self.options.nomail:
                 if self.options.dryrun: return True
                 p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
                 p.communicate(msg.as_string())
-                self.warn('sent message through sendmail to ' + msg.mailto)
+                self.warn(_('sent message through sendmail to %s') % msg.mailto)
             else:
                 # okay, no mail, just dump the exported key then
-                self.warn("""\
+                self.warn(_("""\
 not sending email to %s, as requested, here's the email message:
 
-%s""" % (msg.mailto, msg))
+%s""") % (msg.mailto.decode('utf-8'), msg))
 
 
 class EmailFactory:
@@ -355,12 +356,10 @@ mail.
 """
 
     # the email subject
-    # @todo make this translatable
-    subject = "Your signed OpenPGP key"
+    subject = _("Your signed OpenPGP key")
 
     # the email body
-    # @todo make this translatable
-    body = """
+    body = _("""
 Please find attached your signed PGP key. You can import the signed
 key by running each through `gpg --import`.
 
@@ -371,7 +370,7 @@ yourself.  With GnuPG this can be done using:
     gpg --keyserver pool.sks-keyservers.net --send-key <keyid>
 
 Regards,
-"""
+""")
 
     def __init__(self, keydata, keyfpr, recipient, mailfrom, mailto):
         """email constructor
@@ -414,7 +413,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
 
         # the second layer up, made of two parts: a version number
         # and the first layer, encrypted
-        return self.wrap_crypted_mail(encrypted).as_string()
+        return self.wrap_crypted_mail(encrypted).as_string().decode('utf-8')
 
     def as_string(self):
         return self.__str__()
@@ -429,7 +428,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         keypart = MIMEBase('application', 'pgp-keys', name=filename)
         keypart.add_header('Content-Disposition', 'attachment', filename=filename)
         keypart.add_header('Content-Transfer-Encoding', '7bit')
-        keypart.add_header('Content-Description', 'PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>')
+        keypart.add_header('Content-Description', _('PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>'))
         keypart.set_payload(data)
         return MIMEMultipart('mixed', None, [text, keypart])
 
@@ -444,7 +443,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
         msg['Subject'] = self.subject
         msg['From'] = self.mailfrom
-        msg.preamble = 'This is a multi-part message in PGP/MIME format...'
+        msg.preamble = _('This is a multi-part message in PGP/MIME format...')
         # take the first uid, not ideal
         msg['To'] = self.mailto
         return msg

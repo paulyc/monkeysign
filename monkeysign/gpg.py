@@ -71,6 +71,8 @@ import os, tempfile, shutil, subprocess, re
 
 from StringIO import StringIO
 
+import monkeysign.translation
+
 class Context():
     """Python wrapper for GnuPG
 
@@ -204,7 +206,7 @@ class Context():
             if self.debug: print >>self.debug, "FOUND:", line,
             return match
         else:
-            raise GpgProtocolError(self.returncode, "could not find pattern '%s' in input" % pattern)
+            raise GpgProtocolError(self.returncode, _("could not find pattern '%s' in input") % pattern)
 
     def seek(self, fd, pattern):
         """look for a specific GNUPG status line in the output
@@ -352,7 +354,7 @@ class Keyring():
             elif self.context.returncode == 2:
                 return None
             else:
-                raise GpgProtocolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
+                raise GpgProtocolError(self.context.returncode, _('unexpected GPG exit code in list-keys: %d') % self.context.returncode)
         if secret:
             command = ['list-secret-keys']
             if pattern: command += [pattern]
@@ -372,7 +374,7 @@ class Keyring():
             elif self.context.returncode == 2:
                 return None
             else:
-                raise GpgProtocolError(self.context.returncode, "unexpected GPG exit code in list-keys: %d" % self.context.returncode)
+                raise GpgProtocolError(self.context.returncode, _('unexpected GPG exit code in list-keys: %d') % self.context.returncode)
         return keys
 
     def encrypt_data(self, data, recipient):
@@ -384,7 +386,7 @@ class Keyring():
         if self.context.returncode == 0:
             return self.context.stdout
         else:
-            raise GpgRuntimeError(self.context.returncode, "encryption to %s failed: %s." % (recipient, self.context.stderr.split("\n")[-2]))
+            raise GpgRuntimeError(self.context.returncode, _('encryption to %s failed: %s.') % (recipient, self.context.stderr.split("\n")[-2]))
 
     def decrypt_data(self, data):
         """decrypt data using asymetric encryption
@@ -395,7 +397,7 @@ class Keyring():
         if self.context.returncode == 0:
             return self.context.stdout
         else:
-            raise GpgRuntimeError(self.context.returncode, "decryption failed: %s" % self.context.stderr.split("\n")[-2])
+            raise GpgRuntimeError(self.context.returncode, _('decryption failed: %s') % self.context.stderr.split("\n")[-2])
 
     def del_uid(self, fingerprint, pattern):
         if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command(['edit-key', fingerprint])
@@ -447,7 +449,7 @@ class Keyring():
         try:
             multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
         except GpgProtocolError:
-            raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr)
+            raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
         if multiuid:
             if signall: # special case, sign all keys
                 print >>proc.stdin, "y"
@@ -456,7 +458,7 @@ class Keyring():
                 try:
                     self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
                 except GpgProtocolError:
-                    raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr)
+                    raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
                 print >>proc.stdin, 'y'
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
@@ -485,7 +487,7 @@ class Keyring():
             try:
                 self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
             except GpgProtocolError:
-                raise GpgRuntimeError(self.context.returncode, 'unable to open key for editing: %s' % self.context.stderr)
+                raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
 
         # we fallthrough here if there's only one key to sign
         try:
@@ -501,7 +503,7 @@ class Keyring():
         try:
             self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
         except GpgProtocolError:
-            raise GpgRuntimeError(self.context.returncode, 'password confirmation failed')
+            raise GpgRuntimeError(self.context.returncode, _('password confirmation failed'))
         if multiuid:
             # we save the resulting key in uid selection mode
             self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
@@ -671,23 +673,23 @@ class OpenPGPkey():
             elif rectype == '':
                 pass
             else:
-                raise NotImplementedError("record type '%s' not implemented" % rectype)
+                raise NotImplementedError(_("record type '%s' not implemented") % rectype)
         if uidslist: self.uidslist = uidslist
 
     def __str__(self):
-        ret = "pub  [%s] %sR/" % (self.get_trust(), self.length)
-        ret += self.keyid(8) + " " + self.creation
-        if self.expiry: ret += ' [expiry: ' + self.expiry + ']'
-        ret += "\n"
-        ret += '    Fingerprint = ' + self.format_fpr() + "\n"
+        ret = u'pub  [%s] %sR/' % (self.get_trust(), self.length)
+        ret += self.keyid(8) + u" " + self.creation
+        if self.expiry: ret += u' [expiry: ' + self.expiry + ']'
+        ret += u"\n"
+        ret += u'    Fingerprint = ' + self.format_fpr() + "\n"
         i = 1
         for uid in self.uidslist:
-            ret += "uid %d      [%s] %s\n" % (i, uid.get_trust(), uid.uid)
+            ret += u"uid %d      [%s] %s\n" % (i, uid.get_trust(), uid.uid.decode('utf-8'))
             i += 1
         for subkey in self.subkeys.values():
-            ret += "sub   " + subkey.length + "R/" + subkey.keyid(8) + " " + subkey.creation
-            if subkey.expiry: ret += ' [expiry: ' + subkey.expiry + "]"
-            ret += "\n"
+            ret += u"sub   " + subkey.length + u"R/" + subkey.keyid(8) + u" " + subkey.creation
+            if subkey.expiry: ret += u' [expiry: ' + subkey.expiry + "]"
+            ret += u"\n"
         return ret
 
     def format_fpr(self):

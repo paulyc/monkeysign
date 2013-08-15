@@ -18,6 +18,7 @@
 import sys
 
 from monkeysign.ui import MonkeysignUi
+import monkeysign.translation
 
 class MonkeysignCli(MonkeysignUi):
     """sign a key in a safe fashion.
@@ -31,15 +32,15 @@ This program assumes you have gpg-agent configured to prompt for
 passwords."""
 
     # override default options to allow passing a keyid
-    usage = usage='%prog [options] <keyid>'
-    epilog='<keyid>: a GPG fingerprint or key id'
+    usage = _('%prog [options] <keyid>')
+    epilog = _('<keyid>: a GPG fingerprint or key id')
 
     def parse_args(self, args):
         """override main parsing: we absolutely need an argument"""
         parser = MonkeysignUi.parse_args(self, args)
         if self.pattern is None:
             parser.print_usage()
-            sys.exit('wrong number of arguments, use -h for full help')
+            sys.exit(_('wrong number of arguments, use -h for full help'))
 
     def main(self):
         """main code execution loop
@@ -55,7 +56,7 @@ passwords."""
         # 2. copy the signing key secrets into the keyring
         self.copy_secrets()
 
-        self.warn("Preparing to sign with this key\n\n%s" % self.signing_key)
+        self.warn(_('Preparing to sign with this key\n\n%s') % self.signing_key)
 
         # 3. for every user id (or all, if -a is specified)
         # 3.1. sign the uid, using gpg-agent
@@ -71,7 +72,7 @@ passwords."""
         # implicit
 
     def yes_no(self, prompt, default = None):
-        ans = raw_input(prompt)
+        ans = raw_input(prompt.encode('utf-8'))
         while default is None and ans.lower() not in ["y", "n"]:
             ans = raw_input(prompt)
         if default: return default
@@ -84,11 +85,11 @@ passwords."""
             for uid in key.uidslist:
                 allowed_uids.append(uid.uid)
 
-            prompt += ' (1-%d or full UID, control-c to abort): ' % len(allowed_uids)
+            prompt += _(' (1-%d or full UID, control-c to abort): ') % len(allowed_uids)
 
             pattern = raw_input(prompt)
             while not (pattern in allowed_uids or (pattern.isdigit() and int(pattern)-1 in range(0,len(allowed_uids)))):
-                print "invalid uid"
+                print _('invalid uid')
                 pattern = raw_input(prompt)
             if pattern.isdigit():
                 pattern = allowed_uids[int(pattern)-1]
