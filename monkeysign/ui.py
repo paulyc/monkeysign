@@ -363,6 +363,9 @@ mail.
 Please find attached your signed PGP key. You can import the signed
 key by running each through `gpg --import`.
 
+If you have multiple user ids, each signature was sent in a separate
+email to each user id.
+
 Note that your key was not uploaded to any keyservers. If you want
 this new signature to be available to others, please upload it
 yourself.  With GnuPG this can be done using:
