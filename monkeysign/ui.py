@@ -27,6 +27,7 @@ from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
+from email import Charset
 import smtplib
 import subprocess
 
@@ -460,6 +461,14 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         a multipart/mixed message containing a plain-text message
         explaining what this is, and a second part containing PGP data
         """
+
+        # Override python's weird assumption that utf-8 text should be encoded with
+        # base64, and instead use quoted-printable (for both subject and body).  I
+        # can't figure out a way to specify QP (quoted-printable) instead of base64 in
+        # a way that doesn't modify global state. :-(
+        # (taken from http://radix.twistedmatrix.com/2010/07/how-to-send-good-unicode-email-with.html)
+        Charset.add_charset('utf-8', Charset.QP, Charset.QP, 'utf-8')
+
         text = MIMEText(self.body, 'plain', 'utf-8')
         filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
         keypart = MIMEBase('application', 'pgp-keys', name=filename)

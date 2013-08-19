@@ -198,25 +198,16 @@ class EmailFactoryTest(BaseTestCase):
         data = self.email.tmpkeyring.export_data(self.pattern)
         self.assertNotEqual(data, '')
         message = self.email.create_mail_from_block(data)
-        match = re.compile("""Content-Type: multipart/mixed; boundary="===============%s=="
+        match = re.compile("""Content-Type: multipart/mixed; boundary="===============[0-9]*=="
 MIME-Version: 1.0
 
---===============%s==
+--===============[0-9]*==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
 
-ClBsZWFzZSBmaW5kIGF0dGFjaGVkIHlvdXIgc2lnbmVkIFBHUCBrZXkuIFlvdSBjYW4gaW1wb3J0
-IHRoZSBzaWduZWQKa2V5IGJ5IHJ1bm5pbmcgZWFjaCB0aHJvdWdoIGBncGcgLS1pbXBvcnRgLgoK
-SWYgeW91IGhhdmUgbXVsdGlwbGUgdXNlciBpZHMsIGVhY2ggc2lnbmF0dXJlIHdhcyBzZW50IGlu
-IGEgc2VwYXJhdGUKZW1haWwgdG8gZWFjaCB1c2VyIGlkLgoKTm90ZSB0aGF0IHlvdXIga2V5IHdh
-cyBub3QgdXBsb2FkZWQgdG8gYW55IGtleXNlcnZlcnMuIElmIHlvdSB3YW50CnRoaXMgbmV3IHNp
-Z25hdHVyZSB0byBiZSBhdmFpbGFibGUgdG8gb3RoZXJzLCBwbGVhc2UgdXBsb2FkIGl0CnlvdXJz
-ZWxmLiAgV2l0aCBHbnVQRyB0aGlzIGNhbiBiZSBkb25lIHVzaW5nOgoKICAgIGdwZyAtLWtleXNl
-cnZlciBwb29sLnNrcy1rZXlzZXJ2ZXJzLm5ldCAtLXNlbmQta2V5IDxrZXlpZD4KClJlZ2FyZHMs
-Cg==
-
---===============%s==
+%s
+--===============[0-9]*==
 Content-Type: application/pgp-keys; name="yourkey.asc"
 MIME-Version: 1.0
 Content-Disposition: attachment; filename="yourkey.asc"
@@ -227,7 +218,7 @@ Content-Description: PGP Key <keyid>, uid <uid> \(<idx\), signed by <keyid>
 .*
 -----END PGP PUBLIC KEY BLOCK-----
 
---===============%s==--""" % tuple([ '[0-9]*' ] * 4), re.DOTALL)
+--===============[0-9]*==--""" % (self.email.body), re.DOTALL)
         self.assertRegexpMatches(message.as_string(), match)
         return message
 
