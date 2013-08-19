@@ -361,7 +361,7 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 self.warn(_("""\
 not sending email to %s, as requested, here's the email message:
 
-%s""") % (msg.mailto, msg))
+%s""") % (msg.mailto, msg.create_mail_from_block(msg.tmpkeyring.export_data(msg.keyfpr))))
 
 
 class EmailFactory:

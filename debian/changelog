@@ -7,6 +7,7 @@ monkeysign (1.1~git) UNRELEASED; urgency=low
     * SMTP password is prompted if not specified
     * use STARTTLS if available
     * enable SMTP debugging only debugging is enabled
+  * show the unencrypted email with --no-mail (Closes: #720049)
 
  -- Antoine Beaupré <anarcat@debian.org>  Mon, 19 Aug 2013 10:33:52 -0400
 
