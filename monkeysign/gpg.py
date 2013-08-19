@@ -457,8 +457,11 @@ class Keyring():
                 # confirm signature
                 try:
                     self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
-                except GpgProtocolError:
-                    raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
+                except GpgProtocolError as e:
+                    if 'sign_uid.dupe_okay' in str(e):
+                        raise GpgRuntimeError(self.context.returncode, _('you already signed that key'))
+                    else:
+                        raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
                 print >>proc.stdin, 'y'
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
