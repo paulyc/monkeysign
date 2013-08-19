@@ -346,7 +346,6 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                         self.options.smtppass = self.prompt_pass(_('enter SMTP password for server %s: ') % self.options.smtpserver)
                     server.login(self.options.smtpuser, self.options.smtppass)
                 server.sendmail(msg.mailfrom.encode('utf-8'), msg.mailto.encode('utf-8'), msg.as_string().encode('utf-8'))
-                server.set_debuglevel(1)
                 server.quit()
                 self.warn(_('sent message through SMTP server %s to %s') % (self.options.smtpserver, msg.mailto))
                 return True
