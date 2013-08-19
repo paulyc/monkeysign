@@ -463,7 +463,10 @@ class Keyring():
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
                 # we seek because i have seen a USERID_HINT <keyid> <uid> in some cases
-                self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+                try:
+                    self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+                except GpgProtocolError:
+                    raise GpgRuntimeError(self.context.returncode, _('unable to prompt for passphrase, is gpg-agent running?'))
                 return proc.wait() == 0
 
             # don't sign all uids
