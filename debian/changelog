@@ -1,3 +1,15 @@
+monkeysign (1.1~git) UNRELEASED; urgency=low
+
+  * properly warn when gpg-agent is not running or failing (see #719908)
+  * try to handle cases where the key is already signed (see #720055)
+  * improved SMTP support:
+    * SMTP username and passwords can be passed as commandline arguments
+    * SMTP password is prompted if not specified
+    * use STARTTLS if available
+    * enable SMTP debugging only debugging is enabled
+
+ -- Antoine Beaupré <anarcat@debian.org>  Mon, 19 Aug 2013 10:33:52 -0400
+
 monkeysign (1.0) unstable; urgency=low
 
   * stop copying secrets to the temporary keyring
