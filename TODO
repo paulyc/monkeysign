@@ -16,7 +16,8 @@ Release process
 The following needs to be fixed before 2.0 is released.
 
  * merge with python-gnupg (see below)
- * make all options accessible from the GUI (preferences?)
+ * make all options accessible from the GUI (preferences? see
+   configparser and json modules)
  * make sure the GUI and CLI have feature parity, for example right
    now the GUI can't do local signatures without a commandline flag
  * maybe then: merge in a single "monkeysign" binary
