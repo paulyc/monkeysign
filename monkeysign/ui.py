@@ -337,6 +337,7 @@ expects an EmailFactory email, but will not mail if nomail is set"""
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
+                server.set_debuglevel(self.options.debug)
                 if self.options.smtpuser:
                     try:
                         server.starttls()
