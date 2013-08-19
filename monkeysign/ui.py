@@ -338,11 +338,12 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
                 server.set_debuglevel(self.options.debug)
+                try:
+                    server.starttls()
+                except SMTPException:
+                    self.warn(_('SMTP server does not support STARTTLS'))
+                    if self.options.smtpuser: self.warn(_('authentication credentials will be sent in clear text'))
                 if self.options.smtpuser:
-                    try:
-                        server.starttls()
-                    except SMTPException:
-                        self.warn(_('sending SMTP credentials in clear text, as the SMTP server does not support STARTTLS'))
                     if not self.options.smtppass:
                         self.options.smtppass = self.prompt_pass(_('enter SMTP password for server %s: ') % self.options.smtpserver)
                     server.login(self.options.smtpuser, self.options.smtppass)
