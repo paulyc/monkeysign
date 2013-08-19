@@ -78,7 +78,9 @@ class MonkeysignUi(object):
                           help=_('import in normal keyring a local certification'))
         parser.add_option('-k', '--keyserver', dest='keyserver',
                           help=_('keyserver to fetch keys from'))
-        parser.add_option('-s', '--smtp', dest='smtpserver', help=_('SMTP server to use'))
+        parser.add_option('-s', '--smtp', dest='smtpserver', help=_('SMTP server to use, use a colon to specify the port number if non-standard'))
+        parser.add_option('--smtpuser', dest='smtpuser', help=_('username for the SMTP server (default: no user)'))
+        parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
                           help=_('Do not send email at all. (Default is to use sendmail.)'))
         parser.add_option('-t', '--to', dest='to', 
@@ -205,6 +207,12 @@ this should not interrupt the flow of the program, but must be visible to the us
     def choose_uid(self, prompt, uids):
         raise NotImplementedError('choosing not implemented in base class')
 
+    def prompt_line(self, prompt):
+        raise NotImplementedError('prompting for a line not implemented in base class')
+
+    def prompt_pass(self, prompt):
+        raise NotImplementedError('prompting for a password not implemented in base class')
+
     def find_key(self):
         """find the key to be signed somewhere"""
         self.keyring.context.set_option('export-options', 'export-minimal')
@@ -329,6 +337,14 @@ expects an EmailFactory email, but will not mail if nomail is set"""
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
+                if self.options.smtpuser:
+                    try:
+                        server.starttls()
+                    except SMTPException:
+                        self.warn(_('sending SMTP credentials in clear text, as the SMTP server does not support STARTTLS'))
+                    if not self.options.smtppass:
+                        self.options.smtppass = self.prompt_pass(_('enter SMTP password for server %s: ') % self.options.smtpserver)
+                    server.login(self.options.smtpuser, self.options.smtppass)
                 server.sendmail(msg.mailfrom.encode('utf-8'), msg.mailto.encode('utf-8'), msg.as_string().encode('utf-8'))
                 server.set_debuglevel(1)
                 server.quit()

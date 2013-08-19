@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import getpass
 
 from monkeysign.ui import MonkeysignUi
 import monkeysign.translation
@@ -77,6 +78,12 @@ passwords."""
             ans = raw_input(prompt)
         if default: return default
         else: return ans.lower() == 'y'
+
+    def prompt_line(self, prompt):
+        return raw_input(prompt.encode('utf-8'))
+
+    def prompt_pass(self, prompt):
+        return getpass.getpass(prompt)
 
     def choose_uid(self, prompt, key):
         """present the user with a list of UIDs and let him choose one"""
