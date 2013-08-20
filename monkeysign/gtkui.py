@@ -309,12 +309,12 @@ class MonkeysignScan(gtk.Window):
                self.dialog = gtk.FileChooserDialog("Open QR code image", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
                self.dialog.set_default_response(gtk.RESPONSE_OK)
                response = self.dialog.run()
+               filename = self.dialog.get_filename()
+               self.dialog.destroy()
                if response == gtk.RESPONSE_OK:
-                               filename = self.dialog.get_filename()
                                gtk.gdk.threads_leave() # XXX: without this, the ask() method later freeze, go figure
                                #raise NotImplementedError(_('need to verify fingerprint on image!'))
                                self.scan_image(filename)
-               self.dialog.destroy()
                return
 
         def scan_image(self, filename):
