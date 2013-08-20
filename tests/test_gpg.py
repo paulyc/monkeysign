@@ -314,6 +314,10 @@ class TestKeyringWithKeys(TestKeyringBase):
             for u, uid in key.uids.iteritems():
                 self.assertEqual(userid, uid.uid)
 
+    def test_verify_file(self):
+        """test verify_file()"""
+        self.assertTrue(self.gpg.verify_file(os.path.dirname(__file__) + '/testfile.txt.asc', os.path.dirname(__file__) + '/testfile.txt'))
+
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
         self.key = OpenPGPkey("""tru::1:1343350431:0:3:1:5

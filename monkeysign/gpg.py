@@ -320,6 +320,15 @@ class Keyring():
         self.context.call_command(command)
         return self.context.stdout
 
+    def verify_file(self, filename, sigfile):
+        self.context.call_command(['verify', filename, sigfile])
+        fd = StringIO(self.context.stderr)
+        try:
+            self.context.seek(fd, 'VALIDSIG')
+        except GpgProtocolError:
+            raise GpgRuntimeError(self.context.returncode, _('verifying file %s failed: %s.') % (filename, self.context.stderr.decode('utf-8')))
+        return True
+
     def fetch_keys(self, fpr, keyserver = None):
         """Download keys from a keyserver into the local keyring
 
