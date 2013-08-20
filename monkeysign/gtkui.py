@@ -24,7 +24,7 @@ import gtk
 import gobject
 import pygtk; pygtk.require('2.0')
 import pango
-import Image
+import Image # XXX: what *is* this library exactly?!
 import zbar, zbarpygtk
 
 from qrencode import encode as _qrencode
@@ -199,7 +199,6 @@ class MonkeysignScan(gtk.Window):
                 else:
                         camframe = gtk.Frame()
                         self.zbarframe = camframe
-                        self.zbar = zbarpygtk.Gtk()
                         error_icon = gtk.Image()
                         error_icon.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
                         vbox = gtk.VBox()
@@ -211,6 +210,7 @@ class MonkeysignScan(gtk.Window):
                         vbox.pack_start(error_label_top)
                         vbox.set_size_request(320, 320)
                         camframe.add(vbox)
+                        self.zbar = vbox
 
 		# Ultimate keys list
                 self.ultimate_keys = Keyring().get_keys(None, True, False).values() # Keep ultimately trusted keys in memory
@@ -316,14 +316,12 @@ class MonkeysignScan(gtk.Window):
                response = dialog.run()
                if response == gtk.RESPONSE_OK:
                                filename = dialog.get_filename()
-                               image = Image.open(filename)
-                               pixbuf = gtk.gdk.pixbuf_new_from_file(filename)
-                               raise NotImplementedError(_('need to verify fingerprint on image!'))
-                               self.scan_image(image)
+                               #raise NotImplementedError(_('need to verify fingerprint on image!'))
+                               self.scan_image(filename)
                dialog.destroy()
                return
 
-        def scan_image(self, image):
+        def scan_image(self, filename):
                 """Scan an image for QR codes"""
                 # create a reader
                 scanner = zbar.ImageScanner()
@@ -332,22 +330,27 @@ class MonkeysignScan(gtk.Window):
                 scanner.parse_config('enable')
 
                 # obtain image data
+                image = Image.open(filename)
                 pil = image.convert('L')
                 width, height = pil.size
                 raw = pil.tostring()
 
                 # wrap image data
-                image = zbar.Image(width, height, 'Y800', raw)
+                rawimage = zbar.Image(width, height, 'Y800', raw)
 
                 # scan the image for barcodes
-                scanner.scan(image)
+                scanner.scan(rawimage)
 
                 # extract results
-                for symbol in image:
-                        self.process_scan(symbol.data)
+                for symbol in rawimage:
+                        self.capture = gtk.Image()
+                        self.capture.set_from_file(filename)
+                        self.capture.show()
+                        self.zbarframe.remove(self.zbar)
+                        self.zbarframe.add(self.capture)
+                        self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
 
-                # clean up
-                del(image)
+                        self.process_scan(symbol.data)
 
 	def save_qrcode(self, widget=None):
 		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
@@ -396,7 +399,7 @@ class MonkeysignScan(gtk.Window):
 		loader.close()
 		return pixbuf
 
-        def update_progress_callback(*args):
+        def update_progress_callback(self, *args):
                 """callback invoked for pulsating progressbar
                 """
                 if self.keep_pulsing:
@@ -405,7 +408,7 @@ class MonkeysignScan(gtk.Window):
                 else:
                         return False
 
-        def watch_out_callback(pid, condition):
+        def watch_out_callback(self, pid, condition):
                 """callback invoked when gpg key download is finished
                 """
                 self.keep_pulsing=False
@@ -458,7 +461,7 @@ class MonkeysignScan(gtk.Window):
         def process_scan(self, data):
                 """process zbar-scanned data"""
 
-                # Look for prefix and hexadecimal 40-ascii-character fingerprint
+                self.msui.log(_('zbar captured a frame, looking for 40 character hexadecimal fingerprint'))
                 m = re.search("((?:[0-9A-F]{4}\s*){10})", data, re.IGNORECASE)
 
                 if m != None:
@@ -492,8 +495,12 @@ class MonkeysignScan(gtk.Window):
 
         def resume_capture(self):
                 self.zbarframe.remove(self.capture)
+                try:
+                        self.zbar.set_video_enabled(True)
+                except AttributeError:
+                        # the "zbar" is not a video frame capture, webcam probably disable, ignore
+                        pass
                 self.zbarframe.add(self.zbar)
-                self.zbar.set_video_enabled(True)
                 self.capture = None
 
         def destroy(self, widget, data=None):
