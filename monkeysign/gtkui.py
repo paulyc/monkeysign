@@ -310,15 +310,14 @@ class MonkeysignScan(gtk.Window):
 
         def import_image(self, widget):
                """Use a file chooser dialog to import an image containing a QR code"""
-               dialog = gtk.FileChooserDialog("Open QR code image", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-               dialog.set_default_response(gtk.RESPONSE_OK)
-               dialog.show()
-               response = dialog.run()
+               self.dialog = gtk.FileChooserDialog("Open QR code image", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+               self.dialog.set_default_response(gtk.RESPONSE_OK)
+               response = self.dialog.run()
                if response == gtk.RESPONSE_OK:
-                               filename = dialog.get_filename()
+                               filename = self.dialog.get_filename()
                                #raise NotImplementedError(_('need to verify fingerprint on image!'))
                                self.scan_image(filename)
-               dialog.destroy()
+               self.dialog.destroy()
                return
 
         def scan_image(self, filename):
@@ -431,9 +430,6 @@ class MonkeysignScan(gtk.Window):
 
                         self.resume_capture()
                         for md in self.md: md.destroy()
-                else:
-                        # 1.b) from the local keyring (@todo try that first?)
-                        self.msui.find_key()
                 return
 
         def decoded(self, zbar, data):
@@ -468,8 +464,19 @@ class MonkeysignScan(gtk.Window):
                         # Found fingerprint, get it and strip spaces for GPG
                         # XXX: not sure why passing it into msui is necessary
                         self.msui.pattern = m.group(1).replace(' ', '')
-                        # 1. fetch the key into a temporary keyring - we override the find_key() because we want to be interactive
-                        # 1.a) if allowed (@todo), from the keyservers
+                        # 1. fetch the key into a temporary keyring
+                        # XXX: we override the find_key() because we want to be interactive
+                        # but that's ugly as hell - find_key() should take a callback maybe?
+                        # 1.a) from the local keyring
+                        self.msui.log(_('looking for key %s in your keyring') % self.msui.pattern)
+                        self.msui.keyring.context.set_option('export-options', 'export-minimal')
+                        if self.msui.tmpkeyring.import_data(self.msui.keyring.export_data(self.msui.pattern)):
+                                # XXXX: this actually hangs when signing the key, maybe because we're not in a callback?
+                                # it's the prompting that hangs, see msui.ask...
+                                self.watch_out_callback(0, 0) # XXX: hack, the callback should call a cleaner function
+                                return # XXX: also ugly, reindent everything instead
+
+                        # 1.b) if allowed (@todo), from the keyservers
                         if self.msui.options.keyserver is not None:
                                 self.msui.tmpkeyring.context.set_option('keyserver', self.msui.options.keyserver)
                         command = self.msui.tmpkeyring.context.build_command(['recv-keys', self.msui.pattern])
