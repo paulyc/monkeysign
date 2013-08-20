@@ -130,6 +130,7 @@ class MonkeysignScan(gtk.Window):
         ui = '''<ui>
         <menubar name="MenuBar">
                 <menu action="File">
+                        <menuitem action="Open image..."/>
                         <menuitem action="Save as..."/>
                         <separator name="FileSeparator1"/>
                         <menuitem action="Print"/>
@@ -159,6 +160,7 @@ class MonkeysignScan(gtk.Window):
                 actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
                 actiongroup.add_actions([
                                 ('File', None, _('_File')),
+                                ('Open image...', gtk.STOCK_OPEN, _('Open image...'), None, None, self.import_image),
                                 ('Save as...', gtk.STOCK_SAVE, _('_Save as...'), None, None, self.save_qrcode),
                                 ('Print', gtk.STOCK_PRINT, _('_Print'), None, None, self.print_op),
                                 ('Edit', None, '_Edit'),
@@ -305,6 +307,48 @@ class MonkeysignScan(gtk.Window):
 			size = rect.height - 15
 		version, width, image = _qrencode_scaled('OPENPGP4FPR:'+fingerprint,size,0,1,2,True)
 		return image
+
+        def import_image(self, widget):
+               """Use a file chooser dialog to import an image containing a QR code"""
+               dialog = gtk.FileChooserDialog("Open QR code image", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+               dialog.set_default_response(gtk.RESPONSE_OK)
+               dialog.show()
+               response = dialog.run()
+               if response == gtk.RESPONSE_OK:
+                               filename = dialog.get_filename()
+                               image = Image.open(filename)
+                               pixbuf = gtk.gdk.pixbuf_new_from_file(filename)
+                               raise NotImplementedError(_('need to verify fingerprint on image!'))
+                               self.scan_image(image)
+               dialog.destroy()
+               return
+
+        def scan_image(self, image):
+                """Scan an image for QR codes"""
+                # create a reader
+                scanner = zbar.ImageScanner()
+
+                # configure the reader
+                scanner.parse_config('enable')
+
+                # obtain image data
+                pil = image.convert('L')
+                width, height = pil.size
+                raw = pil.tostring()
+
+                # wrap image data
+                image = zbar.Image(width, height, 'Y800', raw)
+
+                # scan the image for barcodes
+                scanner.scan(image)
+
+                # extract results
+                for symbol in image:
+                        m = re.search("((?:[0-9A-F]{4}\s*){10})", symbol.data, re.IGNORECASE)
+                        raise NotImplementedError(_('need to sign key now!'))
+
+                # clean up
+                del(image)
 
 	def save_qrcode(self, widget=None):
 		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
