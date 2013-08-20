@@ -315,6 +315,7 @@ class MonkeysignScan(gtk.Window):
                response = self.dialog.run()
                if response == gtk.RESPONSE_OK:
                                filename = self.dialog.get_filename()
+                               gtk.gdk.threads_leave() # XXX: without this, the ask() method later freeze, go figure
                                #raise NotImplementedError(_('need to verify fingerprint on image!'))
                                self.scan_image(filename)
                self.dialog.destroy()
