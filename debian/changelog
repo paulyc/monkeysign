@@ -1,5 +1,8 @@
 monkeysign (1.1~git) UNRELEASED; urgency=low
 
+  * implement qrcode image import, to allow people without webcams to
+    import pictures from a trusted camera - the images must be signed with
+    a detached signature on pain of a ugly warning with instructions.
   * properly warn when gpg-agent is not running or failing (see #719908)
   * try to handle cases where the key is already signed (see #720055)
   * improved SMTP support:

@@ -30,7 +30,7 @@ import zbar, zbarpygtk
 from qrencode import encode as _qrencode
 from qrencode import encode_scaled as _qrencode_scaled
 
-from monkeysign.gpg import Keyring
+from monkeysign.gpg import Keyring, GpgRuntimeError
 from monkeysign.ui import MonkeysignUi
 import monkeysign.translation
 
@@ -313,7 +313,18 @@ class MonkeysignScan(gtk.Window):
                self.dialog.destroy()
                if response == gtk.RESPONSE_OK:
                                gtk.gdk.threads_leave() # XXX: without this, the ask() method later freeze, go figure
-                               #raise NotImplementedError(_('need to verify fingerprint on image!'))
+                               try:
+                                       verified = False
+                                       for suffix in [ '.asc', '.sig' ]:
+                                               if os.path.exists(filename + suffix):
+                                                       # armored signature exists, verify it
+                                                       verified = self.msui.keyring.verify_file(filename + suffix, filename)
+                                       if not verified:
+                                               raise GpgRuntimeError(0, _('cannot find signature for image file'))
+                               except GpgRuntimeError as e:
+                                       self.msui.warn(_("The image provided cannot be verified using a trusted OpenPGP signature.\n\nMake sure the image comes from a trusted source (e.g. your own camera, which you have never left unsurveilled) before signing this!\n\nDO NOT SIGN UNTRUSTED FINGERPRINTS!\n\nTo get rid of this warning, if you really trust this image, use the following command to sign the file\n\n    gpg -s --detach %s\n") % filename)
+                               else:
+                                       self.msui.log(_('image signature verified successfully'))
                                self.scan_image(filename)
                return
 
