@@ -344,8 +344,7 @@ class MonkeysignScan(gtk.Window):
 
                 # extract results
                 for symbol in image:
-                        m = re.search("((?:[0-9A-F]{4}\s*){10})", symbol.data, re.IGNORECASE)
-                        raise NotImplementedError(_('need to sign key now!'))
+                        self.process_scan(symbol.data)
 
                 # clean up
                 del(image)
@@ -397,69 +396,75 @@ class MonkeysignScan(gtk.Window):
 		loader.close()
 		return pixbuf
 
+        def update_progress_callback(*args):
+                """callback invoked for pulsating progressbar
+                """
+                if self.keep_pulsing:
+                        self.progressbar.pulse()
+                        return True
+                else:
+                        return False
+
+        def watch_out_callback(pid, condition):
+                """callback invoked when gpg key download is finished
+                """
+                self.keep_pulsing=False
+                self.dialog.destroy()
+                self.msui.log(_('fetching finished'))
+                if condition == 0:
+                        # 2. copy the signing key secrets into the keyring
+                        self.msui.copy_secrets()
+                        # 3. for every user id (or all, if -a is specified)
+                        # 3.1. sign the uid, using gpg-agent
+                        self.msui.sign_key()
+
+                        # 3.2. export and encrypt the signature
+                        # 3.3. mail the key to the user
+                        self.msui.export_key()
+
+                        # 3.4. optionnally (-l), create a local signature and import in
+                        #local keyring
+                        # 4. trash the temporary keyring
+
+                        self.resume_capture()
+                        for md in self.md: md.destroy()
+                else:
+                        # 1.b) from the local keyring (@todo try that first?)
+                        self.msui.find_key()
+                return
+
         def decoded(self, zbar, data):
                 """callback invoked when a barcode is decoded by the zbar widget.
                 checks for an openpgp fingerprint
                 """
 
-                def update_progress_callback(*args):
-                        """callback invoked for pulsating progressbar
-                        """
-                        if self.keep_pulsing:
-                                self.progressbar.pulse()
-                                return True
-                        else:
-                                return False
+                # Capture and display the video frame containing QR code
+                self.zbarframe.set_shadow_type(gtk.SHADOW_NONE)
+                alloc = self.zbarframe.allocation
+                pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, alloc.width, alloc.height)
+                pixbuf.get_from_drawable(self.zbarframe.window, self.zbarframe.window.get_colormap(),   alloc.x, alloc.y, 0, 0, alloc.width, alloc.height)
+                self.capture = gtk.Image()
+                self.capture.set_from_pixbuf(pixbuf)
+                self.capture.show()
+                self.zbarframe.remove(self.zbar)
+                self.zbarframe.add(self.capture)
+                self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
 
-                def watch_out_callback(pid, condition):
-                        """callback invoked when gpg key download is finished
-                        """
-                        self.keep_pulsing=False
-                        self.dialog.destroy()
-                        self.msui.log(_('fetching finished'))
-                        if condition == 0:
-                                # 2. copy the signing key secrets into the keyring
-                                self.msui.copy_secrets()
-                                # 3. for every user id (or all, if -a is specified)
-                                # 3.1. sign the uid, using gpg-agent
-                                self.msui.sign_key()
+                # Disable video capture
+                self.zbar.set_video_enabled(False)
 
-                                # 3.2. export and encrypt the signature
-                                # 3.3. mail the key to the user
-                                self.msui.export_key()
+                self.process_scan(data)
 
-                                # 3.4. optionnally (-l), create a local signature and import in
-                                #local keyring
-                                # 4. trash the temporary keyring
-
-                                self.resume_capture()
-                                for md in self.md: md.destroy()
-                        else:
-                                # 1.b) from the local keyring (@todo try that first?)
-                                self.msui.find_key()
-                        return
+        def process_scan(self, data):
+                """process zbar-scanned data"""
 
                 # Look for prefix and hexadecimal 40-ascii-character fingerprint
                 m = re.search("((?:[0-9A-F]{4}\s*){10})", data, re.IGNORECASE)
 
                 if m != None:
                         # Found fingerprint, get it and strip spaces for GPG
+                        # XXX: not sure why passing it into msui is necessary
                         self.msui.pattern = m.group(1).replace(' ', '')
-
-                        # Capture and display the video frame containing QR code
-                        self.zbarframe.set_shadow_type(gtk.SHADOW_NONE)
-                        alloc = self.zbarframe.allocation
-                        pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, alloc.width, alloc.height)
-                        pixbuf.get_from_drawable(self.zbarframe.window, self.zbarframe.window.get_colormap(),   alloc.x, alloc.y, 0, 0, alloc.width, alloc.height)
-                        self.capture = gtk.Image()
-                        self.capture.set_from_pixbuf(pixbuf)
-                        self.capture.show()
-                        self.zbarframe.remove(self.zbar)
-                        self.zbarframe.add(self.capture)
-                        self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-
-                        # Disable video capture
-                        self.zbar.set_video_enabled(False)
                         # 1. fetch the key into a temporary keyring - we override the find_key() because we want to be interactive
                         # 1.a) if allowed (@todo), from the keyservers
                         if self.msui.options.keyserver is not None:
@@ -477,13 +482,13 @@ class MonkeysignScan(gtk.Window):
                         self.dialog.set_size_request(250, 100)
                         self.keep_pulsing = True
                         proc = subprocess.Popen(command, 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-                        gobject.child_watch_add(proc.pid, watch_out_callback)
-                        gobject.timeout_add(100, update_progress_callback)
+                        gobject.child_watch_add(proc.pid, self.watch_out_callback)
+                        gobject.timeout_add(100, self.update_progress_callback)
                         if self.dialog.run() == gtk.RESPONSE_CANCEL:
                                 proc.kill()
-                        return
                 else:
-                        print _('ignoring found data: %s') % data
+                        self.msui.warn(_('data found in barcode does not match a OpenPGP fingerprint pattern: %s') % data)
+                        self.resume_capture()
 
         def resume_capture(self):
                 self.zbarframe.remove(self.capture)
