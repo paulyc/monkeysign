@@ -319,6 +319,11 @@ class MonkeysignScan(gtk.Window):
 
         def scan_image(self, filename):
                 """Scan an image for QR codes"""
+
+                self.capture = gtk.Image()
+                self.capture.set_from_file(filename)
+                self.capture.show()
+
                 # create a reader
                 scanner = zbar.ImageScanner()
 
@@ -340,13 +345,9 @@ class MonkeysignScan(gtk.Window):
                 # extract results
                 found = False
                 for symbol in rawimage:
-                        self.capture = gtk.Image()
-                        self.capture.set_from_file(filename)
-                        self.capture.show()
                         self.zbarframe.remove(self.zbar)
                         self.zbarframe.add(self.capture)
                         self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-
                         self.process_scan(symbol.data)
                         found = True
                 if not found:
