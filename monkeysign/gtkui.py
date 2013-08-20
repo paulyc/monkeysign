@@ -24,7 +24,7 @@ import gtk
 import gobject
 import pygtk; pygtk.require('2.0')
 import pango
-import Image # XXX: what *is* this library exactly?!
+from PIL import Image
 import zbar, zbarpygtk
 
 from qrencode import encode as _qrencode
