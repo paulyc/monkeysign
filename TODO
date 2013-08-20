@@ -16,6 +16,8 @@ Release process
 
 The following needs to be fixed before 2.0 is released.
 
+ * merge the two monkeyscan classes, and cleanup the GTK UI code
+ * properly handle exceptions in GTK UI
  * merge with python-gnupg (see below)
  * make all options accessible from the GUI (preferences? see
    configparser and json modules)
