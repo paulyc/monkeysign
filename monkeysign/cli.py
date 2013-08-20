@@ -16,6 +16,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
+import os
 import getpass
 
 from monkeysign.ui import MonkeysignUi
@@ -50,6 +51,10 @@ passwords."""
         """
 
         MonkeysignUi.main(self)
+
+        if not 'GPG_TTY' in os.environ:
+            os.environ['GPG_TTY'] = os.popen('tty').read()
+            self.log(_('reset GPG_TTY to %s') % os.environ['GPG_TTY'])
 
         # 1. fetch the key into a temporary keyring
         self.find_key()
