@@ -73,27 +73,24 @@ passwords.
         def yes_no(self, prompt, default = None):
                 """we ignore default! gotta fix that"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, prompt)
-                gtk.gdk.threads_enter()
-                response = md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        response = md.run()
                 md.destroy()
                 return response == gtk.RESPONSE_YES
 
         def abort(self, prompt):
                 """we don't actually abort, just exit threads and resume capture"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, prompt)
-                gtk.gdk.threads_enter()
-                md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        md.run()
                 md.destroy()
                 self.window.resume_capture()
 
         def warn(self, prompt):
                 """display the message but let things go"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK, prompt)
-                gtk.gdk.threads_enter()
-                md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        md.run()
                 md.destroy()
 
         def choose_uid(self, prompt, key):
@@ -112,9 +109,8 @@ passwords.
                                 self.uid_radios = r
                                 self.uid_radios.set_active(True)
 
-                gtk.gdk.threads_enter()
-                response = md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        response = md.run()
 
                 label = None
                 if response == gtk.RESPONSE_ACCEPT:
