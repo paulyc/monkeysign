@@ -8,8 +8,7 @@ Release process
  * install and test Debian package (`dpkg -i ../build-area/monkeysign_*.deb`)
  * upload Debian package
  * push commits and tags to the git repository
- * add announcement on website and mailing list
-   (monkeysphere@lists.riseup.net, gnupg-devel@gnupg.org?)
+ * add announcement on website and mailing list <monkeysphere@lists.riseup.net>
 
 2.0 blockers
 ============
