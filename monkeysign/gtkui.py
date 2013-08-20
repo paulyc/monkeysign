@@ -338,6 +338,7 @@ class MonkeysignScan(gtk.Window):
                 scanner.scan(rawimage)
 
                 # extract results
+                found = False
                 for symbol in rawimage:
                         self.capture = gtk.Image()
                         self.capture.set_from_file(filename)
@@ -347,6 +348,9 @@ class MonkeysignScan(gtk.Window):
                         self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
 
                         self.process_scan(symbol.data)
+                        found = True
+                if not found:
+                        self.msui.warn(_('data found in image!'))
 
 	def save_qrcode(self, widget=None):
 		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
