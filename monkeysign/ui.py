@@ -216,8 +216,6 @@ this should not interrupt the flow of the program, but must be visible to the us
 
     def find_key(self):
         """find the key to be signed somewhere"""
-        self.keyring.context.set_option('export-options', 'export-minimal')
-
         # 1.b) from the local keyring
         self.log(_('looking for key %s in your keyring') % self.pattern)
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
