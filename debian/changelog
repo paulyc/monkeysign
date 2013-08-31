@@ -1,3 +1,31 @@
+monkeysign (1.0~bpo60+1) wheezy-backports; urgency=low
+
+  * Rebuild for wheezy-backports.
+  * No change required.
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 31 Aug 2013 11:06:55 -0400
+
+monkeysign (1.0) unstable; urgency=low
+
+  * stop copying secrets to the temporary keyring
+  * make sure we use the right signing key when specified
+  * signatures on multiple UIDs now get properly sent separately
+    (Closes: #719241)
+  * this includes "deluid" support on the gpg library
+  * significantly refactor email creation
+  * improve unit tests on commandline scripts, invalid (revoked) keys and
+    timeout handling
+  * provide manpages (Closes: #716674)
+  * avoid showing binary garbage on export when debugging
+  * properly fail if password confirmation fails
+  * user interfaces now translatable
+  * accept space-separated key fingerprints
+  * fix single UID key signing
+  * proper formatting of UIDs with comments (removed) and spaces (wrapped)
+    for emails
+
+ -- Antoine Beaupré <anarcat@debian.org>  Wed, 14 Aug 2013 20:51:44 -0400
+
 monkeysign (0.9~bpo70+1) wheezy-backports; urgency=low
 
   * Rebuild for squeeze-backports, no change.

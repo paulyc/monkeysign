@@ -28,7 +28,7 @@ import tempfile
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign.gpg import Context, Keyring, TempKeyring, OpenPGPkey, OpenPGPuid, GpgProtocolError
+from monkeysign.gpg import *
 
 class TestContext(unittest.TestCase):
     """Tests for the Context class.
@@ -92,7 +92,6 @@ class TestTempKeyring(unittest.TestCase):
     def setUp(self):
         self.gpg = TempKeyring()
         self.assertIn('homedir', self.gpg.context.options)
-        self.assertIn('tmphomedir', self.gpg)
 
     def tearDown(self):
         del self.gpg
@@ -117,6 +116,8 @@ class TestKeyringBase(unittest.TestCase):
         self.tmp = tempfile.mkdtemp(prefix="pygpg-")
         self.gpg = Keyring(self.tmp)
         self.assertEqual(self.gpg.context.options['homedir'], self.tmp)
+        # to avoid rebuilding the trust base after uid changes and so on
+        self.gpg.context.set_option('always-trust')
 
     def tearDown(self):
         """trash the temporary directory we created"""
@@ -186,7 +187,13 @@ class TestKeyringBasics(TestKeyringBase):
         looking if there is really no output
         """
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertFalse(self.gpg.sign_key('7B75921E'))
+        with self.assertRaises(GpgRuntimeError):
+            self.gpg.sign_key('7B75921E')
+
+    def test_failed_revoke(self):
+        self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-revoke.asc').read())
+        with self.assertRaises(GpgRuntimeError):
+            self.gpg.sign_key('7B75921E', True)
 
 class TestKeyringWithKeys(TestKeyringBase):
     def setUp(self):
@@ -209,31 +216,37 @@ class TestKeyringWithKeys(TestKeyringBase):
 
         that is, even if all other conditions are ok"""
         self.gpg.context.set_option('local-user', '0000000F')
-        with self.assertRaises(GpgProtocolError):
+        with self.assertRaises(GpgRuntimeError):
             self.gpg.sign_key('7B75921E', True)
 
     def test_sign_key_all_uids(self):
         """test signature of all uids of a key"""
         self.assertTrue(self.gpg.sign_key('7B75921E', True))
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
-    def test_sign_key_uid(self):
+    def test_sign_key_single_uid(self):
+        """test signing a key with a single uid"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
+        self.assertTrue(self.gpg.sign_key('323F39BD', True))
+        self.gpg.context.call_command(['list-sigs', '323F39BD'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:A31E75E4323F39BD:[^:]*::::Monkeysphere second test key <bar@example.com>:[0-9]*x:')
+
+    def test_sign_key_one_uid(self):
         """test signature of a single uid"""
         self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
-        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Test Key <foo@example.com>:10x:')
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
     def test_sign_key_as_user(self):
         """normal signature with a signing user specified"""
         self.gpg.context.set_option('local-user', '96F47C6A')
         self.assertTrue(self.gpg.sign_key('7B75921E', True))
 
+    @unittest.expectedFailure
     def test_sign_already_signed(self):
-        """test if signing a already signed key fails with a meaningful message
-
-        @todo not implemented"""
-        pass
+        """test if signing a already signed key fails with a meaningful message"""
+        raise NotImplementedError('not detecting already signed keys properly yet')
 
     def test_encrypt_decrypt_data_armored_untrusted(self):
         """test if we can encrypt data to our private key (and decrypt it)"""
@@ -266,6 +279,40 @@ class TestKeyringWithKeys(TestKeyringBase):
         self.assertEqual(len(keys.keys()), 2)
         #for fpr, key in keys.iteritems():
         #    print >>sys.stderr, "key:", key
+
+    def test_del_uid(self):
+        """test uid deletion, gpg.del_uid()"""
+        userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        found = False
+        keys = self.gpg.get_keys('7B75921E')
+        for fpr, key in keys.iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertIsInstance(uid, OpenPGPuid)
+                if userid == uid.uid:
+                    found = True
+                    break
+        self.assertTrue(found, "that we can find the userid before removing it")
+        self.assertTrue(self.gpg.del_uid(fpr, userid))
+        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertNotEqual(userid, uid.uid)
+
+    def test_del_uid_except(self):
+        """see if we can easily delete all uids except a certain one"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
+        keys = self.gpg.get_keys('7B75921E')
+        todelete = []
+        for fpr, key in keys.iteritems():
+            for u, uid in key.uids.iteritems():
+                if userid != uid.uid:
+                    todelete.append(uid.uid)
+            for uid in todelete:
+                self.gpg.del_uid(fpr, uid)
+        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertEqual(userid, uid.uid)
 
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):

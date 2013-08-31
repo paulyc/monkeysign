@@ -34,5 +34,13 @@ else:
         print "some modules missing for scanning functionality: %s" % e
         sys.exit(1)
 
+from monkeysign.gpg import GpgRuntimeError
+
 with ui() as u:
-    u.main()
+    try:
+        u.main()
+    except GpgRuntimeError as e:
+        if u.options.debug:
+            raise # throw full backtrace
+        else:
+            sys.exit(e.strerror) # only show error

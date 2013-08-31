@@ -23,10 +23,11 @@ Test suite for the basic user interface class.
 import unittest
 import os
 import sys
+import re
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign.ui import MonkeysignUi
+from monkeysign.ui import MonkeysignUi, EmailFactory
 from monkeysign.gpg import TempKeyring
 
 from test_lib import TestTimeLimit
@@ -34,26 +35,7 @@ from test_lib import TestTimeLimit
 class CliBaseTest(unittest.TestCase):
     def setUp(self):
         self.argv = sys.argv
-        sys.argv = [ 'monkeysign', '--dry-run', '--no-mail' ]
-
-    def tearDown(self):
-        sys.argv = self.argv
-
-class CliTestCase(CliBaseTest):
-    def test_call_usage(self):
-        with self.assertRaises(SystemExit):
-            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
-
-class CliTestDialog(CliBaseTest):
-    def setUp(self):
-        CliBaseTest.setUp(self)
-        self.gpg = TempKeyring()
-        os.environ['GNUPGHOME'] = self.gpg.tmphomedir
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        
-        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
+        sys.argv = [ 'monkeysign', '--no-mail' ]
 
     def write_to_callback(self, stdin, callback):
         r, w = os.pipe()
@@ -74,18 +56,51 @@ class CliTestDialog(CliBaseTest):
             w.flush()
             os._exit(0)
 
+    def tearDown(self):
+        sys.argv = self.argv
+
+class CliTestCase(CliBaseTest):
+    def test_call_usage(self):
+        with self.assertRaises(SystemExit):
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
+
+class CliTestDialog(CliBaseTest):
+    def setUp(self):
+        CliBaseTest.setUp(self)
+        self.gpg = TempKeyring()
+        os.environ['GNUPGHOME'] = self.gpg.homedir
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+        sys.argv += [ '-u', '96F47C6A', '7B75921E' ]
+
     def test_sign_fake_keyring(self):
         """test if we can sign a key on a fake keyring"""
         def callback(self):
             execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
-        self.write_to_callback("y\n", callback) # just say yes
+        self.write_to_callback("y\ny\n", callback) # just say yes
+
+    def test_sign_one_uid(self):
+        """test if we can sign only one keyid"""
+        def callback(self):
+            execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
+        self.write_to_callback("n\n1\ny\n", callback) # just say yes
 
     def test_two_empty_responses(self):
-        """test what happens when we answer nothing twice"""
+        """test what happens when we answer nothing twice
+
+this tests for bug #716675"""
         def callback(self):
             with self.assertRaises(EOFError):
                 execfile(os.path.dirname(__file__) + '/../scripts/monkeysign')
-        self.write_to_callback("\n\n", callback) # just say yes
+        self.write_to_callback("\n\n", callback) # say 'default' twice
+
+class CliTestSpacedFingerprint(CliTestDialog):
+    def setUp(self):
+        CliTestDialog.setUp(self)
+        sys.argv.pop() # remove the uid from parent class
+        sys.argv += '8DC9 01CE 6414 6C04 8AD5  0FBB 7921 5252 7B75 921E'.split()
 
 class BaseTestCase(unittest.TestCase):
     pattern = None
@@ -97,17 +112,18 @@ class BaseTestCase(unittest.TestCase):
             self.args += [ self.pattern ]
         self.ui = MonkeysignUi(self.args)
         self.ui.keyring = TempKeyring()
+        self.ui.prepare() # needed because we changed the base keyring
 
 class BasicTests(BaseTestCase):
     pattern = '7B75921E'
 
     def setUp(self):
         BaseTestCase.setUp(self)
-        self.tmphomedir = self.ui.tmpkeyring.tmphomedir
+        self.homedir = self.ui.tmpkeyring.homedir
 
     def test_cleanup(self):
         del self.ui
-        self.assertFalse(os.path.exists(self.tmphomedir))
+        self.assertFalse(os.path.exists(self.homedir))
 
 class SigningTests(BaseTestCase):
     pattern = '7B75921E'
@@ -116,6 +132,7 @@ class SigningTests(BaseTestCase):
         """setup a basic keyring capable of signing a local key"""
         BaseTestCase.setUp(self)
         self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.ui.keyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
@@ -131,6 +148,9 @@ this duplicates tests from the gpg code, but is necessary to test later function
 this duplicates tests from the gpg code, but is necessary to test later functions"""
         self.test_find_key()
         self.ui.copy_secrets()
+        self.assertTrue(self.ui.keyring.get_keys(None, True, False))
+        self.assertGreaterEqual(len(self.ui.keyring.get_keys(None, True, False)), 1)
+        self.assertGreaterEqual(len(self.ui.keyring.get_keys(None, True, True)), 1)
 
     def test_sign_key(self):
         """test if we can sign the keys non-interactively"""
@@ -138,28 +158,110 @@ this duplicates tests from the gpg code, but is necessary to test later function
         self.ui.sign_key()
         self.assertGreaterEqual(len(self.ui.signed_keys), 1)
 
-    def test_create_mail(self):
-        """test if the exported keys are signed"""
-        self.test_sign_key()
-
-        for fpr, key in self.ui.signed_keys.items():
-            msg = self.ui.create_mail(fpr, 'unittests@localhost', 'devnull@localhost')
-            self.assertIsNotNone(msg)
-            self.assertRegexpMatches(msg.as_string(), "BEGIN PGP MESSAGE")
-
-    @unittest.expectedFailure
     def test_create_mail_multiple(self):
-        """test if exported keys contain the right uid
-
-not yet implemented, see the TODO in export_key() for more details"""
+        """test if exported keys contain the right uid"""
         self.test_sign_key()
 
         for fpr, key in self.ui.signed_keys.items():
             oldmsg = None
             for uid in key.uids.values():
-                msg = self.ui.create_mail(uid, 'unittests@localhost', 'devnull@localhost')
+                msg = EmailFactory(self.ui.tmpkeyring.export_data(fpr), fpr, uid.uid, 'unittests@localhost', 'devnull@localhost')
                 if oldmsg is not None:
-                    self.assertNotEqual(oldmsg, msg)
+                    self.assertNotEqual(oldmsg.as_string(), msg.as_string())
+                    self.assertNotEqual(oldmsg.create_mail_from_block(oldmsg.tmpkeyring.export_data(fpr)).as_string(),
+                                        msg.create_mail_from_block(oldmsg.tmpkeyring.export_data(fpr)).as_string())
+                    self.assertNotEqual(oldmsg.tmpkeyring.export_data(fpr),
+                                        msg.tmpkeyring.export_data(fpr))
+                oldmsg = msg
+            self.assertIsNot(oldmsg, None)
+
+class EmailFactoryTest(BaseTestCase):
+    pattern = '7B75921E'
+
+    def setUp(self):
+        """setup a basic keyring capable of signing a local key"""
+        BaseTestCase.setUp(self)
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+        self.email = EmailFactory(self.ui.tmpkeyring.export_data(self.pattern), self.pattern, 'Antoine Beaupré <anarcat@orangeseeds.org>', 'nobody@example.com', 'nobody@example.com')
+
+    def test_cleanup_uids(self):
+        """test if we can properly remove irrelevant UIDs"""
+        for fpr, key in self.email.tmpkeyring.get_keys('7B75921E').iteritems():
+            for u, uid in key.uids.iteritems():
+                self.assertEqual(self.email.recipient, uid.uid)
+
+    def test_mail_key(self):
+        """test if we can generate a mail with a key inside"""
+        data = self.email.tmpkeyring.export_data(self.pattern)
+        self.assertNotEqual(data, '')
+        message = self.email.create_mail_from_block(data)
+        match = re.compile("""Content-Type: multipart/mixed; boundary="===============%s=="
+MIME-Version: 1.0
+
+--===============%s==
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: base64
+
+ClBsZWFzZSBmaW5kIGF0dGFjaGVkIHlvdXIgc2lnbmVkIFBHUCBrZXkuIFlvdSBjYW4gaW1wb3J0
+IHRoZSBzaWduZWQKa2V5IGJ5IHJ1bm5pbmcgZWFjaCB0aHJvdWdoIGBncGcgLS1pbXBvcnRgLgoK
+Tm90ZSB0aGF0IHlvdXIga2V5IHdhcyBub3QgdXBsb2FkZWQgdG8gYW55IGtleXNlcnZlcnMuIElm
+IHlvdSB3YW50CnRoaXMgbmV3IHNpZ25hdHVyZSB0byBiZSBhdmFpbGFibGUgdG8gb3RoZXJzLCBw
+bGVhc2UgdXBsb2FkIGl0CnlvdXJzZWxmLiAgV2l0aCBHbnVQRyB0aGlzIGNhbiBiZSBkb25lIHVz
+aW5nOgoKICAgIGdwZyAtLWtleXNlcnZlciBwb29sLnNrcy1rZXlzZXJ2ZXJzLm5ldCAtLXNlbmQt
+a2V5IDxrZXlpZD4KClJlZ2FyZHMsCg==
+
+--===============%s==
+Content-Type: application/pgp-keys; name="yourkey.asc"
+MIME-Version: 1.0
+Content-Disposition: attachment; filename="yourkey.asc"
+Content-Transfer-Encoding: 7bit
+Content-Description: PGP Key <keyid>, uid <uid> \(<idx\), signed by <keyid>
+
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+.*
+-----END PGP PUBLIC KEY BLOCK-----
+
+--===============%s==--""" % tuple([ '[0-9]*' ] * 4), re.DOTALL)
+        self.assertRegexpMatches(message.as_string(), match)
+        return message
+
+    def test_wrap_crypted_mail(self):
+        match = re.compile("""Content-Type: multipart/encrypted; protocol="application/pgp-encrypted";
+ boundary="===============%s=="
+MIME-Version: 1.0
+Subject: .*
+From: nobody@example.com
+To: nobody@example.com
+
+This is a multi-part message in PGP/MIME format...
+--===============%s==
+Content-Type: application/pgp-encrypted; filename="signedkey.msg"
+MIME-Version: 1.0
+Content-Disposition: attachment; filename="signedkey.msg"
+
+Version: 1
+--===============%s==
+Content-Type: application/octet-stream; filename="msg.asc"
+MIME-Version: 1.0
+Content-Disposition: inline; filename="msg.asc"
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP MESSAGE-----
+.*
+-----END PGP MESSAGE-----
+
+--===============%s==--""" % tuple(['[0-9]*'] * 4), re.DOTALL)
+        self.assertRegexpMatches(self.email.as_string(), match)
+
+    def test_weird_from(self):
+        """make sure we don't end up with spaces in our email address"""
+        self.email = EmailFactory(self.ui.tmpkeyring.export_data(self.pattern), self.pattern, 'Antoine Beaupré <anarcat@orangeseeds.org>', 'Antoine Beaupré (home address) <anarcat@anarcat.ath.cx>', 'nobody@example.com')
+        match = re.compile("""From: (([^ ]* )|("[^"]*" ))?<[^> ]*>$""", re.DOTALL | re.MULTILINE)
+        self.assertRegexpMatches(self.email.as_string(), match)
 
 class KeyserverTests(BaseTestCase):
     args = [ '--keyserver', 'pool.sks-keyservers.net' ]
@@ -191,8 +293,11 @@ class NonExistantKeyTests(BaseTestCase, TestTimeLimit):
 
     def test_find_key(self):
         """find_key() should exit if the key can't be found on keyservers or local keyring"""
-        with self.assertRaises(SystemExit):
-            self.ui.find_key()
+        try:
+            with self.assertRaises(SystemExit):
+                self.ui.find_key()
+        except AlarmException:
+            raise unittest.case._ExpectedFailure(sys.exc_info())
 
 if __name__ == '__main__':
     unittest.main()

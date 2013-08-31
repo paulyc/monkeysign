@@ -17,8 +17,11 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from distutils.core import setup
+from glob import glob
 
 from monkeysign import __version__ as version
+import monkeysign.manpage
+import monkeysign.translation
 
 setup(name = 'monkeysign',
     description='OpenPGP key exchange for humans',
@@ -40,6 +43,8 @@ exchanged keys with!
     url='http://web.monkeysphere.info/',
     packages=['monkeysign'],
     scripts=['scripts/monkeysign', 'scripts/monkeyscan'],
+    cmdclass={'build_manpage': monkeysign.manpage.build_manpage, 'build_trans': monkeysign.translation.build_trans},
+    data_files=[('share/man/man1', glob('man/*.1'))],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -64,5 +69,5 @@ exchanged keys with!
         'Topic :: Multimedia :: Video :: Capture',
         'Topic :: Security :: Cryptography',
         'Topic :: Software Development :: Libraries :: Python Modules'
-    ]
+    ],
 )

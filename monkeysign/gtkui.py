@@ -31,14 +31,15 @@ from qrencode import encode as _qrencode
 from qrencode import encode_scaled as _qrencode_scaled
 
 from monkeysign.gpg import Keyring
-
 from monkeysign.ui import MonkeysignUi
+import monkeysign.translation
 
 class MonkeysignScanUi(MonkeysignUi):
-        """Sign a key in a safe fashion.
+        """sign a key in a safe fashion using a webcam to scan for qr-codes
 
 This command will fire up a graphical interface and turn on the webcam
-(if available) on this computer.
+(if available) on this computer. It will also display a qr-code of
+your main OpenPGP key.
 
 The webcam is used to capture an OpenPGP fingerprint represented as a
 qrcode (or whatever the zbar library can parse) and then go through a
@@ -46,8 +47,10 @@ signing process.
 
 The signature is then encrypted and mailed to the user. This leave the
 choice of publishing the certification to that person and makes sure
-that person owns the identity signed. This script assumes you have
-gpg-agent configure to prompt for passwords.
+that person owns the identity signed.
+
+This program assumes you have gpg-agent configure to prompt for
+passwords.
 """
 
         def main(self):
@@ -115,10 +118,10 @@ gpg-agent configure to prompt for passwords.
 
                 label = None
                 if response == gtk.RESPONSE_ACCEPT:
-                        self.log("okay, signing")
+                        self.log(_('okay, signing'))
                         label = [ r for r in self.uid_radios.get_group() if r.get_active()][0].get_label()
                 else:
-                        self.log("user denied signature")
+                        self.log(_('user denied signature'))
                 md.destroy()
                 return label
 
@@ -145,7 +148,7 @@ class MonkeysignScan(gtk.Window):
                 self.md = [] # modal dialogs to destroy
 
                 # Set up main window
-                self.set_title("Monkeysign (scan)")
+                self.set_title(_('Monkeysign (scan)'))
                 self.set_position(gtk.WIN_POS_CENTER)
                 self.connect("destroy", self.destroy)
 
@@ -155,12 +158,12 @@ class MonkeysignScan(gtk.Window):
                 self.add_accel_group(accelgroup)
                 actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
                 actiongroup.add_actions([
-                                ('File', None, '_File'),
-                                ('Save as...', gtk.STOCK_SAVE, '_Save as...', None, None, self.save_qrcode),
-                                ('Print', gtk.STOCK_PRINT, '_Print', None, None, self.print_op),
+                                ('File', None, _('_File')),
+                                ('Save as...', gtk.STOCK_SAVE, _('_Save as...'), None, None, self.save_qrcode),
+                                ('Print', gtk.STOCK_PRINT, _('_Print'), None, None, self.print_op),
                                 ('Edit', None, '_Edit'),
-                                ('Copy', gtk.STOCK_COPY, '_Copy', None, 'Copy image to clipboard', self.clip_qrcode),
-                                ('Quit', gtk.STOCK_QUIT, '_Quit', None, None, self.destroy),
+                                ('Copy', gtk.STOCK_COPY, _('_Copy'), None, _('Copy image to clipboard'), self.clip_qrcode),
+                                ('Quit', gtk.STOCK_QUIT, _('_Quit'), None, None, self.destroy),
                                 ])
                 uimanager.insert_action_group(actiongroup, 0)
                 uimanager.add_ui_from_string(self.ui)
@@ -201,7 +204,7 @@ class MonkeysignScan(gtk.Window):
                         error_icon_bottom = gtk.Alignment(0, 1, 1, 0)
                         error_icon_bottom.add(error_icon)
                         error_label_top = gtk.Alignment(0, 0, 1, 0)
-                        error_label_top.add(gtk.Label("No video device detected."))
+                        error_label_top.add(gtk.Label(_('No video device detected.')))
                         vbox.pack_start(error_icon_bottom)
                         vbox.pack_start(error_label_top)
                         vbox.set_size_request(320, 320)
@@ -307,7 +310,7 @@ class MonkeysignScan(gtk.Window):
 		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
 		key = self.ultimate_keys[self.mykey.get_active()]
 		image = self.make_qrcode(key.fpr)
-		dialog = gtk.FileChooserDialog("Save QR code", None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+		dialog = gtk.FileChooserDialog(_('Save QR code'), None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
 		dialog.set_default_response(gtk.RESPONSE_OK)
 		dialog.set_current_name(key.keyid() + '.png')
 		dialog.show()
@@ -369,7 +372,7 @@ class MonkeysignScan(gtk.Window):
                         """
                         self.keep_pulsing=False
                         self.dialog.destroy()
-                        self.msui.log('fetching finished')
+                        self.msui.log(_('fetching finished'))
                         if condition == 0:
                                 # 2. copy the signing key secrets into the keyring
                                 self.msui.copy_secrets()
@@ -419,9 +422,9 @@ class MonkeysignScan(gtk.Window):
                                 self.msui.tmpkeyring.context.set_option('keyserver', self.msui.options.keyserver)
                         command = self.msui.tmpkeyring.context.build_command(['recv-keys', self.msui.pattern])
                         self.msui.log('cmd: ' + str(command))
-                        self.dialog = gtk.Dialog(title="Please wait", parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
+                        self.dialog = gtk.Dialog(title=_('Please wait'), parent=None, flags=gtk.DIALOG_MODAL, buttons=None)
                         self.dialog.add_button('gtk-cancel', gtk.RESPONSE_CANCEL)
-                        message = gtk.Label("Retrieving public key from server...")
+                        message = gtk.Label(_('Retrieving public key from server...'))
                         message.show()
                         self.progressbar = gtk.ProgressBar()
                         self.progressbar.show()
@@ -436,7 +439,7 @@ class MonkeysignScan(gtk.Window):
                                 proc.kill()
                         return
                 else:
-                        print "ignoring found data: " + data
+                        print _('ignoring found data: %s') % data
 
         def resume_capture(self):
                 self.zbarframe.remove(self.capture)
