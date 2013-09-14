@@ -277,7 +277,7 @@ class FakeKeyringTests(BaseTestCase):
         """test if we can find a key on the local keyring"""
         self.ui.find_key()
 
-class NonExistantKeyTests(BaseTestCase, TestTimeLimit):
+class NonExistentKeyTests(BaseTestCase, TestTimeLimit):
     """test behavior with a key that can't be found"""
 
     args = []

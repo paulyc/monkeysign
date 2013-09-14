@@ -31,7 +31,7 @@ The merge question
 
 This software has a primitive GPG Python API that duplicates the work
 of at least two other libraries. The `pythong-gnupg` library is
-particularily similar and communication was started to consider the
+particularly similar and communication was started to consider the
 possibility of merging. This section details how we should deal with
 this.
 

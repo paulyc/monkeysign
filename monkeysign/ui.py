@@ -115,7 +115,7 @@ class MonkeysignUi(object):
         self.keyring = Keyring()
 
         # the temporary keyring we operate in, actually initialized in prepare()
-        # this is because we want the constructor to jsut initialise
+        # this is because we want the constructor to just initialise
         # data structures and not write any data
         self.tmpkeyring = None
 
