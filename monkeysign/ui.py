@@ -75,6 +75,7 @@ class MonkeysignUi(object):
         parser.add_option('-n', '--dry-run', dest='dryrun', default=False, action='store_true',
                           help=_('do not actually do anything'))
         parser.add_option('-u', '--user', dest='user', help=_('user id to sign the key with'))
+        parser.add_option('--cert-level', dest='certlevel', help=_('certification level to sign the key with'))
         parser.add_option('-l', '--local', dest='local', default=False, action='store_true',
                           help=_('import in normal keyring a local certification'))
         parser.add_option('-k', '--keyserver', dest='keyserver',
@@ -155,6 +156,8 @@ class MonkeysignUi(object):
             self.tmpkeyring.context.set_option('keyserver', self.options.keyserver)
         if self.options.user is not None:
             self.tmpkeyring.context.set_option('local-user', self.options.user)
+        if self.options.certlevel is not None:
+            self.tmpkeyring.context.set_option('default-cert-level', self.options.certlevel)
         self.tmpkeyring.context.set_option('secret-keyring', self.keyring.homedir + '/secring.gpg')
 
         # copy the gpg.conf from the real keyring
