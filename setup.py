@@ -20,7 +20,7 @@ from distutils.core import setup
 from glob import glob
 
 from monkeysign import __version__ as version
-import monkeysign.manpage
+import monkeysign.documentation
 import monkeysign.translation
 
 setup(name = 'monkeysign',
@@ -43,8 +43,10 @@ exchanged keys with!
     url='http://web.monkeysphere.info/',
     packages=['monkeysign'],
     scripts=['scripts/monkeysign', 'scripts/monkeyscan'],
-    cmdclass={'build_manpage': monkeysign.manpage.build_manpage,
-              'build_trans': monkeysign.translation.build_trans},
+    cmdclass={'build_manpage': monkeysign.documentation.build_manpage,
+              'build_trans': monkeysign.translation.build_trans,
+              'build_slides': monkeysign.documentation.build_slides,
+              },
     data_files=[('share/man/man1', glob('man/*.1'))],
     classifiers=[
         'Development Status :: 4 - Beta',
