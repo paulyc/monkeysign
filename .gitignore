@@ -1,5 +1,5 @@
 *.pyc
 build
 man
-doc/presentation.html
-doc/ui
+presentation.html
+ui
