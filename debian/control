@@ -35,3 +35,7 @@ Description: OpenPGP key signing and exchange for humans
  No more reciting tedious strings of hexadecimal characters.  And, you
  can build a little rogue's gallery of the people that you have met
  and exchanged keys with!
+ .
+ Monkeysign is the commandline signing software, a caff
+ replacement. Monkeyscan is the graphical user interface that scans
+ qrcodes.
