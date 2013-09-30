@@ -1,5 +1,6 @@
 monkeysign (1.1~git) UNRELEASED; urgency=low
 
+  [Antoine Beaupré]
   * improved SMTP support:
     * SMTP username and passwords can be passed as commandline arguments
     * SMTP password is prompted if not specified
@@ -9,8 +10,16 @@ monkeysign (1.1~git) UNRELEASED; urgency=low
   * warn when gpg-agent is not running or failing
   * set GPG_TTY if it is missing (Closes: #719908)
   * bail out on already signed keys (Closes: #720055)
+  * mention monkeyscan in the package description so it can be found more
+    easily
+  * fix python-pkg-resources dependency
+  * don't show backtrace on control-c
 
- -- Antoine Beaupré <anarcat@debian.org>  Mon, 19 Aug 2013 10:33:52 -0400
+  [Philip Jägenstedt]
+  * fix some typos (Closes: #722964)
+  * add --cert-level option (Closes: #722740)
+
+ -- Antoine Beaupré <anarcat@debian.org>  Mon, 30 Sep 2013 22:26:12 +0200
 
 monkeysign (1.0) unstable; urgency=low
 
