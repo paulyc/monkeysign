@@ -1,4 +1,4 @@
-monkeysign (1.1~git) UNRELEASED; urgency=low
+monkeysign (1.1) unstable; urgency=low
 
   [Antoine Beaupré]
   * improved SMTP support:
@@ -21,7 +21,7 @@ monkeysign (1.1~git) UNRELEASED; urgency=low
   * fix some typos (Closes: #722964)
   * add --cert-level option (Closes: #722740)
 
- -- Antoine Beaupré <anarcat@debian.org>  Mon, 30 Sep 2013 22:26:12 +0200
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 00:22:30 +0200
 
 monkeysign (1.0) unstable; urgency=low
 
