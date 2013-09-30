@@ -15,8 +15,20 @@ Release process
 
 The following needs to be fixed before 2.0 is released.
 
- * merge the two monkeyscan classes, and cleanup the GTK UI code
  * properly handle exceptions in GTK UI
+ * usability issues:
+  * don't popup - because we can't control location - besides popups are
+    evil
+  * merge the two monkeyscan classes, and cleanup the GTK UI code
+  * move video dropdown in preferences
+  * add explanations on what will happen, maybe pic of two laptops
+  * move key selection an identity menu
+  * label the two frames to explain what the camera and qrcode does
+  * drop the save/print buttons
+  * there shouldn't be a question "sign all user IDs?" -- there should
+    just be a list of user IDs presented with checkboxes next to them all
+    pre-checked by default and the user can un-check the ones they want
+ * gpg-agent should be started if it's not already
  * merge with python-gnupg (see below)
  * make all options accessible from the GUI (preferences? see
    configparser and json modules)
@@ -25,6 +37,23 @@ The following needs to be fixed before 2.0 is released.
  * maybe then: merge in a single "monkeysign" binary
  * if not merging: harmonize error handling in gpg.py, see the file
    docstring for more info
+
+Other wishlist items
+====================
+
+ * reuse tactical tech's security in a box PGP training material for
+   documentation
+ * having a windows port would be important for wider adoption
+ * encode a "can you keep my picture" in the qrcode - the code would be
+   advisory (as the remote implementations could simply not respect the
+   setting) - but if it is set, we should avoid keeping a picture of the
+   person associated with the qrcode, maybe by blurring out the image
+   outside of the qrcode
+ * make a batch mode: pictures are recorded in a gallery and then can be
+   processed one at a time
+ * recognise my own fingerprint "yep, that's me!"
+ * complete keyring management?
+ * key generation
 
 The merge question
 ==================
