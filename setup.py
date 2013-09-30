@@ -43,7 +43,8 @@ exchanged keys with!
     url='http://web.monkeysphere.info/',
     packages=['monkeysign'],
     scripts=['scripts/monkeysign', 'scripts/monkeyscan'],
-    cmdclass={'build_manpage': monkeysign.manpage.build_manpage, 'build_trans': monkeysign.translation.build_trans},
+    cmdclass={'build_manpage': monkeysign.manpage.build_manpage,
+              'build_trans': monkeysign.translation.build_trans},
     data_files=[('share/man/man1', glob('man/*.1'))],
     classifiers=[
         'Development Status :: 4 - Beta',
