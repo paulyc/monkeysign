@@ -47,7 +47,10 @@ exchanged keys with!
               'build_trans': monkeysign.translation.build_trans,
               'build_slides': monkeysign.documentation.build_slides,
               },
-    data_files=[('share/man/man1', glob('man/*.1'))],
+    data_files=[('share/man/man1', glob('man/*.1')),
+                ('share/doc/monkeysign', glob('presentation.*')),
+                ('share/doc/monkeysign/ui/default', glob('ui/default/*')),
+                ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
