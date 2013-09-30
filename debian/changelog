@@ -7,7 +7,7 @@ monkeysign (1.1~git) UNRELEASED; urgency=low
     * use STARTTLS if available
     * enable SMTP debugging only debugging is enabled
   * show the unencrypted email with --no-mail (Closes: #720049)
-  * warn when gpg-agent is not running or failing
+  * warn when gpg-agent is not running or failing (Closes: #723052)
   * set GPG_TTY if it is missing (Closes: #719908)
   * bail out on already signed keys (Closes: #720055)
   * mention monkeyscan in the package description so it can be found more
