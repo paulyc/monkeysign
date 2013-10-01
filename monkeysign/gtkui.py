@@ -130,7 +130,6 @@ class MonkeysignScan(gtk.Window):
         <menubar name="MenuBar">
                 <menu action="File">
                         <menuitem action="Save as..."/>
-                        <separator name="FileSeparator1"/>
                         <menuitem action="Print"/>
                         <separator name="FileSeparator2"/>
                         <menuitem action="Quit"/>
@@ -156,7 +155,7 @@ class MonkeysignScan(gtk.Window):
                 self.create_menu()
                 video_found = self.create_video_controls()
                 self.create_webcam_display(video_found)
-                qrwidget = self.create_qrcode_display()
+                self.create_qrcode_display()
                 self.create_secret_keys_display()
 		self.last_allocation = self.get_allocation()
 
@@ -174,7 +173,6 @@ class MonkeysignScan(gtk.Window):
 		hbox = gtk.HBox(False, 2)
 		vbox = gtk.VBox(False, 2)
 		vbox.pack_start(self.swin, True, True, 0)
-		vbox.pack_start(qrwidget, False, False, 3)
 		hbox.pack_start(vbox, True, True, 10)
 		mainhbox.pack_start(hbox, True, True, 10)
 
@@ -260,20 +258,10 @@ class MonkeysignScan(gtk.Window):
                 self.connect("expose-event", self.expose_event) # hook up to resize events
 
                 self.qrcode = gtk.Image() # QR Code widget
-                save = gtk.Button(stock=gtk.STOCK_SAVE) # Save button
-                save.connect("clicked", self.save_qrcode);
-                printbtn = gtk.Button(stock=gtk.STOCK_PRINT) # Print button
-                printbtn.connect("clicked", self.print_op);
                 self.clip = gtk.Clipboard() # Clipboard
 		self.swin = gtk.ScrolledWindow()
 		self.swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.swin.add_with_viewport(self.qrcode)
-		hbox_btns = gtk.HBox(False, 2)
-		hbox_btns.pack_start(save, False, False, 3)
-		hbox_btns.pack_start(printbtn, False, False, 3)
-		halign = gtk.Alignment(0.5, 0, 0, 0)
-		halign.add(hbox_btns)
-                return halign
 
         def create_secret_keys_display(self):
 		# Secret keys list

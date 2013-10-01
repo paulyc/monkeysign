@@ -21,7 +21,6 @@ The following needs to be fixed before 2.0 is released.
     evil
   * add explanations on what will happen, maybe pic of two laptops
   * label the two frames to explain what the camera and qrcode does
-  * drop the save/print buttons
   * there shouldn't be a question "sign all user IDs?" -- there should
     just be a list of user IDs presented with checkboxes next to them all
     pre-checked by default and the user can un-check the ones they want
