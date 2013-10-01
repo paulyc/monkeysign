@@ -18,6 +18,7 @@
 import pygtk
 pygtk.require("2.0")
 import gtk
+import monkeysign.translation
 
 def msg_exception(exception):
     """Shows information about a exception in a gtk dialog"""
@@ -25,7 +26,7 @@ def msg_exception(exception):
     msg = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_CLOSE,
         message_format=exception.__class__.__name__)
     msg.format_secondary_text(exception.__str__())
-    msg.set_title("Error")
+    msg.set_title(_("Error"))
     msg.run()
     msg.destroy()
 
