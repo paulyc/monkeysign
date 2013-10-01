@@ -248,6 +248,10 @@ class Context():
         m = re.search('gpg \(GnuPG\) (\d+.\d+(?:.\d+)*)', self.stdout)
         return m.group(1)
 
+class TorContext(Context):
+    def build_command(self, command):
+        return ['torsocks'] + Context.build_command(command)
+
 class Keyring():
     """Keyring functionalities.
 
@@ -267,7 +271,7 @@ class Keyring():
     # the context this keyring is associated with
     context = None
 
-    def __init__(self, homedir=None):
+    def __init__(self, homedir=None, usetor=False):
         """constructor for the gpg context
 
         this mostly sets options, and allows passing in a different
@@ -278,7 +282,10 @@ class Keyring():
         later function calls on the object may modify the keyring (or
         other keyrings, if the homedir option is modified.
         """
-        self.context = Context()
+        if usetor:
+            self.context = TorContext()
+        else:
+            self.context = Context()
         if homedir is not None:
             self.context.set_option('homedir', homedir)
         else:
@@ -526,10 +533,10 @@ class Keyring():
         return proc.wait() == 0
 
 class TempKeyring(Keyring):
-    def __init__(self):
+    def __init__(self, usetor=False):
         """Override the parent class to generate a temporary GPG home
         that gets destroyed at the end of operations."""
-        Keyring.__init__(self, tempfile.mkdtemp(prefix="pygpg-"))
+        Keyring.__init__(self, tempfile.mkdtemp(prefix="pygpg-"), usetor)
 
     def __del__(self):
         shutil.rmtree(self.homedir)

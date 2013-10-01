@@ -85,6 +85,8 @@ class MonkeysignUi(object):
         parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
                           help=_('Do not send email at all. (Default is to use sendmail.)'))
+        parser.add_option('--tor', dest='usetor', default=False, action='store_true',
+                          help=_('Use torsocks to fetch keys from the keyserver'))
         parser.add_option('-t', '--to', dest='to', 
                           help=_('Override destination email for testing (default is to use the first uid on the key or send email to each uid chosen)'))
         return parser
@@ -111,9 +113,6 @@ class MonkeysignUi(object):
         # the key we are signing, can be a keyid or a uid pattern
         self.pattern = None
 
-        # the regular keyring we suck secrets and maybe the key to be signed from
-        self.keyring = Keyring()
-
         # the temporary keyring we operate in, actually initialized in prepare()
         # this is because we want the constructor to just initialise
         # data structures and not write any data
@@ -126,6 +125,9 @@ class MonkeysignUi(object):
         self.signing_key = None
 
         self.parse_args(args)
+
+        # the regular keyring we suck secrets and maybe the key to be signed from
+        self.keyring = Keyring(usetor=self.options.usetor)
 
         # set a default logging mechanism
         self.logfile = sys.stderr
@@ -147,7 +149,7 @@ class MonkeysignUi(object):
 
     def prepare(self):
         # initialize the temporary keyring directory
-        self.tmpkeyring = TempKeyring()
+        self.tmpkeyring = TempKeyring(usetor=self.options.usetor)
 
         if self.options.debug:
             self.tmpkeyring.context.debug = self.logfile
