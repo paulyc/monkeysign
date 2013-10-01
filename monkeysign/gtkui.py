@@ -152,12 +152,42 @@ class MonkeysignScan(gtk.Window):
                 self.set_position(gtk.WIN_POS_CENTER)
                 self.connect("destroy", self.destroy)
 
+                self.create_menu()
+                self.create_secret_keys_display()
+                video_found = self.create_video_controls()
+                self.create_webcam_display(video_found)
+                qrwidget = self.create_qrcode_display()
+		self.last_allocation = self.get_allocation()
+
+                # Setup window layout
+                mainvbox = gtk.VBox()
+                mainhbox = gtk.HBox()
+                lvbox = gtk.VBox()
+                lvbox.pack_start(self.video_cb, False, False)
+                lvbox.pack_start(self.zbarframe, False, False, 5)
+                mainhbox.pack_start(lvbox, False, False, 10)
+                mainvbox.pack_start(self.uimanager.get_widget('/MenuBar'), False, False)
+                mainvbox.pack_start(mainhbox, False, False, 10)
+                self.add(mainvbox)
+
+		# Setup window layout
+		hbox = gtk.HBox(False, 2)
+		vbox = gtk.VBox(False, 2)
+		vbox.pack_start(self.swin, True, True, 0)
+		vbox.pack_start(qrwidget, False, False, 3)
+		hbox.pack_start(vbox, True, True, 10)
+		mainhbox.pack_start(hbox, True, True, 10)
+
+                # Start the show
+                self.show_all()
+
+        def create_menu(self):
                 # Menu
-                uimanager = gtk.UIManager()
-                accelgroup = uimanager.get_accel_group()
+                self.uimanager = gtk.UIManager()
+                accelgroup = self.uimanager.get_accel_group()
                 self.add_accel_group(accelgroup)
-                actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
-                actiongroup.add_actions([
+                self.actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
+                self.actiongroup.add_actions([
                                 ('File', None, _('_File')),
                                 ('Save as...', gtk.STOCK_SAVE, _('_Save QR code as...'), None, None, self.save_qrcode),
                                 ('Print', gtk.STOCK_PRINT, _('_Print QR code...'), None, None, self.print_op),
@@ -166,11 +196,10 @@ class MonkeysignScan(gtk.Window):
                                 ('Identity', None, _('Choose identity')),
                                 ('Quit', gtk.STOCK_QUIT, _('_Quit'), None, None, self.destroy),
                                 ])
-                uimanager.insert_action_group(actiongroup, 0)
-                uimanager.add_ui_from_string(self.ui)
+                self.uimanager.insert_action_group(self.actiongroup, 0)
+                self.uimanager.add_ui_from_string(self.ui)
 
-                self.make_secret_keys_list(uimanager, actiongroup)
-
+        def create_video_controls(self):
                 # Video device list combo box
                 video_found = False
                 cell = gtk.CellRendererText()
@@ -189,7 +218,9 @@ class MonkeysignScan(gtk.Window):
                                         video_found = True
                                         self.video_ls.append([path])
                 self.video_cb.connect("changed", self.video_changed)
+                return video_found
 
+        def create_webcam_display(self, video_found):
                 # Webcam preview display
                 if video_found == True:
                         self.zbar = zbarpygtk.Gtk()
@@ -213,6 +244,7 @@ class MonkeysignScan(gtk.Window):
                         vbox.set_size_request(320, 320)
                         camframe.add(vbox)
 
+        def create_qrcode_display(self):
                 # QR code display
                 self.pixbuf = None # Hold QR code in pixbuf
                 self.last_allocation = gtk.gdk.Rectangle() # Remember last allocation when resizing
@@ -225,46 +257,23 @@ class MonkeysignScan(gtk.Window):
                 printbtn = gtk.Button(stock=gtk.STOCK_PRINT) # Print button
                 printbtn.connect("clicked", self.print_op);
                 self.clip = gtk.Clipboard() # Clipboard
-
-		self.last_allocation = self.get_allocation()
-
-                # Setup window layout
-                mainvbox = gtk.VBox()
-                mainhbox = gtk.HBox()
-                lvbox = gtk.VBox()
-                lvbox.pack_start(self.video_cb, False, False)
-                lvbox.pack_start(self.zbarframe, False, False, 5)
-                mainhbox.pack_start(lvbox, False, False, 10)
-                mainvbox.pack_start(uimanager.get_widget('/MenuBar'), False, False)
-                mainvbox.pack_start(mainhbox, False, False, 10)
-                self.add(mainvbox)
-
-		# Setup window layout
-		hbox = gtk.HBox(False, 2)
-		vbox = gtk.VBox(False, 2)
 		self.swin = gtk.ScrolledWindow()
 		self.swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.swin.add_with_viewport(self.qrcode)
-		vbox.pack_start(self.swin, True, True, 0)
 		hbox_btns = gtk.HBox(False, 2)
 		hbox_btns.pack_start(save, False, False, 3)
 		hbox_btns.pack_start(printbtn, False, False, 3)
 		halign = gtk.Alignment(0.5, 0, 0, 0)
 		halign.add(hbox_btns)
-		vbox.pack_start(halign, False, False, 3)
-		hbox.pack_start(vbox, True, True, 10)
-		mainhbox.pack_start(hbox, True, True, 10)
+                return halign
 
-                # Start the show
-                self.show_all()
-
-        def make_secret_keys_list(self, uimanager, actiongroup):
+        def create_secret_keys_display(self):
 		# Secret keys list
                 i = 0
                 radiogroup = None
                 for key in Keyring().get_keys(None, True, False).values():
                         uid = key.uidslist[0].uid
-                        uimanager.add_ui(uimanager.new_merge_id(), '/MenuBar/Edit/Identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
+                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/MenuBar/Edit/Identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
                         action = gtk.RadioAction(uid, uid, uid, None, i)
                         i += 1
                         action.connect('activate', self.uid_changed, key)
@@ -272,7 +281,7 @@ class MonkeysignScan(gtk.Window):
                                 radiogroup = action
                         else:
                                 action.set_group(radiogroup)
-                        actiongroup.add_action(action)
+                        self.actiongroup.add_action(action)
                 if (i > 0):
                         radiogroup.set_current_value(0)
 
