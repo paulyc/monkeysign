@@ -34,7 +34,7 @@ def errorhandler(f):
     def wrapper(*args, **kargs):
         try:
             return f(*args, **kargs)
-        except Exception, instance:
+        except Exception as instance:
             if type(instance) not in [KeyboardInterrupt, SystemExit]:
                 msg_exception(instance)
     return wrapper
