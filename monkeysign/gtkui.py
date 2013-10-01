@@ -159,22 +159,16 @@ class MonkeysignScan(gtk.Window):
                 self.create_secret_keys_display()
 		self.last_allocation = self.get_allocation()
 
-                # Setup window layout
-                mainvbox = gtk.VBox()
+                # top horizontal box: webcam and qrcode
                 mainhbox = gtk.HBox()
-                lvbox = gtk.VBox()
-                lvbox.pack_start(self.zbarframe, False, False, 5)
-                mainhbox.pack_start(lvbox, False, False, 10)
+                mainhbox.pack_start(self.zbarframe, False, False, 10)
+		mainhbox.pack_start(self.qrcodewidget, True, True, 10)
+
+                # main vertical box: the above with a menu on top
+                mainvbox = gtk.VBox()
                 mainvbox.pack_start(self.uimanager.get_widget('/menu'), False, False)
                 mainvbox.pack_start(mainhbox, False, False, 10)
                 self.add(mainvbox)
-
-		# Setup window layout
-		hbox = gtk.HBox(False, 2)
-		vbox = gtk.VBox(False, 2)
-		vbox.pack_start(self.qrcodewidget, True, True, 0)
-		hbox.pack_start(vbox, True, True, 10)
-		mainhbox.pack_start(hbox, True, True, 10)
 
                 # Start the show
                 self.show_all()
