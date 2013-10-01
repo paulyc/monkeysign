@@ -1,3 +1,9 @@
+monkeysign (2.0~git0) experimental; urgency=low
+
+  * Upload to experimental new crazy features.
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:34:48 +0200
+
 monkeysign (1.1) unstable; urgency=low
 
   [Antoine Beaupré]
