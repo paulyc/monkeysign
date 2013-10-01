@@ -51,19 +51,19 @@ class ExceptionDialog(gtk.MessageDialog):
         self.vbox.pack_start(expander)
         textview = gtk.TextView()
         textview.get_buffer().set_text(traceback.format_exc())
-        expander.add(scrolled(textview))
+        expander.add(self.scrolled(textview))
         self.show_all()
 
-def scrolled(widget, shadow=gtk.SHADOW_NONE):
-    window = gtk.ScrolledWindow()
-    window.set_shadow_type(shadow)
-    window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-    if widget.set_scroll_adjustments(window.get_hadjustment(),
-                                      window.get_vadjustment()):
-        window.add(widget)
-    else:
-        window.add_with_viewport(widget)
-    return window
+    def scrolled(self, widget, shadow=gtk.SHADOW_NONE):
+        window = gtk.ScrolledWindow()
+        window.set_shadow_type(shadow)
+        window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        if widget.set_scroll_adjustments(window.get_hadjustment(),
+                                          window.get_vadjustment()):
+            window.add(widget)
+        else:
+            window.add_with_viewport(widget)
+        return window
 
 class test:
     @errorhandler
