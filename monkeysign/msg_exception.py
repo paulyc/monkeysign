@@ -18,6 +18,8 @@
 import pygtk
 pygtk.require("2.0")
 import gtk
+import traceback
+
 import monkeysign.translation
 
 def msg_exception(exception):
@@ -45,6 +47,23 @@ class ExceptionDialog(gtk.MessageDialog):
                 "your work and restart the application. If the error "
                 "occurs again please report it to the developer." % str(instance)))
         self.set_title(_("Error"))
+        expander = gtk.Expander(_("Exception Details"))
+        self.vbox.pack_start(expander)
+        textview = gtk.TextView()
+        textview.get_buffer().set_text(traceback.format_exc())
+        expander.add(scrolled(textview))
+        self.show_all()
+
+def scrolled(widget, shadow=gtk.SHADOW_NONE):
+    window = gtk.ScrolledWindow()
+    window.set_shadow_type(shadow)
+    window.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+    if widget.set_scroll_adjustments(window.get_hadjustment(),
+                                      window.get_vadjustment()):
+        window.add(widget)
+    else:
+        window.add_with_viewport(widget)
+    return window
 
 class test:
     @errorhandler
