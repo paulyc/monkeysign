@@ -172,7 +172,7 @@ class MonkeysignScan(gtk.Window):
 		# Setup window layout
 		hbox = gtk.HBox(False, 2)
 		vbox = gtk.VBox(False, 2)
-		vbox.pack_start(self.swin, True, True, 0)
+		vbox.pack_start(self.qrcodewidget, True, True, 0)
 		hbox.pack_start(vbox, True, True, 10)
 		mainhbox.pack_start(hbox, True, True, 10)
 
@@ -259,9 +259,9 @@ class MonkeysignScan(gtk.Window):
 
                 self.qrcode = gtk.Image() # QR Code widget
                 self.clip = gtk.Clipboard() # Clipboard
-		self.swin = gtk.ScrolledWindow()
-		self.swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.swin.add_with_viewport(self.qrcode)
+		self.qrcodewidget = gtk.ScrolledWindow()
+		self.qrcodewidget.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.qrcodewidget.add_with_viewport(self.qrcode)
 
         def create_secret_keys_display(self):
 		# Secret keys list
@@ -306,7 +306,7 @@ class MonkeysignScan(gtk.Window):
 
 	def make_qrcode(self, fingerprint):
 		"""Given a fingerprint, generate a QR code with appropriate prefix"""
-		rect = self.swin.get_allocation()
+		rect = self.qrcodewidget.get_allocation()
 		if rect.width < rect.height:
 			size = rect.width - 15
 		else:
