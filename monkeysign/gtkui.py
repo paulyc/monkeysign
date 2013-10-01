@@ -153,10 +153,10 @@ class MonkeysignScan(gtk.Window):
                 self.connect("destroy", self.destroy)
 
                 self.create_menu()
-                self.create_secret_keys_display()
                 video_found = self.create_video_controls()
                 self.create_webcam_display(video_found)
                 qrwidget = self.create_qrcode_display()
+                self.create_secret_keys_display()
 		self.last_allocation = self.get_allocation()
 
                 # Setup window layout
