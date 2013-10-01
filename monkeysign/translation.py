@@ -32,7 +32,7 @@ try:
     if hasattr(locale, "textdomain"):
         locale.textdomain('monkeysign')
     gettext.install('monkeysign', pkg_resources.resource_filename('monkeysign', "po"), unicode=True, names='ngettext')
-except Exception, e:
+except Exception as e:
     print "Unable to initialize translations: %s" % e
     import __builtin__
     __builtin__.__dict__["_"] = lambda x: x

@@ -1,3 +1,9 @@
+monkeysign (1.2~git0) UNRELEASED; urgency=low
+
+  * python 3 compatibility (Closes: #725059)
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:42:58 +0200
+
 monkeysign (1.1) unstable; urgency=low
 
   [Antoine Beaupré]
