@@ -37,6 +37,13 @@ def errorhandler(f):
         except Exception, instance:
             msg_exception(instance)
     return wrapper
-            
+
+class test:
+    @errorhandler
+    def __init__(self):
+        raise Exception("test exception")
+
+if __name__ == '__main__':
+    test()
             
 # vim: tabstop=4 expandtab shiftwidth=4     
