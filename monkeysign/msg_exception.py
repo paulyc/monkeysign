@@ -23,10 +23,7 @@ import monkeysign.translation
 def msg_exception(exception):
     """Shows information about a exception in a gtk dialog"""
 
-    msg = gtk.MessageDialog(type=gtk.MESSAGE_ERROR, buttons=gtk.BUTTONS_CLOSE,
-        message_format=exception.__class__.__name__)
-    msg.format_secondary_text(exception.__str__())
-    msg.set_title(_("Error"))
+    msg = ExceptionDialog(exception)
     msg.run()
     msg.destroy()
 
@@ -39,6 +36,15 @@ def errorhandler(f):
             if type(instance) not in [KeyboardInterrupt, SystemExit]:
                 msg_exception(instance)
     return wrapper
+
+class ExceptionDialog(gtk.MessageDialog):
+    def __init__(self, instance):
+        gtk.MessageDialog.__init__(self, buttons=gtk.BUTTONS_CLOSE, type=gtk.MESSAGE_ERROR)
+        self.set_resizable(True)
+        self.set_markup(_("An error has occured:\n%r\nYou should save "
+                "your work and restart the application. If the error "
+                "occurs again please report it to the developer." % str(instance)))
+        self.set_title(_("Error"))
 
 class test:
     @errorhandler
