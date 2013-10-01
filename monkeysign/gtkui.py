@@ -127,17 +127,17 @@ passwords.
 class MonkeysignScan(gtk.Window):
 
         ui = '''<ui>
-        <menubar name="MenuBar">
-                <menu action="File">
-                        <menuitem action="Save as..."/>
-                        <menuitem action="Print"/>
+        <menubar name="menu">
+                <menu action="file">
+                        <menuitem action="save"/>
+                        <menuitem action="print"/>
                         <separator name="FileSeparator2"/>
-                        <menuitem action="Quit"/>
+                        <menuitem action="quit"/>
                 </menu>
-                <menu action="Edit">
-                        <menuitem action="Copy"/>
-                        <menu action="Identity"/>
-                        <menu action="Video device"/>
+                <menu action="edit">
+                        <menuitem action="copy"/>
+                        <menu action="identity"/>
+                        <menu action="video"/>
                 </menu>
         </menubar>
         </ui>'''
@@ -165,7 +165,7 @@ class MonkeysignScan(gtk.Window):
                 lvbox = gtk.VBox()
                 lvbox.pack_start(self.zbarframe, False, False, 5)
                 mainhbox.pack_start(lvbox, False, False, 10)
-                mainvbox.pack_start(self.uimanager.get_widget('/MenuBar'), False, False)
+                mainvbox.pack_start(self.uimanager.get_widget('/menu'), False, False)
                 mainvbox.pack_start(mainhbox, False, False, 10)
                 self.add(mainvbox)
 
@@ -186,14 +186,14 @@ class MonkeysignScan(gtk.Window):
                 self.add_accel_group(accelgroup)
                 self.actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
                 self.actiongroup.add_actions([
-                                ('File', None, _('_File')),
-                                ('Save as...', gtk.STOCK_SAVE, _('_Save QR code as...'), None, None, self.save_qrcode),
-                                ('Print', gtk.STOCK_PRINT, _('_Print QR code...'), None, None, self.print_op),
-                                ('Edit', None, '_Edit'),
-                                ('Copy', gtk.STOCK_COPY, _('_Copy QR code'), None, _('Copy image to clipboard'), self.clip_qrcode),
-                                ('Identity', None, _('Choose identity')),
-                                ('Video device', None, _('Select video device to use')),
-                                ('Quit', gtk.STOCK_QUIT, _('_Quit'), None, None, self.destroy),
+                                ('file', None, _('_File')),
+                                ('save', gtk.STOCK_SAVE, _('_Save QR code as...'), None, None, self.save_qrcode),
+                                ('print', gtk.STOCK_PRINT, _('_Print QR code...'), None, None, self.print_op),
+                                ('edit', None, '_Edit'),
+                                ('copy', gtk.STOCK_COPY, _('_Copy QR code'), None, _('Copy image to clipboard'), self.clip_qrcode),
+                                ('identity', None, _('Identity'), None, _('Choose identity')),
+                                ('video', None, _('Video device'), None, _('Select video device to use')),
+                                ('quit', gtk.STOCK_QUIT, _('_Quit'), None, None, self.destroy),
                                 ])
                 self.uimanager.insert_action_group(self.actiongroup, 0)
                 self.uimanager.add_ui_from_string(self.ui)
@@ -220,7 +220,7 @@ class MonkeysignScan(gtk.Window):
                 return video
 
         def add_video_device(self, path, i):
-                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/MenuBar/Edit/Video device', path, path, gtk.UI_MANAGER_AUTO, True)
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/edit/video', path, path, gtk.UI_MANAGER_AUTO, True)
                 action = gtk.RadioAction(path, path, path, None, i)
                 action.connect('activate', self.video_changed, path)
                 self.actiongroup.add_action(action)
@@ -269,7 +269,7 @@ class MonkeysignScan(gtk.Window):
                 radiogroup = None
                 for key in Keyring().get_keys(None, True, False).values():
                         uid = key.uidslist[0].uid
-                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/MenuBar/Edit/Identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
+                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/edit/identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
                         action = gtk.RadioAction(uid, uid, uid, None, i)
                         i += 1
                         action.connect('activate', self.uid_changed, key)
