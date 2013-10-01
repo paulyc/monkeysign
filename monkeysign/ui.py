@@ -75,6 +75,7 @@ class MonkeysignUi(object):
         parser.add_option('-n', '--dry-run', dest='dryrun', default=False, action='store_true',
                           help=_('do not actually do anything'))
         parser.add_option('-u', '--user', dest='user', help=_('user id to sign the key with'))
+        parser.add_option('--cert-level', dest='certlevel', help=_('certification level to sign the key with'))
         parser.add_option('-l', '--local', dest='local', default=False, action='store_true',
                           help=_('import in normal keyring a local certification'))
         parser.add_option('-k', '--keyserver', dest='keyserver',
@@ -114,7 +115,7 @@ class MonkeysignUi(object):
         self.keyring = Keyring()
 
         # the temporary keyring we operate in, actually initialized in prepare()
-        # this is because we want the constructor to jsut initialise
+        # this is because we want the constructor to just initialise
         # data structures and not write any data
         self.tmpkeyring = None
 
@@ -155,6 +156,8 @@ class MonkeysignUi(object):
             self.tmpkeyring.context.set_option('keyserver', self.options.keyserver)
         if self.options.user is not None:
             self.tmpkeyring.context.set_option('local-user', self.options.user)
+        if self.options.certlevel is not None:
+            self.tmpkeyring.context.set_option('default-cert-level', self.options.certlevel)
         self.tmpkeyring.context.set_option('secret-keyring', self.keyring.homedir + '/secring.gpg')
 
         # copy the gpg.conf from the real keyring
@@ -216,8 +219,6 @@ this should not interrupt the flow of the program, but must be visible to the us
 
     def find_key(self):
         """find the key to be signed somewhere"""
-        self.keyring.context.set_option('export-options', 'export-minimal')
-
         # 1.b) from the local keyring
         self.log(_('looking for key %s in your keyring') % self.pattern)
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):

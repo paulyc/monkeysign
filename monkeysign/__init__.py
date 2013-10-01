@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__version_info__ = ('1', '0')
+__version_info__ = ('1', '1')
 __version__ = '.'.join(__version_info__)
 __copyright__ = """Copyright (C) 2010-2013  Antoine Beaupré, Jerome Charaoui
 This program comes with ABSOLUTELY NO WARRANTY.

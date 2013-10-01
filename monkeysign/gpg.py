@@ -138,12 +138,12 @@ class Context():
         sense.
 
         this uses build_command to create a commandline out of the
-        'options' dictionnary, and appends the provided command at the
+        'options' dictionary, and appends the provided command at the
         end. this is because order of certain options matter in gpg,
         where some options (like --recv-keys) are expected to be at
         the end.
 
-        it is here that the options dictionnary is converted into a
+        it is here that the options dictionary is converted into a
         list. the command argument is expected to be a list of
         arguments that can be converted to strings. if it is not a
         list, it is cast into a list."""

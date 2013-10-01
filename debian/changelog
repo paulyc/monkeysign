@@ -1,18 +1,36 @@
-monkeysign (1.1~git) UNRELEASED; urgency=low
+monkeysign (2.0~git0) experimental; urgency=low
 
+  * Upload to experimental new crazy features.
   * implement qrcode image import, to allow people without webcams to
     import pictures from a trusted camera - the images must be signed with
     a detached signature on pain of a ugly warning with instructions.
-  * properly warn when gpg-agent is not running or failing (see #719908)
-  * try to handle cases where the key is already signed (see #720055)
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:34:48 +0200
+
+monkeysign (1.1) unstable; urgency=low
+
+  [Antoine Beaupré]
   * improved SMTP support:
     * SMTP username and passwords can be passed as commandline arguments
     * SMTP password is prompted if not specified
     * use STARTTLS if available
     * enable SMTP debugging only debugging is enabled
-  * properly show the unencrypted email with --no-mail (Closes: #720049)
+  * show the unencrypted email with --no-mail (Closes: #720049)
+  * warn when gpg-agent is not running or failing (Closes: #723052)
+  * set GPG_TTY if it is missing (Closes: #719908)
+  * bail out on already signed keys (Closes: #720055)
+  * mention monkeyscan in the package description so it can be found more
+    easily
+  * fix python-pkg-resources dependency
+  * don't show backtrace on control-c
+  * add missing files to .gitignore (Closes: #724007)
+  * ship with a neat little slideshow to make presentations
 
- -- Antoine Beaupré <anarcat@debian.org>  Mon, 19 Aug 2013 10:33:52 -0400
+  [Philip Jägenstedt]
+  * fix some typos (Closes: #722964)
+  * add --cert-level option (Closes: #722740)
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 00:22:30 +0200
 
 monkeysign (1.0) unstable; urgency=low
 
