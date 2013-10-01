@@ -138,6 +138,7 @@ class MonkeysignScan(gtk.Window):
                 <menu action="Edit">
                         <menuitem action="Copy"/>
                         <menu action="Identity"/>
+                        <menu action="Video device"/>
                 </menu>
         </menubar>
         </ui>'''
@@ -163,7 +164,6 @@ class MonkeysignScan(gtk.Window):
                 mainvbox = gtk.VBox()
                 mainhbox = gtk.HBox()
                 lvbox = gtk.VBox()
-                lvbox.pack_start(self.video_cb, False, False)
                 lvbox.pack_start(self.zbarframe, False, False, 5)
                 mainhbox.pack_start(lvbox, False, False, 10)
                 mainvbox.pack_start(self.uimanager.get_widget('/MenuBar'), False, False)
@@ -194,20 +194,16 @@ class MonkeysignScan(gtk.Window):
                                 ('Edit', None, '_Edit'),
                                 ('Copy', gtk.STOCK_COPY, _('_Copy QR code'), None, _('Copy image to clipboard'), self.clip_qrcode),
                                 ('Identity', None, _('Choose identity')),
+                                ('Video device', None, _('Select video device to use')),
                                 ('Quit', gtk.STOCK_QUIT, _('_Quit'), None, None, self.destroy),
                                 ])
                 self.uimanager.insert_action_group(self.actiongroup, 0)
                 self.uimanager.add_ui_from_string(self.ui)
 
         def create_video_controls(self):
-                # Video device list combo box
-                video_found = False
-                cell = gtk.CellRendererText()
-                cell.props.ellipsize = pango.ELLIPSIZE_END
-                self.video_ls = gtk.ListStore(str)
-                self.video_cb = gtk.ComboBox(self.video_ls)
-                self.video_cb.pack_start(cell, True)
-                self.video_cb.add_attribute(cell, 'text', 0)
+                i = 0
+                video = False
+                radiogroup = None
                 for (root, dirs, files) in os.walk("/dev"):
                         for dev in files:
                                 path = os.path.join(root, dev)
@@ -215,19 +211,31 @@ class MonkeysignScan(gtk.Window):
                                         continue
                                 info = os.stat(path)
                                 if stat.S_ISCHR(info.st_mode) and os.major(info.st_rdev) == 81:
-                                        video_found = True
-                                        self.video_ls.append([path])
-                self.video_cb.connect("changed", self.video_changed)
-                return video_found
+                                        i += 1
+                                        action = self.add_video_device(path, i)
+                                        video = path
+                                        if radiogroup is None:
+                                                radiogroup = action
+                                        else:
+                                                action.set_group(radiogroup)
+                radiogroup.set_current_value(i)
+                return video
+
+        def add_video_device(self, path, i):
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/MenuBar/Edit/Video device', path, path, gtk.UI_MANAGER_AUTO, True)
+                action = gtk.RadioAction(path, path, path, None, i)
+                action.connect('activate', self.video_changed, path)
+                self.actiongroup.add_action(action)
+                return action
 
         def create_webcam_display(self, video_found):
                 # Webcam preview display
-                if video_found == True:
+                if video_found:
                         self.zbar = zbarpygtk.Gtk()
                         self.zbar.connect("decoded-text", self.decoded)
+                        self.zbar.set_video_device(video_found)
                         self.zbarframe = gtk.Frame()
                         self.zbarframe.add(self.zbar)
-                        self.video_cb.set_active(0)
                 else:
                         camframe = gtk.Frame()
                         self.zbarframe = camframe
@@ -300,17 +308,13 @@ class MonkeysignScan(gtk.Window):
                 self.pixbuf = self.image_to_pixbuf(self.make_qrcode(self.active_key.fpr))
                 self.qrcode.set_from_pixbuf(self.pixbuf)
 
-        def video_changed(self, widget=None):
+        def video_changed(self, action, path):
                 """callback invoked when a new video device is selected from the
                 drop-down list.  sets the new device for the zbar widget,
                 which will eventually cause it to be opened and enabled
                 """
-                i = self.video_cb.get_active_iter()
-                if i:
-                        dev = self.video_cb.get_model().get_value(i, 0)
-                        self.zbar.set_video_device(dev)
-                else:
-                        self.zbar.set_video_enabled(False)
+                if action.get_active() and zbar in self:
+                        self.zbar.set_video_device(path)
 
 	def make_qrcode(self, fingerprint):
 		"""Given a fingerprint, generate a QR code with appropriate prefix"""
