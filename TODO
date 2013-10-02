@@ -28,6 +28,8 @@ The following needs to be fixed before 2.0 is released.
   * there shouldn't be a question "sign all user IDs?" -- there should
     just be a list of user IDs presented with checkboxes next to them all
     pre-checked by default and the user can un-check the ones they want
+  * write the email to a file when --no-mail, showing it in a popup
+    makes crazy things in unity
  * gpg-agent should be started if it's not already
  * merge with python-gnupg (see below)
  * make all options accessible from the GUI (preferences? see
