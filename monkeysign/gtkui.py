@@ -174,7 +174,7 @@ class MonkeysignScan(gtk.Window):
                 self.show_all()
 
         def create_menu(self):
-                # Menu
+                """create the main menu"""
                 self.uimanager = gtk.UIManager()
                 accelgroup = self.uimanager.get_accel_group()
                 self.add_accel_group(accelgroup)
@@ -193,6 +193,7 @@ class MonkeysignScan(gtk.Window):
                 self.uimanager.add_ui_from_string(self.ui)
 
         def create_video_controls(self):
+                """create controls to choose the video device"""
                 i = 0
                 video = False
                 radiogroup = None
@@ -214,6 +215,7 @@ class MonkeysignScan(gtk.Window):
                 return video
 
         def add_video_device(self, path, i):
+                """helper function to add an entry for a video device"""
                 self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/edit/video', path, path, gtk.UI_MANAGER_AUTO, True)
                 action = gtk.RadioAction(path, path, path, None, i)
                 action.connect('activate', self.video_changed, path)
@@ -221,7 +223,7 @@ class MonkeysignScan(gtk.Window):
                 return action
 
         def create_webcam_display(self, video_found):
-                # Webcam preview display
+                """create the webcam preview widgets"""
                 if video_found:
                         self.zbar = zbarpygtk.Gtk()
                         self.zbar.connect("decoded-text", self.decoded)
@@ -248,7 +250,7 @@ class MonkeysignScan(gtk.Window):
                 self.zbarwidget.pack_start(self.zbarframe)
 
         def create_qrcode_display(self):
-                # QR code display
+                """create the QR code display"""
                 self.pixbuf = None # Hold QR code in pixbuf
                 self.last_allocation = gtk.gdk.Rectangle() # Remember last allocation when resizing
                 self.printsettings = None # Initialise print settings
@@ -264,7 +266,7 @@ class MonkeysignScan(gtk.Window):
                 self.qrcodewidget.pack_start(swin)
 
         def create_secret_keys_display(self):
-		# Secret keys list
+		"""list the secret keys for selection somewhere"""
                 i = 0
                 radiogroup = None
                 for key in Keyring().get_keys(None, True, False).values():
@@ -288,11 +290,13 @@ class MonkeysignScan(gtk.Window):
 			self.draw_qrcode()
 
         def uid_changed(self, action, key):
+                """refresh the qrcode when the selected key changes"""
                 if action.get_active():
                         self.active_key = key
                         self.draw_qrcode()
 
         def draw_qrcode(self):
+                """draw the qrcode from the key fingerprint"""
                 self.pixbuf = self.image_to_pixbuf(self.make_qrcode(self.active_key.fpr))
                 self.qrcode.set_from_pixbuf(self.pixbuf)
 
@@ -305,7 +309,7 @@ class MonkeysignScan(gtk.Window):
                         self.zbar.set_video_device(path)
 
 	def make_qrcode(self, fingerprint):
-		"""Given a fingerprint, generate a QR code with appropriate prefix"""
+		"""Given a fingerprint, generate a QR code image with appropriate prefix"""
 		rect = self.qrcodewidget.get_allocation()
 		if rect.width < rect.height:
 			size = rect.width - 15
@@ -332,9 +336,11 @@ class MonkeysignScan(gtk.Window):
 		return
 
 	def clip_qrcode(self, widget=None):
+                """copy the qrcode to the clipboard"""
 		self.clip.set_image(self.pixbuf)
 
 	def print_op(self, widget=None):
+                """handler for the print QR code menu"""
 		keyid = self.keyid.subkeys[0].keyid()
 		print_op = gtk.PrintOperation()
 		print_op.set_job_name('Monkeysign-'+keyid)
@@ -343,6 +349,7 @@ class MonkeysignScan(gtk.Window):
 		res = print_op.run(gtk.PRINT_OPERATION_ACTION_PRINT_DIALOG, self)
 
 	def print_qrcode(self, operation=None, context=None, page_nr=None):
+                """actually print the qr code"""
 		ctx = context.get_cairo_context()
 		ctx.set_source_pixbuf(self.pixbuf, 0, 0)
 		ctx.paint()
@@ -450,12 +457,14 @@ class MonkeysignScan(gtk.Window):
                         print _('ignoring found data: %s') % data
 
         def resume_capture(self):
+                """restart capture"""
                 self.zbarframe.remove(self.capture)
                 self.zbarframe.add(self.zbar)
                 self.zbar.set_video_enabled(True)
                 self.capture = None
 
         def destroy(self, widget, data=None):
+                """close the application"""
                 self.zbar.set_video_enabled(False)
                 del self.msui
                 gtk.main_quit()
