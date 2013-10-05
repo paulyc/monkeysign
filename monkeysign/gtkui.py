@@ -24,12 +24,13 @@ import gtk
 import gobject
 import pygtk; pygtk.require('2.0')
 import pango
+from PIL import Image
 import zbar, zbarpygtk
 
 from qrencode import encode as _qrencode
 from qrencode import encode_scaled as _qrencode_scaled
 
-from monkeysign.gpg import Keyring
+from monkeysign.gpg import Keyring, GpgRuntimeError
 from monkeysign.ui import MonkeysignUi
 import monkeysign.translation
 
@@ -72,27 +73,24 @@ passwords.
         def yes_no(self, prompt, default = None):
                 """we ignore default! gotta fix that"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_QUESTION, gtk.BUTTONS_YES_NO, prompt)
-                gtk.gdk.threads_enter()
-                response = md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        response = md.run()
                 md.destroy()
                 return response == gtk.RESPONSE_YES
 
         def abort(self, prompt):
                 """we don't actually abort, just exit threads and resume capture"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_ERROR, gtk.BUTTONS_CLOSE, prompt)
-                gtk.gdk.threads_enter()
-                md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        md.run()
                 md.destroy()
                 self.window.resume_capture()
 
         def warn(self, prompt):
                 """display the message but let things go"""
                 md = gtk.MessageDialog(self.window, gtk.DIALOG_DESTROY_WITH_PARENT, gtk.MESSAGE_WARNING, gtk.BUTTONS_OK, prompt)
-                gtk.gdk.threads_enter()
-                md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        md.run()
                 md.destroy()
 
         def choose_uid(self, prompt, key):
@@ -111,9 +109,8 @@ passwords.
                                 self.uid_radios = r
                                 self.uid_radios.set_active(True)
 
-                gtk.gdk.threads_enter()
-                response = md.run()
-                gtk.gdk.threads_leave()
+                with gtk.gdk.lock:
+                        response = md.run()
 
                 label = None
                 if response == gtk.RESPONSE_ACCEPT:
@@ -129,6 +126,7 @@ class MonkeysignScan(gtk.Window):
         ui = '''<ui>
         <menubar name="menu">
                 <menu action="file">
+                        <menuitem action="open"/>
                         <menuitem action="save"/>
                         <menuitem action="print"/>
                         <separator name="FileSeparator2"/>
@@ -181,6 +179,7 @@ class MonkeysignScan(gtk.Window):
                 self.actiongroup = gtk.ActionGroup('MonkeysignGen_Menu')
                 self.actiongroup.add_actions([
                                 ('file', None, _('_File')),
+                                ('open', gtk.STOCK_OPEN, _('Open image...'), None, None, self.import_image),
                                 ('save', gtk.STOCK_SAVE, _('_Save QR code as...'), None, None, self.save_qrcode),
                                 ('print', gtk.STOCK_PRINT, _('_Print QR code...'), None, None, self.print_op),
                                 ('edit', None, '_Edit'),
@@ -233,7 +232,6 @@ class MonkeysignScan(gtk.Window):
                 else:
                         camframe = gtk.Frame()
                         self.zbarframe = camframe
-                        self.zbar = zbarpygtk.Gtk()
                         error_icon = gtk.Image()
                         error_icon.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
                         vbox = gtk.VBox()
@@ -318,6 +316,66 @@ class MonkeysignScan(gtk.Window):
 		version, width, image = _qrencode_scaled('OPENPGP4FPR:'+fingerprint,size,0,1,2,True)
 		return image
 
+        def import_image(self, widget):
+               """Use a file chooser dialog to import an image containing a QR code"""
+               self.dialog = gtk.FileChooserDialog("Open QR code image", None, gtk.FILE_CHOOSER_ACTION_OPEN, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+               self.dialog.set_default_response(gtk.RESPONSE_OK)
+               response = self.dialog.run()
+               filename = self.dialog.get_filename()
+               self.dialog.destroy()
+               if response == gtk.RESPONSE_OK:
+                               gtk.gdk.threads_leave() # XXX: without this, the ask() method later freeze, go figure
+                               try:
+                                       verified = False
+                                       for suffix in [ '.asc', '.sig' ]:
+                                               if os.path.exists(filename + suffix):
+                                                       # armored signature exists, verify it
+                                                       verified = self.msui.keyring.verify_file(filename + suffix, filename)
+                                       if not verified:
+                                               raise GpgRuntimeError(0, _('cannot find signature for image file'))
+                               except GpgRuntimeError as e:
+                                       self.msui.warn(_("The image provided cannot be verified using a trusted OpenPGP signature.\n\nMake sure the image comes from a trusted source (e.g. your own camera, which you have never left unsurveilled) before signing this!\n\nDO NOT SIGN UNTRUSTED FINGERPRINTS!\n\nTo get rid of this warning, if you really trust this image, use the following command to sign the file\n\n    gpg -s --detach %s\n") % filename)
+                               else:
+                                       self.msui.log(_('image signature verified successfully'))
+                               self.scan_image(filename)
+               return
+
+        def scan_image(self, filename):
+                """Scan an image for QR codes"""
+
+                self.capture = gtk.Image()
+                self.capture.set_from_file(filename)
+                self.capture.show()
+
+                # create a reader
+                scanner = zbar.ImageScanner()
+
+                # configure the reader
+                scanner.parse_config('enable')
+
+                # obtain image data
+                image = Image.open(filename)
+                pil = image.convert('L')
+                width, height = pil.size
+                raw = pil.tostring()
+
+                # wrap image data
+                rawimage = zbar.Image(width, height, 'Y800', raw)
+
+                # scan the image for barcodes
+                scanner.scan(rawimage)
+
+                # extract results
+                found = False
+                for symbol in rawimage:
+                        self.zbarframe.remove(self.zbar)
+                        self.zbarframe.add(self.capture)
+                        self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+                        self.process_scan(symbol.data)
+                        found = True
+                if not found:
+                        self.msui.warn(_('data found in image!'))
+
 	def save_qrcode(self, widget=None):
 		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
                 key = self.active_key
@@ -368,71 +426,85 @@ class MonkeysignScan(gtk.Window):
 		loader.close()
 		return pixbuf
 
+        def update_progress_callback(self, *args):
+                """callback invoked for pulsating progressbar
+                """
+                if self.keep_pulsing:
+                        self.progressbar.pulse()
+                        return True
+                else:
+                        return False
+
+        def watch_out_callback(self, pid, condition):
+                """callback invoked when gpg key download is finished
+                """
+                self.keep_pulsing=False
+                self.dialog.destroy()
+                self.msui.log(_('fetching finished'))
+                if condition == 0:
+                        # 2. copy the signing key secrets into the keyring
+                        self.msui.copy_secrets()
+                        # 3. for every user id (or all, if -a is specified)
+                        # 3.1. sign the uid, using gpg-agent
+                        self.msui.sign_key()
+
+                        # 3.2. export and encrypt the signature
+                        # 3.3. mail the key to the user
+                        self.msui.export_key()
+
+                        # 3.4. optionnally (-l), create a local signature and import in
+                        #local keyring
+                        # 4. trash the temporary keyring
+
+                        self.resume_capture()
+                        for md in self.md: md.destroy()
+                return
+
         def decoded(self, zbar, data):
                 """callback invoked when a barcode is decoded by the zbar widget.
                 checks for an openpgp fingerprint
                 """
 
-                def update_progress_callback(*args):
-                        """callback invoked for pulsating progressbar
-                        """
-                        if self.keep_pulsing:
-                                self.progressbar.pulse()
-                                return True
-                        else:
-                                return False
+                # Capture and display the video frame containing QR code
+                self.zbarframe.set_shadow_type(gtk.SHADOW_NONE)
+                alloc = self.zbarframe.allocation
+                pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, alloc.width, alloc.height)
+                pixbuf.get_from_drawable(self.zbarframe.window, self.zbarframe.window.get_colormap(),   alloc.x, alloc.y, 0, 0, alloc.width, alloc.height)
+                self.capture = gtk.Image()
+                self.capture.set_from_pixbuf(pixbuf)
+                self.capture.show()
+                self.zbarframe.remove(self.zbar)
+                self.zbarframe.add(self.capture)
+                self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
 
-                def watch_out_callback(pid, condition):
-                        """callback invoked when gpg key download is finished
-                        """
-                        self.keep_pulsing=False
-                        self.dialog.destroy()
-                        self.msui.log(_('fetching finished'))
-                        if condition == 0:
-                                # 2. copy the signing key secrets into the keyring
-                                self.msui.copy_secrets()
-                                # 3. for every user id (or all, if -a is specified)
-                                # 3.1. sign the uid, using gpg-agent
-                                self.msui.sign_key()
+                # Disable video capture
+                self.zbar.set_video_enabled(False)
 
-                                # 3.2. export and encrypt the signature
-                                # 3.3. mail the key to the user
-                                self.msui.export_key()
+                self.process_scan(data)
 
-                                # 3.4. optionnally (-l), create a local signature and import in
-                                #local keyring
-                                # 4. trash the temporary keyring
+        def process_scan(self, data):
+                """process zbar-scanned data"""
 
-                                self.resume_capture()
-                                for md in self.md: md.destroy()
-                        else:
-                                # 1.b) from the local keyring (@todo try that first?)
-                                self.msui.find_key()
-                        return
-
-                # Look for prefix and hexadecimal 40-ascii-character fingerprint
+                self.msui.log(_('zbar captured a frame, looking for 40 character hexadecimal fingerprint'))
                 m = re.search("((?:[0-9A-F]{4}\s*){10})", data, re.IGNORECASE)
 
                 if m != None:
                         # Found fingerprint, get it and strip spaces for GPG
+                        # XXX: not sure why passing it into msui is necessary
                         self.msui.pattern = m.group(1).replace(' ', '')
+                        # 1. fetch the key into a temporary keyring
+                        # XXX: we override the find_key() because we want to be interactive
+                        # but that's ugly as hell - find_key() should take a callback maybe?
+                        # 1.a) from the local keyring
+                        self.msui.log(_('looking for key %s in your keyring') % self.msui.pattern)
+                        self.msui.keyring.context.set_option('export-options', 'export-minimal')
+                        if self.msui.tmpkeyring.import_data(self.msui.keyring.export_data(self.msui.pattern)):
+                                # XXXX: this actually hangs when signing the key, maybe because we're not in a callback?
+                                # it's the prompting that hangs, see msui.ask...
+                                self.watch_out_callback(0, 0) # XXX: hack, the callback should call a cleaner function
+                                return # XXX: also ugly, reindent everything instead
 
-                        # Capture and display the video frame containing QR code
-                        self.zbarframe.set_shadow_type(gtk.SHADOW_NONE)
-                        alloc = self.zbarframe.allocation
-                        pixbuf = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, alloc.width, alloc.height)
-                        pixbuf.get_from_drawable(self.zbarframe.window, self.zbarframe.window.get_colormap(),   alloc.x, alloc.y, 0, 0, alloc.width, alloc.height)
-                        self.capture = gtk.Image()
-                        self.capture.set_from_pixbuf(pixbuf)
-                        self.capture.show()
-                        self.zbarframe.remove(self.zbar)
-                        self.zbarframe.add(self.capture)
-                        self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
-
-                        # Disable video capture
-                        self.zbar.set_video_enabled(False)
-                        # 1. fetch the key into a temporary keyring - we override the find_key() because we want to be interactive
-                        # 1.a) if allowed (@todo), from the keyservers
+                        # 1.b) if allowed (@todo), from the keyservers
                         if self.msui.options.keyserver is not None:
                                 self.msui.tmpkeyring.context.set_option('keyserver', self.msui.options.keyserver)
                         command = self.msui.tmpkeyring.context.build_command(['recv-keys', self.msui.pattern])
@@ -448,19 +520,23 @@ class MonkeysignScan(gtk.Window):
                         self.dialog.set_size_request(250, 100)
                         self.keep_pulsing = True
                         proc = subprocess.Popen(command, 0, None, subprocess.PIPE, subprocess.PIPE, subprocess.PIPE)
-                        gobject.child_watch_add(proc.pid, watch_out_callback)
-                        gobject.timeout_add(100, update_progress_callback)
+                        gobject.child_watch_add(proc.pid, self.watch_out_callback)
+                        gobject.timeout_add(100, self.update_progress_callback)
                         if self.dialog.run() == gtk.RESPONSE_CANCEL:
                                 proc.kill()
-                        return
                 else:
-                        print _('ignoring found data: %s') % data
+                        self.msui.warn(_('data found in barcode does not match a OpenPGP fingerprint pattern: %s') % data)
+                        self.resume_capture()
 
         def resume_capture(self):
                 """restart capture"""
                 self.zbarframe.remove(self.capture)
+                try:
+                        self.zbar.set_video_enabled(True)
+                except AttributeError:
+                        # the "zbar" is not a video frame capture, webcam probably disable, ignore
+                        pass
                 self.zbarframe.add(self.zbar)
-                self.zbar.set_video_enabled(True)
                 self.capture = None
 
         def destroy(self, widget, data=None):

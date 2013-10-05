@@ -1,6 +1,9 @@
 monkeysign (2.0~git0) experimental; urgency=low
 
   * Upload to experimental new crazy features.
+  * implement qrcode image import, to allow people without webcams to
+    import pictures from a trusted camera - the images must be signed with
+    a detached signature on pain of a ugly warning with instructions.
 
  -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:34:48 +0200
 
