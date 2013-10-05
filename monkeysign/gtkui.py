@@ -212,7 +212,16 @@ class MonkeysignScan(gtk.Window):
                                                 radiogroup = action
                                         else:
                                                 action.set_group(radiogroup)
-                radiogroup.set_current_value(i)
+                i += 1
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/video', _('Disable video'), 'disable', gtk.UI_MANAGER_AUTO, True)
+                action = gtk.RadioAction('disable', _('Disable video'), _('Disable video'), None, i)
+                action.connect('activate', self.video_changed, None)
+                self.actiongroup.add_action(action)
+                if radiogroup is None:
+                        radiogroup = action
+                else:
+                        action.set_group(radiogroup)
+                radiogroup.set_current_value(int(bool(video)))
                 return video
 
         def add_video_device(self, path, i):
@@ -280,6 +289,14 @@ class MonkeysignScan(gtk.Window):
                         else:
                                 action.set_group(radiogroup)
                         self.actiongroup.add_action(action)
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', _('Hide QR code'), 'hide', gtk.UI_MANAGER_AUTO, True)
+                action = gtk.RadioAction('hide', _('Hide QR code'), _('Hide QR code'), None, i)
+                action.connect('activate', self.uid_changed, None)
+                if radiogroup is None:
+                        radiogroup = action
+                else:
+                        action.set_group(radiogroup)
+                self.actiongroup.add_action(action)                
                 if (i > 0):
                         radiogroup.set_current_value(0)
 
@@ -297,16 +314,21 @@ class MonkeysignScan(gtk.Window):
 
         def draw_qrcode(self):
                 """draw the qrcode from the key fingerprint"""
-                self.pixbuf = self.image_to_pixbuf(self.make_qrcode(self.active_key.fpr))
-                self.qrcode.set_from_pixbuf(self.pixbuf)
+                if self.active_key:
+                        self.pixbuf = self.image_to_pixbuf(self.make_qrcode(self.active_key.fpr))
+                        self.qrcode.set_from_pixbuf(self.pixbuf)
+                else:
+                        self.qrcode.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
 
         def video_changed(self, action, path):
                 """callback invoked when a new video device is selected from the
                 drop-down list.  sets the new device for the zbar widget,
                 which will eventually cause it to be opened and enabled
                 """
-                if action.get_active() and zbar in self:
-                        self.zbar.set_video_device(path)
+                if zbar in self:
+                        self.zbar.set_video_enabled(path is not None)
+                        if path is not None and action.get_active():
+                                self.zbar.set_video_device(path)
 
         def make_qrcode(self, fingerprint):
                 """Given a fingerprint, generate a QR code image with appropriate prefix"""
@@ -378,8 +400,13 @@ class MonkeysignScan(gtk.Window):
                 if not found:
                         self.msui.warn(_('data found in image!'))
 
+        
         def save_qrcode(self, widget=None):
                 """Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
+                if self.active_key is None:
+                        gtk.gdk.threads_leave() # XXX: without this, warn() freezes, go figure
+                        self.msui.warn(_('No identity selected. Select one from the identiy menu or generate a OpenPGP key if none is available.'))
+                        return
                 key = self.active_key
                 image = self.make_qrcode(key.fpr)
                 dialog = gtk.FileChooserDialog(_('Save QR code'), None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
@@ -401,7 +428,11 @@ class MonkeysignScan(gtk.Window):
 
         def print_op(self, widget=None):
                 """handler for the print QR code menu"""
-                keyid = self.keyid.subkeys[0].keyid()
+                if self.active_key is None:
+                        gtk.gdk.threads_leave() # XXX: without this, warn() freezes, go figure
+                        self.msui.warn(_('No identity selected. Select one from the identiy menu or generate a OpenPGP key if none is available.'))
+                        return
+                keyid = self.active_key.subkeys[0].keyid()
                 print_op = gtk.PrintOperation()
                 print_op.set_job_name('Monkeysign-'+keyid)
                 print_op.set_n_pages(1)
