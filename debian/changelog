@@ -9,6 +9,7 @@ monkeysign (2.0~git0) experimental; urgency=low
     * all options moved to menus, including the print/save buttons, the
       video and identity dropdowns
     * properly handle exceptions in gtk UI
+    * avoid duplicate camera listing and display nicer name (Closes: #718796)
 
  -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:34:48 +0200
 
