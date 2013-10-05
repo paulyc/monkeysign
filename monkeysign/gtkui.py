@@ -18,6 +18,7 @@
 
 import sys, os, stat, subprocess
 import re
+from glob import glob
 import StringIO
 import gtk
 
@@ -198,25 +199,26 @@ class MonkeysignScan(gtk.Window):
                 i = 0
                 video = False
                 radiogroup = None
-                for (root, dirs, files) in os.walk("/dev"):
-                        for dev in files:
-                                path = os.path.join(root, dev)
+                for path in glob("/dev/video[0-9]*"):
                                 if not os.access(path, os.F_OK):
                                         continue
                                 info = os.stat(path)
                                 if stat.S_ISCHR(info.st_mode) and os.major(info.st_rdev) == 81:
                                         i += 1
-                                        action = self.add_video_device(path, i)
+                                        try:
+                                                label = "%s (%s)" % (open('/sys/class/video4linux/%s/name' % os.path.basename(path)).read(),
+                                                                     path)
+                                        except IOError:
+                                                label = path
+                                                pass
+                                        action = self.add_video_device(path, label, path, i)
                                         video = path
                                         if radiogroup is None:
                                                 radiogroup = action
                                         else:
                                                 action.set_group(radiogroup)
                 i += 1
-                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/video', _('Disable video'), 'disable', gtk.UI_MANAGER_AUTO, True)
-                action = gtk.RadioAction('disable', _('Disable video'), _('Disable video'), None, i)
-                action.connect('activate', self.video_changed, None)
-                self.actiongroup.add_action(action)
+                action = self.add_video_device('disable', _('Disable video'), None, i)
                 if radiogroup is None:
                         radiogroup = action
                 else:
@@ -224,10 +226,10 @@ class MonkeysignScan(gtk.Window):
                 radiogroup.set_current_value(int(bool(video)))
                 return video
 
-        def add_video_device(self, path, i):
+        def add_video_device(self, name, label, path, i):
                 """helper function to add an entry for a video device"""
-                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/video', path, path, gtk.UI_MANAGER_AUTO, True)
-                action = gtk.RadioAction(path, path, path, None, i)
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/video', label, name, gtk.UI_MANAGER_AUTO, True)
+                action = gtk.RadioAction(name, label, label, None, i)
                 action.connect('activate', self.video_changed, path)
                 self.actiongroup.add_action(action)
                 return action
