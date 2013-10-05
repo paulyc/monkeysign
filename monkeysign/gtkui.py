@@ -157,12 +157,12 @@ class MonkeysignScan(gtk.Window):
                 self.create_webcam_display(video_found)
                 self.create_qrcode_display()
                 self.create_secret_keys_display()
-		self.last_allocation = self.get_allocation()
+                self.last_allocation = self.get_allocation()
 
                 # top horizontal box: webcam and qrcode
                 mainhbox = gtk.HBox()
                 mainhbox.pack_start(self.zbarwidget, False, False, 10)
-		mainhbox.pack_start(self.qrcodewidget, True, True, 10)
+                mainhbox.pack_start(self.qrcodewidget, True, True, 10)
 
                 # main vertical box: the above with a menu on top
                 mainvbox = gtk.VBox()
@@ -258,15 +258,15 @@ class MonkeysignScan(gtk.Window):
 
                 self.qrcode = gtk.Image() # QR Code widget
                 self.clip = gtk.Clipboard() # Clipboard
-		self.qrcodewidget = gtk.VBox()
+                self.qrcodewidget = gtk.VBox()
                 swin = gtk.ScrolledWindow()
-		swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		swin.add_with_viewport(self.qrcode)
+                swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+                swin.add_with_viewport(self.qrcode)
                 self.qrcodewidget.pack_start(gtk.Label(_('This is a QR-code version of your PGP fingerprint. Scan this with another monkeysign to transfer your fingerprint.')), False)
                 self.qrcodewidget.pack_start(swin)
 
         def create_secret_keys_display(self):
-		"""list the secret keys for selection somewhere"""
+                """list the secret keys for selection somewhere"""
                 i = 0
                 radiogroup = None
                 for key in Keyring().get_keys(None, True, False).values():
@@ -283,11 +283,11 @@ class MonkeysignScan(gtk.Window):
                 if (i > 0):
                         radiogroup.set_current_value(0)
 
-	def expose_event(self, widget, event):
-		"""When window is resized, regenerate the QR code"""
-		if self.get_allocation() != self.last_allocation:
-			self.last_allocation = self.get_allocation()
-			self.draw_qrcode()
+        def expose_event(self, widget, event):
+                """When window is resized, regenerate the QR code"""
+                if self.get_allocation() != self.last_allocation:
+                        self.last_allocation = self.get_allocation()
+                        self.draw_qrcode()
 
         def uid_changed(self, action, key):
                 """refresh the qrcode when the selected key changes"""
@@ -308,15 +308,15 @@ class MonkeysignScan(gtk.Window):
                 if action.get_active() and zbar in self:
                         self.zbar.set_video_device(path)
 
-	def make_qrcode(self, fingerprint):
-		"""Given a fingerprint, generate a QR code image with appropriate prefix"""
-		rect = self.qrcodewidget.get_allocation()
-		if rect.width < rect.height:
-			size = rect.width - 15
-		else:
-			size = rect.height - 15
-		version, width, image = _qrencode_scaled('OPENPGP4FPR:'+fingerprint,size,0,1,2,True)
-		return image
+        def make_qrcode(self, fingerprint):
+                """Given a fingerprint, generate a QR code image with appropriate prefix"""
+                rect = self.qrcodewidget.get_allocation()
+                if rect.width < rect.height:
+                        size = rect.width - 15
+                else:
+                        size = rect.height - 15
+                version, width, image = _qrencode_scaled('OPENPGP4FPR:'+fingerprint,size,0,1,2,True)
+                return image
 
         def import_image(self, widget):
                """Use a file chooser dialog to import an image containing a QR code"""
@@ -378,55 +378,55 @@ class MonkeysignScan(gtk.Window):
                 if not found:
                         self.msui.warn(_('data found in image!'))
 
-	def save_qrcode(self, widget=None):
-		"""Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
+        def save_qrcode(self, widget=None):
+                """Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
                 key = self.active_key
-		image = self.make_qrcode(key.fpr)
-		dialog = gtk.FileChooserDialog(_('Save QR code'), None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
-		dialog.set_default_response(gtk.RESPONSE_OK)
-		dialog.set_current_name(key.keyid() + '.png')
-		dialog.show()
-		response = dialog.run()
-		if response == gtk.RESPONSE_OK:
-				name = dialog.get_filename()
-				image.save(name, 'PNG')
-		elif response == gtk.RESPONSE_CANCEL:
-				pass
-		dialog.destroy()
-		return
+                image = self.make_qrcode(key.fpr)
+                dialog = gtk.FileChooserDialog(_('Save QR code'), None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
+                dialog.set_default_response(gtk.RESPONSE_OK)
+                dialog.set_current_name(key.keyid() + '.png')
+                dialog.show()
+                response = dialog.run()
+                if response == gtk.RESPONSE_OK:
+                                name = dialog.get_filename()
+                                image.save(name, 'PNG')
+                elif response == gtk.RESPONSE_CANCEL:
+                                pass
+                dialog.destroy()
+                return
 
-	def clip_qrcode(self, widget=None):
+        def clip_qrcode(self, widget=None):
                 """copy the qrcode to the clipboard"""
-		self.clip.set_image(self.pixbuf)
+                self.clip.set_image(self.pixbuf)
 
-	def print_op(self, widget=None):
+        def print_op(self, widget=None):
                 """handler for the print QR code menu"""
-		keyid = self.keyid.subkeys[0].keyid()
-		print_op = gtk.PrintOperation()
-		print_op.set_job_name('Monkeysign-'+keyid)
-		print_op.set_n_pages(1)
-		print_op.connect("draw_page", self.print_qrcode)
-		res = print_op.run(gtk.PRINT_OPERATION_ACTION_PRINT_DIALOG, self)
+                keyid = self.keyid.subkeys[0].keyid()
+                print_op = gtk.PrintOperation()
+                print_op.set_job_name('Monkeysign-'+keyid)
+                print_op.set_n_pages(1)
+                print_op.connect("draw_page", self.print_qrcode)
+                res = print_op.run(gtk.PRINT_OPERATION_ACTION_PRINT_DIALOG, self)
 
-	def print_qrcode(self, operation=None, context=None, page_nr=None):
+        def print_qrcode(self, operation=None, context=None, page_nr=None):
                 """actually print the qr code"""
-		ctx = context.get_cairo_context()
-		ctx.set_source_pixbuf(self.pixbuf, 0, 0)
-		ctx.paint()
-		ctx.restore()
-		return
+                ctx = context.get_cairo_context()
+                ctx.set_source_pixbuf(self.pixbuf, 0, 0)
+                ctx.paint()
+                ctx.restore()
+                return
 
-	def image_to_pixbuf(self, image):
-		"""Utility function to convert a PIL image instance to Pixbuf"""
-		fd = StringIO.StringIO()
-		image.save(fd, "ppm")
-		contents = fd.getvalue()
-		fd.close()
-		loader = gtk.gdk.PixbufLoader("pnm")
-		loader.write(contents, len(contents))
-		pixbuf = loader.get_pixbuf()
-		loader.close()
-		return pixbuf
+        def image_to_pixbuf(self, image):
+                """Utility function to convert a PIL image instance to Pixbuf"""
+                fd = StringIO.StringIO()
+                image.save(fd, "ppm")
+                contents = fd.getvalue()
+                fd.close()
+                loader = gtk.gdk.PixbufLoader("pnm")
+                loader.write(contents, len(contents))
+                pixbuf = loader.get_pixbuf()
+                loader.close()
+                return pixbuf
 
         def update_progress_callback(self, *args):
                 """callback invoked for pulsating progressbar
