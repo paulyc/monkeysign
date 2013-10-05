@@ -327,10 +327,13 @@ class MonkeysignScan(gtk.Window):
                 drop-down list.  sets the new device for the zbar widget,
                 which will eventually cause it to be opened and enabled
                 """
-                if zbar in self:
-                        self.zbar.set_video_enabled(path is not None)
-                        if path is not None and action.get_active():
-                                self.zbar.set_video_device(path)
+                try:
+                        if action.get_active():
+                                self.zbar.set_video_enabled(path is not None)
+                                if path is not None:
+                                        self.zbar.set_video_device(path)
+                except AttributeError:
+                        pass
 
         def make_qrcode(self, fingerprint):
                 """Given a fingerprint, generate a QR code image with appropriate prefix"""
