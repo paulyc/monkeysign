@@ -136,9 +136,9 @@ class MonkeysignScan(gtk.Window):
                 </menu>
                 <menu action="edit">
                         <menuitem action="copy"/>
-                        <menu action="identity"/>
-                        <menu action="video"/>
                 </menu>
+                <menu action="identity"/>
+                <menu action="video"/>
         </menubar>
         </ui>'''
 
@@ -217,7 +217,7 @@ class MonkeysignScan(gtk.Window):
 
         def add_video_device(self, path, i):
                 """helper function to add an entry for a video device"""
-                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/edit/video', path, path, gtk.UI_MANAGER_AUTO, True)
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/video', path, path, gtk.UI_MANAGER_AUTO, True)
                 action = gtk.RadioAction(path, path, path, None, i)
                 action.connect('activate', self.video_changed, path)
                 self.actiongroup.add_action(action)
@@ -271,7 +271,7 @@ class MonkeysignScan(gtk.Window):
                 radiogroup = None
                 for key in Keyring().get_keys(None, True, False).values():
                         uid = key.uidslist[0].uid
-                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/edit/identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
+                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
                         action = gtk.RadioAction(uid, uid, uid, None, i)
                         i += 1
                         action.connect('activate', self.uid_changed, key)
