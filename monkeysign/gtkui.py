@@ -298,9 +298,9 @@ class MonkeysignScan(gtk.Window):
                         radiogroup = action
                 else:
                         action.set_group(radiogroup)
-                self.actiongroup.add_action(action)                
-                if (i > 0):
-                        radiogroup.set_current_value(0)
+                self.actiongroup.add_action(action)
+                # fire off activation hook once
+                radiogroup.set_current_value(0)
 
         def expose_event(self, widget, event):
                 """When window is resized, regenerate the QR code"""
