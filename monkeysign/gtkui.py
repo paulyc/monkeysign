@@ -33,6 +33,7 @@ from qrencode import encode_scaled as _qrencode_scaled
 from monkeysign.gpg import Keyring, GpgRuntimeError
 from monkeysign.ui import MonkeysignUi
 import monkeysign.translation
+from monkeysign.msg_exception import errorhandler
 
 class MonkeysignScanUi(MonkeysignUi):
         """sign a key in a safe fashion using a webcam to scan for qr-codes
@@ -53,6 +54,7 @@ This program assumes you have gpg-agent configure to prompt for
 passwords.
 """
 
+        @errorhandler
         def main(self):
                 # threads *must* be properly initialized to use zbarpygtk
                 gtk.gdk.threads_init()

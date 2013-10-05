@@ -15,7 +15,6 @@ Release process
 
 The following needs to be fixed before 2.0 is released.
 
- * properly handle exceptions in GTK UI
  * usability issues:
   * don't popup - because we can't control location - besides popups are
     evil
