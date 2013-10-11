@@ -27,6 +27,7 @@ from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email.header import Header
 from email.utils import parseaddr, formataddr
+from email import Charset
 import smtplib
 import subprocess
 
@@ -74,11 +75,14 @@ class MonkeysignUi(object):
         parser.add_option('-n', '--dry-run', dest='dryrun', default=False, action='store_true',
                           help=_('do not actually do anything'))
         parser.add_option('-u', '--user', dest='user', help=_('user id to sign the key with'))
+        parser.add_option('--cert-level', dest='certlevel', help=_('certification level to sign the key with'))
         parser.add_option('-l', '--local', dest='local', default=False, action='store_true',
                           help=_('import in normal keyring a local certification'))
         parser.add_option('-k', '--keyserver', dest='keyserver',
                           help=_('keyserver to fetch keys from'))
-        parser.add_option('-s', '--smtp', dest='smtpserver', help=_('SMTP server to use'))
+        parser.add_option('-s', '--smtp', dest='smtpserver', help=_('SMTP server to use, use a colon to specify the port number if non-standard'))
+        parser.add_option('--smtpuser', dest='smtpuser', help=_('username for the SMTP server (default: no user)'))
+        parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
                           help=_('Do not send email at all. (Default is to use sendmail.)'))
         parser.add_option('-t', '--to', dest='to', 
@@ -111,7 +115,7 @@ class MonkeysignUi(object):
         self.keyring = Keyring()
 
         # the temporary keyring we operate in, actually initialized in prepare()
-        # this is because we want the constructor to jsut initialise
+        # this is because we want the constructor to just initialise
         # data structures and not write any data
         self.tmpkeyring = None
 
@@ -152,6 +156,8 @@ class MonkeysignUi(object):
             self.tmpkeyring.context.set_option('keyserver', self.options.keyserver)
         if self.options.user is not None:
             self.tmpkeyring.context.set_option('local-user', self.options.user)
+        if self.options.certlevel is not None:
+            self.tmpkeyring.context.set_option('default-cert-level', self.options.certlevel)
         self.tmpkeyring.context.set_option('secret-keyring', self.keyring.homedir + '/secring.gpg')
 
         # copy the gpg.conf from the real keyring
@@ -205,10 +211,14 @@ this should not interrupt the flow of the program, but must be visible to the us
     def choose_uid(self, prompt, uids):
         raise NotImplementedError('choosing not implemented in base class')
 
+    def prompt_line(self, prompt):
+        raise NotImplementedError('prompting for a line not implemented in base class')
+
+    def prompt_pass(self, prompt):
+        raise NotImplementedError('prompting for a password not implemented in base class')
+
     def find_key(self):
         """find the key to be signed somewhere"""
-        self.keyring.context.set_option('export-options', 'export-minimal')
-
         # 1.b) from the local keyring
         self.log(_('looking for key %s in your keyring') % self.pattern)
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.pattern)):
@@ -329,8 +339,17 @@ expects an EmailFactory email, but will not mail if nomail is set"""
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
                 server = smtplib.SMTP(self.options.smtpserver)
+                server.set_debuglevel(self.options.debug)
+                try:
+                    server.starttls()
+                except SMTPException:
+                    self.warn(_('SMTP server does not support STARTTLS'))
+                    if self.options.smtpuser: self.warn(_('authentication credentials will be sent in clear text'))
+                if self.options.smtpuser:
+                    if not self.options.smtppass:
+                        self.options.smtppass = self.prompt_pass(_('enter SMTP password for server %s: ') % self.options.smtpserver)
+                    server.login(self.options.smtpuser, self.options.smtppass)
                 server.sendmail(msg.mailfrom.encode('utf-8'), msg.mailto.encode('utf-8'), msg.as_string().encode('utf-8'))
-                server.set_debuglevel(1)
                 server.quit()
                 self.warn(_('sent message through SMTP server %s to %s') % (self.options.smtpserver, msg.mailto))
                 return True
@@ -344,7 +363,7 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 self.warn(_("""\
 not sending email to %s, as requested, here's the email message:
 
-%s""") % (msg.mailto, msg))
+%s""") % (msg.mailto, msg.create_mail_from_block(msg.tmpkeyring.export_data(msg.keyfpr))))
 
 
 class EmailFactory:
@@ -362,6 +381,9 @@ mail.
     body = _("""
 Please find attached your signed PGP key. You can import the signed
 key by running each through `gpg --import`.
+
+If you have multiple user ids, each signature was sent in a separate
+email to each user id.
 
 Note that your key was not uploaded to any keyservers. If you want
 this new signature to be available to others, please upload it
@@ -440,6 +462,14 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         a multipart/mixed message containing a plain-text message
         explaining what this is, and a second part containing PGP data
         """
+
+        # Override python's weird assumption that utf-8 text should be encoded with
+        # base64, and instead use quoted-printable (for both subject and body).  I
+        # can't figure out a way to specify QP (quoted-printable) instead of base64 in
+        # a way that doesn't modify global state. :-(
+        # (taken from http://radix.twistedmatrix.com/2010/07/how-to-send-good-unicode-email-with.html)
+        Charset.add_charset('utf-8', Charset.QP, Charset.QP, 'utf-8')
+
         text = MIMEText(self.body, 'plain', 'utf-8')
         filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
         keypart = MIMEBase('application', 'pgp-keys', name=filename)

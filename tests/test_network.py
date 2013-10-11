@@ -18,7 +18,7 @@
 
 """Tests that hit the network.
 
-Those tests are in a seperate file to allow the base set of tests to
+Those tests are in a separate file to allow the base set of tests to
 be ran without internet access.
 """
 
@@ -32,7 +32,7 @@ from monkeysign.gpg import TempKeyring
 from test_lib import TestTimeLimit, AlarmException
 
 class TestGpgNetwork(TestTimeLimit):
-    """Seperate test cases for functions that hit the network
+    """Separate test cases for functions that hit the network
 
 each test needs to run under a specific timeout so we don't wait on
 the network forever"""

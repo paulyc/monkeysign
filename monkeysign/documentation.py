@@ -143,5 +143,25 @@ class ManPageFormatter(optparse.HelpFormatter):
             result.append(help_text)
         return ''.join(result)
 
+class build_slides(Command):
+
+    description = 'Generate the HTML presentation with rst2s5.'
+
+    user_options = [
+        ('file=', 'f', 'rst file'),
+        ]
+
+    def initialize_options(self):
+        self.file = None
+
+    def finalize_options(self):
+        if self.file is None:
+            raise DistutilsOptionError('\'file\' option is required')
+
+    def run(self):
+        html = os.path.dirname(self.file) + os.path.splitext(os.path.basename(self.file))[0] + '.html'
+        self.announce('processing slides from %s to %s' % (self.file, html), 2)
+        os.system('rst2s5 --theme default "%s" "%s"' % (self.file, html))
 
 build.sub_commands.append(('build_manpage', None))
+build.sub_commands.append(('build_slides', None))

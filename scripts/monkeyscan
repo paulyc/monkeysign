@@ -44,3 +44,5 @@ with ui() as u:
             raise # throw full backtrace
         else:
             sys.exit(e.strerror) # only show error
+    except KeyboardInterrupt:
+        sys.exit()

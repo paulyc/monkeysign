@@ -198,23 +198,16 @@ class EmailFactoryTest(BaseTestCase):
         data = self.email.tmpkeyring.export_data(self.pattern)
         self.assertNotEqual(data, '')
         message = self.email.create_mail_from_block(data)
-        match = re.compile("""Content-Type: multipart/mixed; boundary="===============%s=="
+        match = re.compile("""Content-Type: multipart/mixed; boundary="===============[0-9]*=="
 MIME-Version: 1.0
 
---===============%s==
+--===============[0-9]*==
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
 
-ClBsZWFzZSBmaW5kIGF0dGFjaGVkIHlvdXIgc2lnbmVkIFBHUCBrZXkuIFlvdSBjYW4gaW1wb3J0
-IHRoZSBzaWduZWQKa2V5IGJ5IHJ1bm5pbmcgZWFjaCB0aHJvdWdoIGBncGcgLS1pbXBvcnRgLgoK
-Tm90ZSB0aGF0IHlvdXIga2V5IHdhcyBub3QgdXBsb2FkZWQgdG8gYW55IGtleXNlcnZlcnMuIElm
-IHlvdSB3YW50CnRoaXMgbmV3IHNpZ25hdHVyZSB0byBiZSBhdmFpbGFibGUgdG8gb3RoZXJzLCBw
-bGVhc2UgdXBsb2FkIGl0CnlvdXJzZWxmLiAgV2l0aCBHbnVQRyB0aGlzIGNhbiBiZSBkb25lIHVz
-aW5nOgoKICAgIGdwZyAtLWtleXNlcnZlciBwb29sLnNrcy1rZXlzZXJ2ZXJzLm5ldCAtLXNlbmQt
-a2V5IDxrZXlpZD4KClJlZ2FyZHMsCg==
-
---===============%s==
+%s
+--===============[0-9]*==
 Content-Type: application/pgp-keys; name="yourkey.asc"
 MIME-Version: 1.0
 Content-Disposition: attachment; filename="yourkey.asc"
@@ -225,7 +218,7 @@ Content-Description: PGP Key <keyid>, uid <uid> \(<idx\), signed by <keyid>
 .*
 -----END PGP PUBLIC KEY BLOCK-----
 
---===============%s==--""" % tuple([ '[0-9]*' ] * 4), re.DOTALL)
+--===============[0-9]*==--""" % (self.email.body), re.DOTALL)
         self.assertRegexpMatches(message.as_string(), match)
         return message
 
@@ -284,7 +277,7 @@ class FakeKeyringTests(BaseTestCase):
         """test if we can find a key on the local keyring"""
         self.ui.find_key()
 
-class NonExistantKeyTests(BaseTestCase, TestTimeLimit):
+class NonExistentKeyTests(BaseTestCase, TestTimeLimit):
     """test behavior with a key that can't be found"""
 
     args = []

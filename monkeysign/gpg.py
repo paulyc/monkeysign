@@ -138,12 +138,12 @@ class Context():
         sense.
 
         this uses build_command to create a commandline out of the
-        'options' dictionnary, and appends the provided command at the
+        'options' dictionary, and appends the provided command at the
         end. this is because order of certain options matter in gpg,
         where some options (like --recv-keys) are expected to be at
         the end.
 
-        it is here that the options dictionnary is converted into a
+        it is here that the options dictionary is converted into a
         list. the command argument is expected to be a list of
         arguments that can be converted to strings. if it is not a
         list, it is cast into a list."""
@@ -457,13 +457,19 @@ class Keyring():
                 # confirm signature
                 try:
                     self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
-                except GpgProtocolError:
-                    raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
+                except GpgProtocolError as e:
+                    if 'sign_uid.dupe_okay' in str(e):
+                        raise GpgRuntimeError(self.context.returncode, _('you already signed that key'))
+                    else:
+                        raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
                 print >>proc.stdin, 'y'
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
                 # we seek because i have seen a USERID_HINT <keyid> <uid> in some cases
-                self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+                try:
+                    self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+                except GpgProtocolError:
+                    raise GpgRuntimeError(self.context.returncode, _('unable to prompt for passphrase, is gpg-agent running?'))
                 return proc.wait() == 0
 
             # don't sign all uids

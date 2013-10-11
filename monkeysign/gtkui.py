@@ -24,7 +24,6 @@ import gtk
 import gobject
 import pygtk; pygtk.require('2.0')
 import pango
-import Image
 import zbar, zbarpygtk
 
 from qrencode import encode as _qrencode
