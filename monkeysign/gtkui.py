@@ -248,7 +248,9 @@ class MonkeysignScan(gtk.Window):
                         vbox.set_size_request(320, 320)
                         camframe.add(vbox)
                 self.zbarwidget = gtk.VBox()
-                self.zbarwidget.pack_start(gtk.Label(_('This is the output of your webcam, align a qrcode in the image to scan a fingerprint.')), False)
+                label = gtk.Label(_('This is the output of your webcam, align a qrcode in the image to scan a fingerprint.'))
+                label.set_line_wrap(True)
+                self.zbarwidget.pack_start(label, False)
                 self.zbarwidget.pack_start(self.zbarframe)
 
         def create_qrcode_display(self):
@@ -264,7 +266,9 @@ class MonkeysignScan(gtk.Window):
                 swin = gtk.ScrolledWindow()
                 swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
                 swin.add_with_viewport(self.qrcode)
-                self.qrcodewidget.pack_start(gtk.Label(_('This is a QR-code version of your PGP fingerprint. Scan this with another monkeysign to transfer your fingerprint.')), False)
+                label = gtk.Label(_('This is a QR-code version of your PGP fingerprint. Scan this with another monkeysign to transfer your fingerprint.'))
+                label.set_line_wrap(True)
+                self.qrcodewidget.pack_start(label, False)
                 self.qrcodewidget.pack_start(swin)
 
         def create_secret_keys_display(self):
