@@ -199,6 +199,7 @@ class MonkeysignScan(gtk.Window):
                 i = 0
                 video = False
                 radiogroup = self.add_video_device('disable', _('Disable video'), None, i)
+                i += 1
                 for path in glob("/dev/video[0-9]*"):
                                 if not os.access(path, os.F_OK):
                                         continue
@@ -213,7 +214,7 @@ class MonkeysignScan(gtk.Window):
                                         self.add_video_device(path, label, path, i).set_group(radiogroup)
                                         video = path
                                         i += 1
-                radiogroup.set_current_value(i)
+                radiogroup.set_current_value(i-1)
                 return video
 
         def add_video_device(self, name, label, path, i):
