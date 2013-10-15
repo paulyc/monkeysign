@@ -198,31 +198,21 @@ class MonkeysignScan(gtk.Window):
                 """create controls to choose the video device"""
                 i = 0
                 video = False
-                radiogroup = None
+                radiogroup = self.add_video_device('disable', _('Disable video'), None, i)
                 for path in glob("/dev/video[0-9]*"):
                                 if not os.access(path, os.F_OK):
                                         continue
                                 info = os.stat(path)
                                 if stat.S_ISCHR(info.st_mode) and os.major(info.st_rdev) == 81:
-                                        i += 1
                                         try:
                                                 label = "%s (%s)" % (open('/sys/class/video4linux/%s/name' % os.path.basename(path)).read(),
                                                                      path)
                                         except IOError:
                                                 label = path
                                                 pass
-                                        action = self.add_video_device(path, label, path, i)
+                                        self.add_video_device(path, label, path, i).set_group(radiogroup)
                                         video = path
-                                        if radiogroup is None:
-                                                radiogroup = action
-                                        else:
-                                                action.set_group(radiogroup)
-                i += 1
-                action = self.add_video_device('disable', _('Disable video'), None, i)
-                if radiogroup is None:
-                        radiogroup = action
-                else:
-                        action.set_group(radiogroup)
+                                        i += 1
                 radiogroup.set_current_value(i)
                 return video
 
