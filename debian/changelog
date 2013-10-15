@@ -3,6 +3,7 @@ monkeysign (1.2~git0) UNRELEASED; urgency=low
   * improve python 3 compatibility, partially (Closes: #725059)
   * update translation strings
   * spanish translation, thanks to lilbit
+  * partial french translation
 
  -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:42:58 +0200
 
