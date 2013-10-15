@@ -576,6 +576,10 @@ class MonkeysignScan(gtk.Window):
 
         def destroy(self, widget, data=None):
                 """close the application"""
-                self.zbar.set_video_enabled(False)
+                try:
+                        self.zbar.set_video_enabled(False)
+                except AttributeError:
+                        # the "zbar" is not a video frame capture, webcam probably disable, ignore
+                        pass
                 del self.msui
                 gtk.main_quit()
