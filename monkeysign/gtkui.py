@@ -18,6 +18,7 @@
 
 import sys, os, stat, subprocess
 import re
+from glob import glob
 import StringIO
 import gtk
 
@@ -136,9 +137,9 @@ class MonkeysignScan(gtk.Window):
                 </menu>
                 <menu action="edit">
                         <menuitem action="copy"/>
-                        <menu action="identity"/>
-                        <menu action="video"/>
                 </menu>
+                <menu action="identity"/>
+                <menu action="video"/>
         </menubar>
         </ui>'''
 
@@ -197,28 +198,29 @@ class MonkeysignScan(gtk.Window):
                 """create controls to choose the video device"""
                 i = 0
                 video = False
-                radiogroup = None
-                for (root, dirs, files) in os.walk("/dev"):
-                        for dev in files:
-                                path = os.path.join(root, dev)
+                radiogroup = self.add_video_device('disable', _('Disable video'), None, i)
+                i += 1
+                for path in glob("/dev/video[0-9]*"):
                                 if not os.access(path, os.F_OK):
                                         continue
                                 info = os.stat(path)
                                 if stat.S_ISCHR(info.st_mode) and os.major(info.st_rdev) == 81:
-                                        i += 1
-                                        action = self.add_video_device(path, i)
+                                        try:
+                                                label = "%s (%s)" % (open('/sys/class/video4linux/%s/name' % os.path.basename(path)).read(),
+                                                                     path)
+                                        except IOError:
+                                                label = path
+                                                pass
+                                        self.add_video_device(path, label, path, i).set_group(radiogroup)
                                         video = path
-                                        if radiogroup is None:
-                                                radiogroup = action
-                                        else:
-                                                action.set_group(radiogroup)
-                radiogroup.set_current_value(i)
+                                        i += 1
+                radiogroup.set_current_value(i-1)
                 return video
 
-        def add_video_device(self, path, i):
+        def add_video_device(self, name, label, path, i):
                 """helper function to add an entry for a video device"""
-                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/edit/video', path, path, gtk.UI_MANAGER_AUTO, True)
-                action = gtk.RadioAction(path, path, path, None, i)
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/video', label, name, gtk.UI_MANAGER_AUTO, True)
+                action = gtk.RadioAction(name, label, label, None, i)
                 action.connect('activate', self.video_changed, path)
                 self.actiongroup.add_action(action)
                 return action
@@ -246,7 +248,9 @@ class MonkeysignScan(gtk.Window):
                         vbox.set_size_request(320, 320)
                         camframe.add(vbox)
                 self.zbarwidget = gtk.VBox()
-                self.zbarwidget.pack_start(gtk.Label(_('This is the output of your webcam, align a qrcode in the image to scan a fingerprint.')), False)
+                label = gtk.Label(_('This is the output of your webcam, align a qrcode in the image to scan a fingerprint.'))
+                label.set_line_wrap(True)
+                self.zbarwidget.pack_start(label, False)
                 self.zbarwidget.pack_start(self.zbarframe)
 
         def create_qrcode_display(self):
@@ -262,7 +266,9 @@ class MonkeysignScan(gtk.Window):
                 swin = gtk.ScrolledWindow()
                 swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
                 swin.add_with_viewport(self.qrcode)
-                self.qrcodewidget.pack_start(gtk.Label(_('This is a QR-code version of your PGP fingerprint. Scan this with another monkeysign to transfer your fingerprint.')), False)
+                label = gtk.Label(_('This is a QR-code version of your PGP fingerprint. Scan this with another monkeysign to transfer your fingerprint.'))
+                label.set_line_wrap(True)
+                self.qrcodewidget.pack_start(label, False)
                 self.qrcodewidget.pack_start(swin)
 
         def create_secret_keys_display(self):
@@ -270,9 +276,11 @@ class MonkeysignScan(gtk.Window):
                 i = 0
                 radiogroup = None
                 for key in Keyring().get_keys(None, True, False).values():
+                        if key.invalid or key.disabled or key.expired or key.revoked:
+                                continue
                         uid = key.uidslist[0].uid
-                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/edit/identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
-                        action = gtk.RadioAction(uid, uid, uid, None, i)
+                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', key.fpr, key.fpr, gtk.UI_MANAGER_AUTO, True)
+                        action = gtk.RadioAction(key.fpr, "%s (%s)" % (uid, key.keyid()), str(key), None, i)
                         i += 1
                         action.connect('activate', self.uid_changed, key)
                         if radiogroup is None:
@@ -280,8 +288,16 @@ class MonkeysignScan(gtk.Window):
                         else:
                                 action.set_group(radiogroup)
                         self.actiongroup.add_action(action)
-                if (i > 0):
-                        radiogroup.set_current_value(0)
+                self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', _('Hide QR code'), 'hide', gtk.UI_MANAGER_AUTO, True)
+                action = gtk.RadioAction('hide', _('Hide QR code'), _('Hide QR code'), None, i)
+                action.connect('activate', self.uid_changed, None)
+                if radiogroup is None:
+                        radiogroup = action
+                else:
+                        action.set_group(radiogroup)
+                self.actiongroup.add_action(action)
+                # fire off activation hook once
+                radiogroup.set_current_value(0)
 
         def expose_event(self, widget, event):
                 """When window is resized, regenerate the QR code"""
@@ -297,16 +313,24 @@ class MonkeysignScan(gtk.Window):
 
         def draw_qrcode(self):
                 """draw the qrcode from the key fingerprint"""
-                self.pixbuf = self.image_to_pixbuf(self.make_qrcode(self.active_key.fpr))
-                self.qrcode.set_from_pixbuf(self.pixbuf)
+                if self.active_key:
+                        self.pixbuf = self.image_to_pixbuf(self.make_qrcode(self.active_key.fpr))
+                        self.qrcode.set_from_pixbuf(self.pixbuf)
+                else:
+                        self.qrcode.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
 
         def video_changed(self, action, path):
                 """callback invoked when a new video device is selected from the
                 drop-down list.  sets the new device for the zbar widget,
                 which will eventually cause it to be opened and enabled
                 """
-                if action.get_active() and zbar in self:
-                        self.zbar.set_video_device(path)
+                try:
+                        if action.get_active():
+                                self.zbar.set_video_enabled(path is not None)
+                                if path is not None:
+                                        self.zbar.set_video_device(path)
+                except AttributeError:
+                        pass
 
         def make_qrcode(self, fingerprint):
                 """Given a fingerprint, generate a QR code image with appropriate prefix"""
@@ -378,8 +402,13 @@ class MonkeysignScan(gtk.Window):
                 if not found:
                         self.msui.warn(_('data found in image!'))
 
+        
         def save_qrcode(self, widget=None):
                 """Use a file chooser dialog to enable user to save the current QR code as a PNG image file"""
+                if self.active_key is None:
+                        gtk.gdk.threads_leave() # XXX: without this, warn() freezes, go figure
+                        self.msui.warn(_('No identity selected. Select one from the identiy menu or generate a OpenPGP key if none is available.'))
+                        return
                 key = self.active_key
                 image = self.make_qrcode(key.fpr)
                 dialog = gtk.FileChooserDialog(_('Save QR code'), None, gtk.FILE_CHOOSER_ACTION_SAVE, (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
@@ -401,7 +430,11 @@ class MonkeysignScan(gtk.Window):
 
         def print_op(self, widget=None):
                 """handler for the print QR code menu"""
-                keyid = self.keyid.subkeys[0].keyid()
+                if self.active_key is None:
+                        gtk.gdk.threads_leave() # XXX: without this, warn() freezes, go figure
+                        self.msui.warn(_('No identity selected. Select one from the identiy menu or generate a OpenPGP key if none is available.'))
+                        return
+                keyid = self.active_key.subkeys[0].keyid()
                 print_op = gtk.PrintOperation()
                 print_op.set_job_name('Monkeysign-'+keyid)
                 print_op.set_n_pages(1)
