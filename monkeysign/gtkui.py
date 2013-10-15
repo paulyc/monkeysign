@@ -223,7 +223,7 @@ class MonkeysignScan(gtk.Window):
                         radiogroup = action
                 else:
                         action.set_group(radiogroup)
-                radiogroup.set_current_value(int(bool(video)))
+                radiogroup.set_current_value(i)
                 return video
 
         def add_video_device(self, name, label, path, i):
@@ -284,8 +284,8 @@ class MonkeysignScan(gtk.Window):
                         if key.invalid or key.disabled or key.expired or key.revoked:
                                 continue
                         uid = key.uidslist[0].uid
-                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', uid, uid, gtk.UI_MANAGER_AUTO, True)
-                        action = gtk.RadioAction(uid, "%s (%s)" % (uid, key.keyid()), str(key), None, i)
+                        self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', key.fpr, key.fpr, gtk.UI_MANAGER_AUTO, True)
+                        action = gtk.RadioAction(key.fpr, "%s (%s)" % (uid, key.keyid()), str(key), None, i)
                         i += 1
                         action.connect('activate', self.uid_changed, key)
                         if radiogroup is None:
