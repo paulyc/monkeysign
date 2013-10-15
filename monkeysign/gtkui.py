@@ -263,13 +263,12 @@ class MonkeysignScan(gtk.Window):
                 self.qrcode = gtk.Image() # QR Code widget
                 self.clip = gtk.Clipboard() # Clipboard
                 self.qrcodewidget = gtk.VBox()
-                swin = gtk.ScrolledWindow()
-                swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-                swin.add_with_viewport(self.qrcode)
                 label = gtk.Label(_('This is a QR-code version of your PGP fingerprint. Scan this with another monkeysign to transfer your fingerprint.'))
                 label.set_line_wrap(True)
                 self.qrcodewidget.pack_start(label, False)
-                self.qrcodewidget.pack_start(swin)
+                self.qrcodewidget.pack_start(self.qrcode, True, True)
+                self.fprlabel = gtk.Label()
+                self.qrcodewidget.pack_start(self.fprlabel, False)
 
         def create_secret_keys_display(self):
                 """list the secret keys for selection somewhere"""
@@ -316,6 +315,7 @@ class MonkeysignScan(gtk.Window):
                 if self.active_key:
                         self.pixbuf = self.image_to_pixbuf(self.make_qrcode(self.active_key.fpr))
                         self.qrcode.set_from_pixbuf(self.pixbuf)
+                        self.fprlabel.set_text("OPENPGP4FPR:%s" % (self.active_key.fpr))
                 else:
                         self.qrcode.set_from_stock(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DIALOG)
 
@@ -334,9 +334,9 @@ class MonkeysignScan(gtk.Window):
 
         def make_qrcode(self, fingerprint):
                 """Given a fingerprint, generate a QR code image with appropriate prefix"""
-                rect = self.qrcodewidget.get_allocation()
+                rect = self.qrcodewidget.get_parent().get_allocation()
                 if rect.width < rect.height:
-                        size = rect.width - 15
+                        size = rect.width/2 - 15
                 else:
                         size = rect.height - 15
                 version, width, image = _qrencode_scaled('OPENPGP4FPR:'+fingerprint,size,0,1,2,True)
