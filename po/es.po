@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: monkeysign1.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-14 23:21-0400\n"
-"PO-Revision-Date: 2013-10-09 10:13-0500\n"
-"Last-Translator: lilbit <lilbit-32@gmx.com>\n"
-"Language-Team: lilbit <lilbit-32@gmx.com>\n"
+"PO-Revision-Date: 2013-10-16 05:26+0200\n"
+"Last-Translator: Antoine Beaupré <anarcat@debian.org>\n"
+"Language-Team: Spanish "
+"<http://hosted.weblate.org/projects/monkeysphere/monkeysign/es/>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.5.4\n"
-"Language: es\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 1.7\n"
 
 #: ../monkeysign/cli.py:24
 msgid ""
@@ -38,7 +40,7 @@ msgstr ""
 "persona, y asegura que aquel persona es el dueño del identidad firmado.\n"
 "\n"
 "Esta programa presume que ya tiene gpg-agent configurado a pedir\n"
-"contraseñas.  "
+"contraseñas."
 
 #: ../monkeysign/cli.py:35
 msgid "%prog [options] <keyid>"
@@ -50,7 +52,7 @@ msgstr "<keyid>: una huella de GPG o identificador de clave"
 
 #: ../monkeysign/cli.py:43 ../monkeysign/ui.py:99
 msgid "wrong number of arguments, use -h for full help"
-msgstr "incorrecto numero de argumentos, prueba -h para ayuda "
+msgstr "incorrecto numero de argumentos, prueba -h para ayuda"
 
 #: ../monkeysign/cli.py:59
 #, python-format
@@ -66,7 +68,7 @@ msgstr ""
 #: ../monkeysign/cli.py:88
 #, python-format
 msgid " (1-%d or full UID, control-c to abort): "
-msgstr "(1-%d o UID completo, control-c a abortar):"
+msgstr " (1-%d o UID completo, control-c a abortar): "
 
 #: ../monkeysign/cli.py:92
 msgid "invalid uid"
@@ -141,7 +143,6 @@ msgstr ""
 "\n"
 "Esta programa presume que ya tienes gpg-agent configurado a pedir\n"
 "contraseñas.\n"
-"  "
 
 #: ../monkeysign/gtkui.py:121
 msgid "okay, signing"
@@ -165,11 +166,11 @@ msgstr "_Guardar como..."
 
 #: ../monkeysign/gtkui.py:163
 msgid "_Print"
-msgstr "_Imprimir "
+msgstr "_Imprimir"
 
 #: ../monkeysign/gtkui.py:165
 msgid "Copy image to clipboard"
-msgstr "Copiar imagen a carpeta "
+msgstr "Copiar imagen a carpeta"
 
 #: ../monkeysign/gtkui.py:165
 msgid "_Copy"
@@ -181,7 +182,7 @@ msgstr "_Salir"
 
 #: ../monkeysign/gtkui.py:207
 msgid "No video device detected."
-msgstr "No dispositivo de vídeo encontrado. "
+msgstr "No dispositivo de vídeo encontrado."
 
 #: ../monkeysign/gtkui.py:313
 msgid "Save QR code"
@@ -197,7 +198,7 @@ msgstr "Espere por favor"
 
 #: ../monkeysign/gtkui.py:427
 msgid "Retrieving public key from server..."
-msgstr "Trayendo clave publico del servidor "
+msgstr "Trayendo clave publico del servidor..."
 
 #: ../monkeysign/gtkui.py:442
 #, python-format
@@ -247,11 +248,11 @@ msgid ""
 "the key or send email to each uid chosen)"
 msgstr ""
 "Anular email de destino por pruebas (el predeterminado es a usar el primer "
-"uid al clave o mandar email a cada uid seleccionado) "
+"uid al clave o mandar email a cada uid seleccionado)"
 
 #: ../monkeysign/ui.py:128
 msgid "Initializing UI"
-msgstr "UI Inicializando "
+msgstr "UI Inicializando"
 
 #: ../monkeysign/ui.py:139
 #, python-format
@@ -288,7 +289,7 @@ msgstr ""
 #: ../monkeysign/ui.py:225
 #, python-format
 msgid "could not find key %s in your keyring or keyservers"
-msgstr "no se encuentra tu clave %s  en tu llavero o servidores de claves "
+msgstr "no se encuentra tu clave %s  en tu llavero o servidores de claves"
 
 #: ../monkeysign/ui.py:234
 #, python-format
@@ -302,7 +303,7 @@ msgstr "encontró clave secreto: %s"
 
 #: ../monkeysign/ui.py:248
 msgid "no default secret key found, abort!"
-msgstr "no encontró clave secreto predeterminado, aborta! "
+msgstr "no encontró clave secreto predeterminado, aborta!"
 
 #: ../monkeysign/ui.py:249
 #, python-format
@@ -348,11 +349,11 @@ msgstr "no identidad elegido"
 
 #: ../monkeysign/ui.py:284
 msgid "Really sign key? [y/N] "
-msgstr "Estás seguro, que firma el clave? [s/N]"
+msgstr "Estás seguro, que firma el clave? [s/N] "
 
 #: ../monkeysign/ui.py:287
 msgid "key signing failed"
-msgstr "el firmar de clave, se falló "
+msgstr "el firmar de clave, se falló"
 
 #: ../monkeysign/ui.py:291
 msgid "making a non-exportable signature"
