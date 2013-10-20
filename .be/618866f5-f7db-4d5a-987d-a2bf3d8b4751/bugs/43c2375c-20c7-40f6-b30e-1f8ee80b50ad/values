@@ -1,0 +1,99 @@
+{
+
+
+
+
+
+
+    "extra_strings": [
+
+
+
+
+
+
+        "BLOCKED-BY:3b254e19-28d6-4fbb-b53e-8f6949d753e8", 
+
+
+
+
+
+
+        "BLOCKED-BY:49390884-ad0a-4ca1-afc1-5d2526f5b045", 
+
+
+
+
+
+
+        "BLOCKED-BY:69e45d7f-e3df-49eb-af40-34a52cb93bf7", 
+
+
+
+
+
+
+        "BLOCKED-BY:7bce0acd-6870-4b14-a107-73c5ffbcb32b", 
+
+
+
+
+
+
+        "BLOCKED-BY:92d4b9d7-b649-41e9-91aa-904aa48e3a30", 
+
+
+
+
+
+
+        "BLOCKED-BY:d73e690b-3fbe-4155-b883-505273696ecb", 
+
+
+
+
+
+
+        "BLOCKED-BY:fa794c25-fc59-4634-ad65-99d7beff753b"
+
+
+
+
+
+
+    ], 
+
+
+
+
+
+
+    "severity": "target", 
+
+
+
+
+
+
+    "status": "open", 
+
+
+
+
+
+
+    "summary": "3.0", 
+
+
+
+
+
+
+    "time": "Sun, 20 Oct 2013 23:02:27 +0000"
+
+
+
+
+
+
+}
