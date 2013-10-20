@@ -1,0 +1,2 @@
+we could just abort signature when we detect a key that is ours by
+saying "yep, that's me!"

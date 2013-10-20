@@ -1,0 +1,50 @@
+{
+
+
+
+
+
+
+    "creator": "Antoine Beaupr\u00e9 <anarcat@koumbit.org>", 
+
+
+
+
+
+
+    "reporter": "Antoine Beaupr\u00e9 <anarcat@koumbit.org>", 
+
+
+
+
+
+
+    "severity": "minor", 
+
+
+
+
+
+
+    "status": "open", 
+
+
+
+
+
+
+    "summary": "gpg-agent should be started if it's not already", 
+
+
+
+
+
+
+    "time": "Sun, 20 Oct 2013 22:10:58 +0000"
+
+
+
+
+
+
+}
