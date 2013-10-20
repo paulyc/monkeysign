@@ -1,0 +1,5 @@
+there shouldn't be a question "sign all user IDs?" -- there should
+just be a list of user IDs presented with checkboxes next to them all
+pre-checked by default and the user can un-check the ones they want.
+
+this will require refactoring the CLI and GTK UI significantly.

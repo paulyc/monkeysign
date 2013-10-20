@@ -1,0 +1,6 @@
+we could scan multiple qrcodes in series and pile them up in a
+gallery, then sign them in batch.
+
+there are security issues with that - if you line up multiple people,
+it gets hard to see if someone hijacked the fingerprint of a previous
+person...

@@ -1,0 +1,5 @@
+the popups block the view of the qrcode for other monkeys, and we
+can't easily fix that because it's hard to control its location. we
+should insert stuff in the existing window instead.
+
+the problem is that it will make the webcam snapshot smaller...

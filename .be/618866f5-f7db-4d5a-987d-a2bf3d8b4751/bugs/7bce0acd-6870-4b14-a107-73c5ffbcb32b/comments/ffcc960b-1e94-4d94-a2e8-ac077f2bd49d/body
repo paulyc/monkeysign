@@ -1,0 +1,6 @@
+a comment i had during trainings was that not having a windows port
+was seriously hurting wider adoption.
+
+we could use pypi at least for distribution, and start looking at
+which dependent libraries are ported to windows...
+

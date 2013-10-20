@@ -1,0 +1,38 @@
+Release process
+===============
+
+ * make sure tests pass (`./test.py`)
+ * update version in `monkeysign/__init__.py` and run `dch -i -D unstable`
+ * signed and annotated tag (`git tag -s -u keyid x.y`)
+ * build Debian package (`git-buildpackage`)
+ * install and test Debian package (`dpkg -i ../build-area/monkeysign_*.deb`)
+ * upload Debian package
+ * push commits and tags to the git repository
+ * add announcement on website and mailing list <monkeysphere@lists.riseup.net>
+
+Bug tracking
+============
+
+Bug tracking happens in this git repository using `be`
+([bugs-everywhere][]). [Full documentation][] is available online, but
+here's a short overview:
+
+    # list bugs
+    be list
+    # new bug
+    be new "here's a summary"
+    # describe / comment on a bug
+    be comment 618/d0d0
+    # register all changes in git
+    be commit
+
+ [bugs-everywhere]: http://bugseverywhere.org/
+ [Full documentation]: http://docs.bugseverywhere.org
+
+This is a new bug tracking designed to replace the overflowing TODO
+file and experiment with this decentralised bugtracking tool. There
+are also bugs reported by email over the [Debian BTS][]. See the
+[website][] for more information.
+
+ [Debian BTS]: http://bugs.debian.org/monkeysign
+ [website]: http://web.monkeysphere.info/monkeysign/#index4h2
