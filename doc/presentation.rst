@@ -20,8 +20,8 @@ why u no PGP???
 
  * key problem with PGP: the web of trust
 
-key monkeysign features
------------------------
+critical monkeysign features
+----------------------------
 
  * display and scan qrcode-encoded fingerprints - no more typing!
  * caff replacement:
