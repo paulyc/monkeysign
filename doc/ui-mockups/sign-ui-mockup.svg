@@ -14,7 +14,7 @@
    height="1702.942"
    id="svg3264"
    version="1.1"
-   inkscape:version="0.48.4 r9939"
+   inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="sign-ui-mockup.svg">
   <defs
      id="defs3266">
@@ -4586,6 +4586,41 @@
        y1="473.26892"
        x2="374.76474"
        y2="484.86215" />
+    <linearGradient
+       y2="72.861961"
+       x2="83.692307"
+       y1="60.027164"
+       x1="83.692307"
+       gradientTransform="matrix(0.8086635,0,0,0.89541802,4406.2911,675.18529)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient4987-10"
+       xlink:href="#gradient_buttonlike-83-6-9"
+       inkscape:collect="always" />
+    <linearGradient
+       id="gradient_buttonlike-83-6-9">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop12131-3-7-2" />
+      <stop
+         style="stop-color:#f5f5f5;stop-opacity:1;"
+         offset="0.01"
+         id="stop12887-40-4-96" />
+      <stop
+         style="stop-color:#e6e6e6;stop-opacity:1;"
+         offset="1"
+         id="stop12133-87-6-2" />
+    </linearGradient>
+    <linearGradient
+       y2="72.861961"
+       x2="83.692307"
+       y1="60.027164"
+       x1="83.692307"
+       gradientTransform="matrix(0.8086635,0,0,0.89541799,4405.4904,708.86023)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient8281"
+       xlink:href="#gradient_buttonlike-83-6-9"
+       inkscape:collect="always" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -4595,8 +4630,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710678"
-     inkscape:cx="4452.1565"
-     inkscape:cy="888.81163"
+     inkscape:cx="3715.4199"
+     inkscape:cy="1036.3138"
      inkscape:document-units="px"
      inkscape:current-layer="browser_chrome"
      showgrid="false"
@@ -4606,10 +4641,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1920"
-     inkscape:window-height="1141"
+     inkscape:window-width="1438"
+     inkscape:window-height="872"
      inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:window-y="26"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata3269">
@@ -7012,6 +7047,73 @@
          xlink:href="data:image/png;base64,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 F83/AAqyFmOE59RWAAAAAElFTkSuQmCC "
          height="30.298435"
          width="28.99192" />
+      <path
+         style="fill:#ff0000;stroke:#ff0000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+         d="m 803.2733,1165.5409 226.2742,-862.67031 -62.22542,45.25483 82.02442,25.45585 -22.6275,-73.53911"
+         id="path7460"
+         inkscape:connector-curvature="0"
+         transform="matrix(0.99972148,0,0,1.0447737,594.23077,227.94529)" />
+      <text
+         xml:space="preserve"
+         style="font-size:72px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         x="738.21948"
+         y="1213.6241"
+         id="text8230"
+         sodipodi:linespacing="125%"
+         transform="matrix(0.99972148,0,0,1.0447737,594.23077,227.94529)"><tspan
+           sodipodi:role="line"
+           id="tspan8232"
+           x="738.21948"
+           y="1213.6241">put this at the bottom</tspan><tspan
+           sodipodi:role="line"
+           x="738.21948"
+           y="1303.6241"
+           id="tspan8234">collapsed by default</tspan></text>
+      <path
+         style="fill:#ff0000;fill-opacity:1;stroke:#ff0000;stroke-width:1.02199936px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+         d="m 3697.5649,1318.6039 87.6569,-446.21502 -62.2081,47.28106 82.0016,26.59561 -22.6212,-76.83173"
+         id="path7460-6"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccc" />
+      <text
+         xml:space="preserve"
+         style="font-size:73.58395386px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;font-family:DejaVu Sans Mono;-inkscape-font-specification:DejaVu Sans Mono"
+         x="3422.9666"
+         y="1367.908"
+         id="text8257"
+         sodipodi:linespacing="125%"
+         transform="scale(0.97820166,1.0222841)"><tspan
+           sodipodi:role="line"
+           id="tspan8259"
+           x="3422.9666"
+           y="1367.908">we need a progress</tspan><tspan
+           sodipodi:role="line"
+           x="3422.9666"
+           y="1459.8879"
+           id="tspan8261">bar here...</tspan></text>
+      <rect
+         ry="2.0895469"
+         rx="1.9994428"
+         y="761.04236"
+         x="4467.6733"
+         height="13.582184"
+         width="12.99638"
+         id="checkbox_unselected-0-1"
+         style="color:#000000;fill:url(#linearGradient8281);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.02199924;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+         inkscape:label="checkbox_unselected" />
+      <text
+         sodipodi:linespacing="100%"
+         id="text13075-9-2-9-6-6-7-1-0-1-8-7"
+         y="755.76855"
+         x="4591.0015"
+         style="font-size:16.93082237px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+         xml:space="preserve"
+         transform="scale(0.97820165,1.0222841)"><tspan
+           style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
+           y="755.76855"
+           x="4591.0015"
+           sodipodi:role="line"
+           id="tspan4912-0-7-2">Send it directly to the keyservers</tspan></text>
     </g>
     <g
        id="g8134"
