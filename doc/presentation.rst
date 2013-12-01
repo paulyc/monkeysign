@@ -13,7 +13,7 @@ what is the monkeysphere
 
    * get out of the CA cartel
    * supports SSH and HTTPS for now, more to come
-   * useable right now!
+   * usable right now!
 
 why u no PGP???
 ---------------
@@ -36,7 +36,7 @@ and more!
    * SMTP support (TLS, user auth)
    * local signatures
    * unit tests
-   * GUI and commandline interface
+   * GUI and command line interface
    * modular python architecture instead of single perl script
    * packaged in Debian, install from git on other OS, packages welcome
 
@@ -44,6 +44,6 @@ help needed!
 ------------
 
  * wrote this from scratch
- * python-gnupg reimplementation, help needed for merge
+ * python-gnupg re-implementation, help needed for merge
  * translations
  * testing / bug reports / patches welcome!
