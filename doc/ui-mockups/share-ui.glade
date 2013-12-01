@@ -3,6 +3,7 @@
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkWindow" id="monkeyshare">
     <property name="can_focus">False</property>
+    <signal name="delete-event" handler="quit" swapped="no"/>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -44,10 +45,14 @@ You may ask someone to point their camera device at this screen and sign your ke
               <object class="GtkExpander" id="Options">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="halign">start</property>
+                <property name="valign">start</property>
                 <child>
                   <object class="GtkBox" id="box4">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="valign">start</property>
                     <property name="orientation">vertical</property>
                     <child>
                       <object class="GtkButton" id="Print">
@@ -56,6 +61,8 @@ You may ask someone to point their camera device at this screen and sign your ke
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -72,6 +79,8 @@ You may ask someone to point their camera device at this screen and sign your ke
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="halign">center</property>
+                        <property name="valign">center</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_stock">True</property>
                       </object>
@@ -127,6 +136,8 @@ You may ask someone to point their camera device at this screen and sign your ke
               <object class="GtkExpander" id="Change identity">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="halign">start</property>
+                <property name="valign">start</property>
                 <child>
                   <object class="GtkComboBoxText" id="uid-selector">
                     <property name="visible">True</property>
@@ -154,13 +165,16 @@ You may ask someone to point their camera device at this screen and sign your ke
             </child>
             <child>
               <object class="GtkButton" id="Finish">
-                <property name="label">gtk-ok</property>
+                <property name="label">gtk-quit</property>
                 <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="halign">end</property>
+                <property name="valign">center</property>
                 <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
+                <signal name="clicked" handler="quit" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
