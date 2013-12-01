@@ -3,6 +3,7 @@
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkWindow" id="chooser">
     <property name="can_focus">False</property>
+    <signal name="delete-event" handler="quit" swapped="no"/>
     <child>
       <object class="GtkBox" id="box2">
         <property name="visible">True</property>
@@ -63,6 +64,7 @@
                 <property name="tooltip_markup" translatable="yes">Sign someone's OpenPGP key using their Monkeycode</property>
                 <property name="halign">center</property>
                 <property name="use_action_appearance">False</property>
+                <signal name="clicked" handler="button" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -81,6 +83,7 @@
                 <property name="tooltip_markup" translatable="yes">Share your OpenPGP key using your monkeycode.</property>
                 <property name="halign">center</property>
                 <property name="use_action_appearance">False</property>
+                <signal name="clicked" handler="button" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -102,10 +105,11 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="receives_default">True</property>
-            <property name="halign">end</property>
-            <property name="valign">end</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
             <property name="use_action_appearance">False</property>
             <property name="use_stock">True</property>
+            <signal name="clicked" handler="quit" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
