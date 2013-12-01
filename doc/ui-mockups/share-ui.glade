@@ -153,8 +153,8 @@ You may ask someone to point their camera device at this screen and sign your ke
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="button1">
-                <property name="label">gtk-apply</property>
+              <object class="GtkButton" id="Finish">
+                <property name="label">gtk-ok</property>
                 <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
