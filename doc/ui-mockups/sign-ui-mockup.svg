@@ -2527,7 +2527,7 @@
        xlink:href="#gradient_buttonlike-4-5-8"
        id="linearGradient4455-7-0"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.2739814,0,0,1.3313931,747.81443,263.96905)"
+       gradientTransform="matrix(1.3660207,0,0,1.3294657,719.2584,264.90355)"
        x1="375"
        y1="474.36218"
        x2="375"
@@ -5871,9 +5871,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.5"
-     inkscape:cx="656.34758"
-     inkscape:cy="840.1946"
+     inkscape:zoom="0.70710678"
+     inkscape:cx="1176.8336"
+     inkscape:cy="873.53618"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -6601,27 +6601,43 @@
        id="g4443-8-1"
        style="display:inline">
       <rect
-         ry="2.662786"
-         rx="2.5479627"
-         y="893.53442"
-         x="1143.3855"
-         height="31.953432"
-         width="151.60381"
+         ry="2.6589313"
+         rx="2.7320411"
+         y="893.55756"
+         x="1143.4076"
+         height="31.907175"
+         width="162.55647"
          id="rect12355-96-9"
-         style="color:#000000;fill:url(#linearGradient4455-7-0);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.30237091;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+         style="color:#000000;fill:url(#linearGradient4455-7-0);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.3476193;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
       <text
          sodipodi:linespacing="100%"
          id="text13075-2-7-4"
          y="894.24365"
-         x="1246.3561"
+         x="1240.2242"
          style="font-size:16.93082237px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
          xml:space="preserve"
          transform="scale(0.97820165,1.0222841)"><tspan
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
            y="894.24365"
-           x="1246.3561"
+           x="1240.2242"
            id="tspan13077-5-2-8"
            sodipodi:role="line">Turn on camera</tspan></text>
+      <g
+         id="g4092-0"
+         transform="matrix(1,0,0,-1,-556.71196,1526.4892)">
+        <path
+           sodipodi:nodetypes="ccc"
+           inkscape:connector-curvature="0"
+           id="path14438-4-0"
+           d="m 1842.8479,615.21945 4.0317,-4.21342 4.0317,4.21342"
+           style="fill:none;stroke:#ffffff;stroke-width:2.19817472;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+        <path
+           style="fill:none;stroke:#404040;stroke-width:2.19817472;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+           d="m 1842.8479,616.62393 4.0317,-4.21342 4.0317,4.21342"
+           id="path15792-8-5-9"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc" />
+      </g>
     </g>
     <text
        xml:space="preserve"
@@ -9508,9 +9524,14 @@
          id="tspan9330">- User has &gt;1 private keys</tspan><tspan
          sodipodi:role="line"
          x="827.79077"
-         y="1188.384"
+         y="1188.3842"
          style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
-         id="tspan9332">- more?</tspan></text>
+         id="tspan9332">- User has no webcam or</tspan><tspan
+         sodipodi:role="line"
+         x="827.79077"
+         y="1251.6556"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9440">    only has a OpenPGP fp</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:68.54414368px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
@@ -9529,5 +9550,31 @@
          y="2678.1768"
          style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
          id="tspan9332-1">- User cross-signs their own key</tspan></text>
+    <rect
+       style="fill:#e6e6e6;fill-opacity:1;stroke:#a0a0a0;stroke-width:0.08950245;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="rect4350-6-7-6-8-1-0-5"
+       width="265.80618"
+       height="30.052362"
+       x="1293.194"
+       y="812.54602"
+       rx="0"
+       ry="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+       x="1305.3069"
+       y="834.21667"
+       id="text13075-9-2-9-6-6-7-1-0-1-28-5"
+       sodipodi:linespacing="100%"><tspan
+         id="tspan4912-0-2-8"
+         sodipodi:role="line"
+         x="1305.3069"
+         y="834.21667"
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Enter OpenPGP fingerprint manually</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.01393056px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 1427.6051,782.04738 -0.3396,30.27035 0,-1.13518 z"
+       id="path9165-0"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>
