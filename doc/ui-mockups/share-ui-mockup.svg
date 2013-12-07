@@ -1170,6 +1170,26 @@
          offset="1"
          id="stop12133-2-8-2" />
     </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#gradient_buttonlike-8-6"
+       id="linearGradient3409"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.5155144,0,0,1.2725595,692.59717,1125.2337)"
+       x1="375"
+       y1="474.36218"
+       x2="375"
+       y2="496.36218" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#gradient_buttonlike-8-6"
+       id="linearGradient3419"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(2.5155144,0,0,1.2725595,692.59717,1125.2337)"
+       x1="375"
+       y1="474.36218"
+       x2="375"
+       y2="496.36218" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -1179,8 +1199,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="1110.4693"
-     inkscape:cy="429.14354"
+     inkscape:cx="1077.4693"
+     inkscape:cy="273.81036"
      inkscape:document-units="px"
      inkscape:current-layer="browser_chrome"
      showgrid="false"
@@ -1190,10 +1210,10 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:window-width="1438"
-     inkscape:window-height="872"
+     inkscape:window-width="1364"
+     inkscape:window-height="740"
      inkscape:window-x="0"
-     inkscape:window-y="26"
+     inkscape:window-y="0"
      inkscape:window-maximized="0" />
   <metadata
      id="metadata3269">
@@ -1203,7 +1223,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1908,35 +1928,35 @@
       <text
          sodipodi:linespacing="100%"
          id="text13075-9-2-91-2-7"
-         y="1234.0247"
-         x="1385.6124"
+         y="1224.8267"
+         x="1376.4144"
          style="font-size:16.93082237px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
          xml:space="preserve"
          transform="scale(0.97820165,1.0222841)"><tspan
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1234.0247"
-           x="1385.6124"
+           y="1224.8267"
+           x="1376.4144"
            sodipodi:role="line"
            id="tspan4553-4-1-2">This is your Monkeycode.</tspan><tspan
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1249.6531"
-           x="1385.6124"
+           y="1240.4551"
+           x="1376.4144"
            sodipodi:role="line"
            id="tspan5270-2" /><tspan
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1265.2816"
-           x="1385.6124"
+           y="1256.0836"
+           x="1376.4144"
            sodipodi:role="line"
            id="tspan5272-4">You may ask someone to point their camera device at this screen</tspan><tspan
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1280.91"
-           x="1385.6124"
+           y="1271.712"
+           x="1376.4144"
            sodipodi:role="line"
            id="tspan5274-8">and sign your key using Monkeysign.</tspan></text>
       <g
          style="display:inline"
          id="g4443-8-9-5"
-         transform="translate(688.20378,858.10825)">
+         transform="translate(692.20266,872.73508)">
         <rect
            style="color:#000000;fill:url(#linearGradient4455-7-6-0);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.30237091;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            id="rect12355-96-1-4"
@@ -1963,7 +1983,7 @@
       <g
          style="display:inline"
          id="g4443-8-9-2-2"
-         transform="translate(623.50778,487.73596)">
+         transform="translate(614.51028,478.33299)">
         <rect
            style="color:#000000;fill:url(#linearGradient4455-7-6-3-4);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.30237091;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            id="rect12355-96-1-5-5"
@@ -1989,7 +2009,7 @@
       </g>
       <g
          id="g3589"
-         transform="translate(-765.50076,-14.626832)">
+         transform="translate(-774.49826,-24.029796)">
         <rect
            style="color:#000000;fill:url(#linearGradient3594);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.30237091;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            id="rect12355-96-1-5-6-1"
@@ -2017,39 +2037,39 @@
          transform="scale(0.97820165,1.0222841)"
          sodipodi:linespacing="100%"
          id="text13075-2-7-1-2-3-1-2"
-         y="1443.5232"
-         x="1883.9259"
+         y="1434.3252"
+         x="1874.7279"
          style="font-size:16.93082237px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
          xml:space="preserve"><tspan
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1443.5232"
-           x="1883.9259"
+           y="1434.3252"
+           x="1874.7279"
            id="tspan13077-5-2-5-7-3-6-4"
            sodipodi:role="line">The graphic on the left</tspan><tspan
            id="tspan3538"
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1459.1516"
-           x="1883.9259"
+           y="1449.9536"
+           x="1874.7279"
            sodipodi:role="line">contains your OpenPGP</tspan><tspan
            id="tspan3540"
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1474.7802"
-           x="1883.9259"
+           y="1465.5822"
+           x="1874.7279"
            sodipodi:role="line">key fingerprint:</tspan><tspan
            id="tspan3566"
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1490.4086"
-           x="1883.9259"
+           y="1481.2106"
+           x="1874.7279"
            sodipodi:role="line">40EA 15EC C836 2510 2E03</tspan><tspan
            id="tspan3568"
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1506.037"
-           x="1883.9259"
+           y="1496.839"
+           x="1874.7279"
            sodipodi:role="line">8B36 9CF9 C308 2D90 F606</tspan><tspan
            id="tspan3542"
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1521.6654"
-           x="1883.9259"
+           y="1512.4674"
+           x="1874.7279"
            sodipodi:role="line" /></text>
       <text
          transform="scale(0.97820166,1.0222841)"
@@ -2062,7 +2082,7 @@
            y="1562.2648"
            x="2617.7454"
            id="tspan3564"
-           sodipodi:role="line"></tspan></text>
+           sodipodi:role="line" /></text>
       <flowRoot
          xml:space="preserve"
          id="flowRoot5203-6-0-6"
@@ -2077,10 +2097,10 @@
              style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial" /></flowRegion><flowPara
            id="flowPara3388">3b. <flowSpan
    style="font-weight:bold;-inkscape-font-specification:Arial Bold"
-   id="flowSpan5660-7">Monkeycode</flowSpan> : the user can expand the Other options section by clicking on the title.</flowPara></flowRoot>      <g
+   id="flowSpan5660-7">Monkeycode</flowSpan> : the user can expand the Other options section by clicking on the title. If there is only one valid key, we display a label. The text (in the label or dropdown) must be unambiguous: if there are many keys, show the creation date. Show &quot;expired&quot; if it is.</flowPara></flowRoot>      <g
          style="display:inline"
          id="cursor_white_pointer-4"
-         transform="matrix(0.99972148,0,0,1.0447737,1582.599,856.63149)"
+         transform="matrix(0.99972148,0,0,1.0447737,1573.6015,847.22852)"
          inkscape:label="cursor_white_pointer">
         <rect
            style="color:#000000;fill:#878787;fill-opacity:0;fill-rule:nonzero;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:0.39215686;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;filter:url(#filter14498-8);enable-background:accumulate"
@@ -2156,32 +2176,31 @@
    id="flowSpan3423">Finish</flowSpan> : After having the Monkeycode scanned, or printed or saved as an image, the user clicks Finish and is returned to screen 1.</flowPara></flowRoot>      <text
          sodipodi:linespacing="100%"
          id="text13075-2-7-0-4"
-         y="1736.4534"
-         x="1445.17"
+         y="1708.8594"
+         x="1436.994"
          style="font-size:16.93082237px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
          xml:space="preserve"
          transform="scale(0.97820165,1.0222841)"><tspan
            style="font-size:15.62845039px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="1736.4534"
-           x="1445.17"
+           y="1708.8594"
+           x="1436.994"
            id="tspan13077-5-2-7-4"
            sodipodi:role="line">Change identity</tspan></text>
       <g
-         transform="translate(77.119935,1166.4044)"
-         style="display:inline"
-         id="g3669-9">
+         id="g3411"
+         transform="matrix(1.4764999,0,0,1,-702.20085,0)">
         <rect
-           style="color:#000000;fill:url(#linearGradient3667-6);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.38356447;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+           style="color:#000000;fill:url(#linearGradient3419);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.38356447;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
            id="rect10410-4"
            width="299.34625"
            height="30.541426"
-           x="1402.5427"
-           y="587.73865"
+           x="1473.6643"
+           y="1726.979"
            rx="1.1539227"
            ry="2.545119" />
         <g
            id="g4832-6"
-           transform="matrix(1.2446532,0,0,1.3007433,1068.0656,-353.59645)">
+           transform="matrix(1.2446532,0,0,1.3007433,1139.1872,785.64385)">
           <path
              style="fill:none;stroke:#ffffff;stroke-width:1.60000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
              d="m 496.5,737.86218 3,3 3,-3"
@@ -2207,22 +2226,22 @@
              inkscape:connector-curvature="0"
              sodipodi:nodetypes="ccc" />
         </g>
-        <text
-           transform="scale(0.97820163,1.0222841)"
-           sodipodi:linespacing="100%"
-           id="text13075-5-0"
-           y="594.14514"
-           x="1440.4645"
-           style="font-size:16.54105949px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-           xml:space="preserve"><tspan
-             style="font-size:15.26867104px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
-             y="594.14514"
-             x="1440.4645"
-             id="tspan13077-5-8-1"
-             sodipodi:role="line">Jerome Charaoui &lt;jerome@riseup.net&gt;</tspan></text>
       </g>
+      <text
+         xml:space="preserve"
+         style="font-size:16.54105949px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+         x="1511.127"
+         y="1708.5519"
+         id="text13075-5-0"
+         sodipodi:linespacing="100%"
+         transform="scale(0.97820165,1.0222841)"><tspan
+           sodipodi:role="line"
+           id="tspan13077-5-8-1"
+           x="1511.127"
+           y="1708.5519"
+           style="font-size:15.26867104px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Jerome Charaoui &lt;jerome@riseup.net&gt; (1970-01-01, expired)</tspan></text>
       <g
-         transform="translate(32.797855,741.84862)"
+         transform="translate(23.800362,732.44565)"
          style="display:inline"
          id="g4096-1">
         <g
@@ -2324,20 +2343,22 @@
              sodipodi:role="line">Jerome Charaoui &lt;jerome@riseup.net&gt;</tspan></text>
       </g>
       <image
-         y="1341.6312"
-         x="1352.0197"
+         sodipodi:absref="/home/anarcat/src/monkeysign/doc/ui-mockups/monkeycode-jerome.png"
+         xlink:href="monkeycode-jerome.png"
+         width="367.89749"
+         height="385.52151"
          id="image8611"
-         xlink:href="monkeycode-jerome.png"
-         height="385.52151"
-         width="367.89749" />
+         x="1343.0221"
+         y="1332.2283" />
       <image
-         style="display:inline"
-         y="593.5733"
-         x="1356.0186"
-         id="image8611-4"
+         sodipodi:absref="/home/anarcat/src/monkeysign/doc/ui-mockups/monkeycode-jerome.png"
          xlink:href="monkeycode-jerome.png"
+         width="367.89749"
          height="385.52151"
-         width="367.89749" />
+         id="image8611-4"
+         x="1356.0186"
+         y="593.5733"
+         style="display:inline" />
     </g>
   </g>
 </svg>
