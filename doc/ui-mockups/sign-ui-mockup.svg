@@ -4716,7 +4716,7 @@
        xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-8-4"
        id="linearGradient6488"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.2743363,0,0,1.2743363,4712.1978,963.17364)"
+       gradientTransform="matrix(1.2743363,0,0,1.2743363,4715.0262,903.77667)"
        x1="375"
        y1="474.36218"
        x2="375"
@@ -4726,7 +4726,7 @@
        xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-24"
        id="linearGradient6493"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.2743363,0,0,1.2743363,4547.6095,963.76879)"
+       gradientTransform="matrix(1.2743363,0,0,1.2743363,4550.4379,904.37182)"
        x1="375"
        y1="474.36218"
        x2="375"
@@ -4736,7 +4736,7 @@
        xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-7"
        id="linearGradient6544"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(1.2743363,0,0,1.2743363,4710.495,185.78178)"
+       gradientTransform="matrix(1.2743363,0,0,1.2743363,4713.3234,126.38481)"
        x1="375"
        y1="474.36218"
        x2="375"
@@ -5336,16 +5336,6 @@
          id="stop12133-87-9" />
     </linearGradient>
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_buttonlike-46"
-       id="linearGradient14581"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.80888879,0,0,0.85704498,19.302233,463.9162)"
-       x1="83.692307"
-       y1="60.027164"
-       x2="83.692307"
-       y2="72.861961" />
-    <linearGradient
        id="gradient_buttonlike-46">
       <stop
          style="stop-color:#ffffff;stop-opacity:1;"
@@ -5361,16 +5351,6 @@
          id="stop12133-7" />
     </linearGradient>
     <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_buttonlike-83-6-9-7-6"
-       id="linearGradient6453-9-5"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.80888879,0,0,0.85704489,3468.8793,869.06466)"
-       x1="83.692307"
-       y1="60.027164"
-       x2="83.692307"
-       y2="72.861961" />
-    <linearGradient
        id="gradient_buttonlike-83-6-9-7-6">
       <stop
          style="stop-color:#ffffff;stop-opacity:1;"
@@ -5385,16 +5365,6 @@
          offset="1"
          id="stop12133-87-6-2-3-1" />
     </linearGradient>
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_buttonlike-83-6-7-3"
-       id="linearGradient6459-8-6"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.80888879,0,0,0.85704492,3468.266,837.5364)"
-       x1="83.692307"
-       y1="60.027164"
-       x2="83.692307"
-       y2="72.861961" />
     <linearGradient
        id="gradient_buttonlike-83-6-7-3">
       <stop
@@ -5435,16 +5405,6 @@
          offset="1"
          id="stop12133-87-9-2" />
     </linearGradient>
-    <linearGradient
-       y2="72.861961"
-       x2="83.692307"
-       y1="60.027164"
-       x1="83.692307"
-       gradientTransform="matrix(0.80888879,0,0,0.85704495,3467.4458,803.93148)"
-       gradientUnits="userSpaceOnUse"
-       id="linearGradient7705"
-       xlink:href="#gradient_buttonlike-83-1-2"
-       inkscape:collect="always" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#gradient_titlebar-1-0-0-2-4"
@@ -5728,7 +5688,7 @@
        x2="375"
        y1="474.36218"
        x1="375"
-       gradientTransform="matrix(1.2743363,0,0,1.2743363,3961.2412,196.25595)"
+       gradientTransform="matrix(1.2743363,0,0,1.2743363,3964.0696,136.85898)"
        gradientUnits="userSpaceOnUse"
        id="linearGradient6835-5"
        xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-8-34-3"
@@ -5778,7 +5738,7 @@
        x2="375"
        y1="474.36218"
        x1="375"
-       gradientTransform="matrix(1.2743363,0,0,1.2743363,3796.5715,196.74139)"
+       gradientTransform="matrix(1.2743363,0,0,1.2743363,3799.3999,137.34442)"
        gradientUnits="userSpaceOnUse"
        id="linearGradient8655"
        xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-9-8-3"
@@ -5818,6 +5778,111 @@
        id="linearGradient8994"
        xlink:href="#gradient_buttonlike-83-6-95"
        inkscape:collect="always" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5"
+       id="linearGradient6576-8"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.2743363,0,0,1.2743363,3112.4949,167.39699)"
+       x1="375"
+       y1="474.36218"
+       x2="375"
+       y2="496.36218" />
+    <linearGradient
+       id="gradient_buttonlike-4-5-4-4-6-2-9-2-3-5">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop12131-5-7-5-1-0-0-7-3-8-5" />
+      <stop
+         style="stop-color:#f5f5f5;stop-opacity:1;"
+         offset="0.01"
+         id="stop12887-1-0-0-6-84-0-0-3-9-1" />
+      <stop
+         style="stop-color:#e6e6e6;stop-opacity:1;"
+         offset="1"
+         id="stop12133-0-9-4-5-4-5-5-6-3-0" />
+    </linearGradient>
+    <linearGradient
+       y2="496.36218"
+       x2="375"
+       y1="474.36218"
+       x1="375"
+       gradientTransform="matrix(2.0697928,0,0,1.2601419,2898.0938,248.88094)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient9088"
+       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5"
+       inkscape:collect="always" />
+    <linearGradient
+       y2="496.36218"
+       x2="375"
+       y1="474.36218"
+       x1="375"
+       gradientTransform="matrix(2.0697928,0,0,1.2601419,2898.0938,248.88094)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient9088-4"
+       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-5"
+       inkscape:collect="always" />
+    <linearGradient
+       id="gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-5">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop12131-5-7-5-1-0-0-7-3-8-5-3" />
+      <stop
+         style="stop-color:#f5f5f5;stop-opacity:1;"
+         offset="0.01"
+         id="stop12887-1-0-0-6-84-0-0-3-9-1-1" />
+      <stop
+         style="stop-color:#e6e6e6;stop-opacity:1;"
+         offset="1"
+         id="stop12133-0-9-4-5-4-5-5-6-3-0-7" />
+    </linearGradient>
+    <linearGradient
+       y2="496.36218"
+       x2="375"
+       y1="474.36218"
+       x1="375"
+       gradientTransform="matrix(2.0697928,0,0,1.2601419,2886.5938,314.38091)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient9125"
+       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-5"
+       inkscape:collect="always" />
+    <linearGradient
+       y2="496.36218"
+       x2="375"
+       y1="474.36218"
+       x1="375"
+       gradientTransform="matrix(2.0697928,0,0,1.2601419,2898.0938,248.88094)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient9088-41"
+       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-2"
+       inkscape:collect="always" />
+    <linearGradient
+       id="gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-2">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1;"
+         offset="0"
+         id="stop12131-5-7-5-1-0-0-7-3-8-5-5" />
+      <stop
+         style="stop-color:#f5f5f5;stop-opacity:1;"
+         offset="0.01"
+         id="stop12887-1-0-0-6-84-0-0-3-9-1-2" />
+      <stop
+         style="stop-color:#e6e6e6;stop-opacity:1;"
+         offset="1"
+         id="stop12133-0-9-4-5-4-5-5-6-3-0-77" />
+    </linearGradient>
+    <linearGradient
+       y2="496.36218"
+       x2="375"
+       y1="474.36218"
+       x1="375"
+       gradientTransform="matrix(2.0697928,0,0,1.2601419,2886.5938,349.88091)"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient9125-2"
+       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-2"
+       inkscape:collect="always" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -5826,9 +5891,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="3145.3106"
-     inkscape:cy="1215.8529"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="3617.9091"
+     inkscape:cy="890.00108"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -7267,13 +7332,13 @@
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="3588.0015"
+       x="3576.0015"
        y="789.7348"
        id="text13075-2-7-7-4-3-5-2-4-4"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan13077-5-2-1-1-9-7-1-8-5"
-         x="3588.0015"
+         x="3576.0015"
          y="789.7348"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial">Sign and email</tspan></text>
     <rect
@@ -7298,7 +7363,7 @@
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
          id="tspan7608">Restart camera</tspan></text>
     <g
-       transform="matrix(1.0002786,0,0,0.95714504,4001.3673,-176.24304)"
+       transform="matrix(1.0002786,0,0,0.95714504,4004.1957,-235.64001)"
        id="g4360-9-1-2-9-0-2"
        style="display:inline">
       <g
@@ -7426,7 +7491,7 @@
            sodipodi:role="line">Monkeysign</tspan></text>
     </g>
     <flowRoot
-       transform="translate(4554.6641,-0.66951239)"
+       transform="translate(4557.4925,-60.066482)"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
        id="flowRoot5203-6-7-3-2-7-2"
        xml:space="preserve"><flowRegion
@@ -7444,63 +7509,63 @@
        id="rect12355-96-8-0-3-6-5-5-8-8"
        width="151.64604"
        height="30.584068"
-       x="5106.1709"
-       y="788.36725"
+       x="5108.9995"
+       y="728.97028"
        rx="2.5486724"
        ry="2.5486724" />
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="5186.0015"
-       y="808.11963"
+       x="5188.8301"
+       y="748.72266"
        id="text13075-2-7-7-4-3-5-2-4-4-9"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan13077-5-2-1-1-9-7-1-8-5-8"
-         x="5186.0015"
-         y="808.11963"
+         x="5188.8301"
+         y="748.72266"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial">Finish</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4788.812"
-       y="382.10666"
+       x="4791.6406"
+       y="322.70969"
        id="text13075-9-2-9-6-6-7-1-0-0"
        sodipodi:linespacing="100%"><tspan
          id="tspan4568-9-9"
          sodipodi:role="line"
-         x="4788.812"
-         y="382.10666"
+         x="4791.6406"
+         y="322.70969"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Success!</tspan><tspan
          id="tspan4910-6"
          sodipodi:role="line"
-         x="4788.812"
-         y="397.39868"
+         x="4791.6406"
+         y="338.00171"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial" /><tspan
          id="tspan4912-7"
          sodipodi:role="line"
-         x="4788.812"
-         y="412.69073"
+         x="4791.6406"
+         y="353.29376"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Monkeysign sucessfully completed the selected key signing operation.</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4810.1699"
-       y="485.30542"
+       x="4812.9985"
+       y="425.90845"
        id="text13075-9-2-9-6-6-7-1-0-1-2"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-8"
          sodipodi:role="line"
-         x="4810.1699"
-         y="485.30542"
+         x="4812.9985"
+         y="425.90845"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Save it locally to a file</tspan></text>
     <image
        width="32"
        height="31.999998"
        xlink:href="data:image/png;base64,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 Pt5+bFfE4QAAAABJRU5ErkJggg== "
        id="image5423"
-       x="4770.4092"
-       y="463.34851" />
+       x="4773.2378"
+       y="403.95154" />
     <flowRoot
        transform="translate(43.409043,246.84286)"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Tondu;-inkscape-font-specification:Tondu"
@@ -7513,7 +7578,7 @@
            width="1988"
            id="rect5456" /></flowRegion><flowPara
          id="flowPara5458" /></flowRoot>    <g
-       transform="matrix(1.0002786,0,0,0.95714504,4000.3672,594.75696)"
+       transform="matrix(1.0002786,0,0,0.95714504,4003.1956,535.35999)"
        id="g4360-9-1-2-9-0-2-9"
        style="display:inline">
       <g
@@ -7641,7 +7706,7 @@
            sodipodi:role="line">Monkeysign</tspan></text>
     </g>
     <flowRoot
-       transform="translate(4553.664,770.33049)"
+       transform="translate(4556.4924,710.93352)"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
        id="flowRoot5203-6-7-3-2-7-2-0"
        xml:space="preserve"><flowRegion
@@ -7657,50 +7722,50 @@
    id="flowSpan5852">Error dialog : </flowSpan>show the operation that failed including some debugging information. The user can click Previous to go back to the key signing options (screen 6a) or Cancel to go back to the main menu.</flowPara></flowRoot>    <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4787.812"
-       y="1153.1066"
+       x="4790.6406"
+       y="1093.7096"
        id="text13075-9-2-9-6-6-7-1-0-0-2"
        sodipodi:linespacing="100%"><tspan
          id="tspan4568-9-9-9"
          sodipodi:role="line"
-         x="4787.812"
-         y="1153.1066"
+         x="4790.6406"
+         y="1093.7096"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Error</tspan><tspan
          id="tspan4910-6-0"
          sodipodi:role="line"
-         x="4787.812"
-         y="1168.3986"
+         x="4790.6406"
+         y="1109.0016"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial" /><tspan
          id="tspan4912-7-1"
          sodipodi:role="line"
-         x="4787.812"
-         y="1183.6907"
+         x="4790.6406"
+         y="1124.2937"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Monkeysign encountered an error executing the requested</tspan><tspan
          sodipodi:role="line"
-         x="4787.812"
-         y="1198.9827"
+         x="4790.6406"
+         y="1139.5857"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
          id="tspan5850">key signing operation.</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4809.1699"
-       y="1256.3053"
+       x="4811.9985"
+       y="1196.9083"
        id="text13075-9-2-9-6-6-7-1-0-1-2-0"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-8-8"
          sodipodi:role="line"
-         x="4809.1699"
-         y="1256.3053"
+         x="4811.9985"
+         y="1196.9083"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Save it locally to a file</tspan><tspan
          sodipodi:role="line"
-         x="4809.1699"
-         y="1271.5973"
+         x="4811.9985"
+         y="1212.2003"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
          id="tspan5921" /><tspan
          sodipodi:role="line"
-         x="4809.1699"
-         y="1286.8894"
+         x="4811.9985"
+         y="1227.4924"
          style="font-size:15.2920351px;font-style:italic;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
          id="tspan5925">Failed to create file, read-only media.</tspan></text>
     <flowRoot
@@ -7717,8 +7782,8 @@
          id="flowPara10195-0-0" /></flowRoot>    <rect
        ry="2.5486724"
        rx="2.5486724"
-       y="1566.354"
-       x="4943.2925"
+       y="1506.957"
+       x="4946.1211"
        height="30.584068"
        width="151.64604"
        id="rect12355-96-8-0-3-6-5-4"
@@ -7726,20 +7791,20 @@
     <text
        sodipodi:linespacing="100%"
        id="text13075-2-7-7-4-3-5-2-6"
-       y="1586.1066"
-       x="5023.1143"
+       y="1526.7096"
+       x="5025.9429"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
        xml:space="preserve"><tspan
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-         y="1586.1066"
-         x="5023.1143"
+         y="1526.7096"
+         x="5025.9429"
          id="tspan13077-5-2-1-1-9-7-1-4"
          sodipodi:role="line">Cancel</tspan></text>
     <rect
        ry="2.5486724"
        rx="2.5486724"
-       y="1565.7589"
-       x="5107.8799"
+       y="1506.3619"
+       x="5110.7085"
        height="30.584068"
        width="151.64604"
        id="rect12355-96-8-0-3-6-5-9-8"
@@ -7747,13 +7812,13 @@
     <text
        sodipodi:linespacing="100%"
        id="text13075-2-7-7-4-3-5-2-9-3"
-       y="1585.5114"
-       x="5187.7026"
+       y="1526.1144"
+       x="5190.5312"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
        xml:space="preserve"><tspan
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-         y="1585.5114"
-         x="5187.7026"
+         y="1526.1144"
+         x="5190.5312"
          id="tspan13077-5-2-1-1-9-7-1-1-7"
          sodipodi:role="line">Previous</tspan></text>
     <rect
@@ -7892,8 +7957,8 @@
        height="28.999996"
        xlink:href="data:image/png;base64,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 F83/AAqyFmOE59RWAAAAAElFTkSuQmCC "
        id="image4538-9"
-       x="4769.4087"
-       y="1237.3485"
+       x="4772.2373"
+       y="1177.9515"
        style="display:inline" />
     <text
        xml:space="preserve"
@@ -8880,72 +8945,42 @@
        id="image5423-2-6"
        x="3145.7498"
        y="226.2457" />
-    <rect
-       inkscape:label="checkbox_unselected"
-       style="color:#000000;fill:url(#linearGradient7705);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:0.99999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="checkbox_unselected-9"
-       width="13.000001"
-       height="13.00012"
-       x="3529.6458"
-       y="853.87732"
-       rx="1.9999999"
-       ry="1.9999995" />
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="3552.9045"
-       y="864.94952"
+       x="3522.1455"
+       y="823.5838"
        id="text13075-9-2-9-6-6-7-1-0-1-28"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-2"
          sodipodi:role="line"
-         x="3552.9045"
-         y="864.94952"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Save it locally to a file</tspan></text>
-    <rect
-       inkscape:label="checkbox_unselected"
-       style="color:#000000;fill:url(#linearGradient6459-8-6);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:0.99999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="checkbox_unselected-0-5"
-       width="13.000001"
-       height="13.00012"
-       x="3530.4663"
-       y="887.48224"
-       rx="1.9999999"
-       ry="1.9999995" />
+         x="3522.1455"
+         y="823.5838"
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Save local non-exportable sig</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="3553.7249"
-       y="898.55438"
+       x="3522.9658"
+       y="857.18866"
        id="text13075-9-2-9-6-6-7-1-0-1-8-1"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-7-3"
          sodipodi:role="line"
-         x="3553.7249"
-         y="898.55438"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Send it to the key owner's email address</tspan></text>
-    <rect
-       inkscape:label="checkbox_unselected"
-       style="color:#000000;fill:url(#linearGradient6453-9-5);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:0.99999988;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
-       id="checkbox_unselected-0-1-5"
-       width="13.000001"
-       height="13.00012"
-       x="3531.0796"
-       y="919.0105"
-       rx="1.9999999"
-       ry="1.9999995" />
+         x="3522.9658"
+         y="857.18866"
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Sign and email</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="3552.9236"
-       y="930.78625"
+       x="3522.1646"
+       y="889.42053"
        id="text13075-9-2-9-6-6-7-1-0-1-8-7-2"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-7-2-3"
          sodipodi:role="line"
-         x="3552.9236"
-         y="930.78625"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Send it directly to the keyservers</tspan></text>
+         x="3522.1646"
+         y="889.42053"
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Send to keyservers</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Tondu;-inkscape-font-specification:Tondu"
@@ -8991,7 +9026,7 @@
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">&lt; still frame with Monkeycode highlighted &gt;</tspan></text>
     <g
        id="g4092"
-       transform="matrix(1.0002786,0,0,-0.95714504,1795.6076,1404.7985)">
+       transform="matrix(1.0002786,0,0,-0.95714504,1802.1076,1373.2985)">
       <path
          sodipodi:nodetypes="ccc"
          inkscape:connector-curvature="0"
@@ -9005,18 +9040,6 @@
          inkscape:connector-curvature="0"
          sodipodi:nodetypes="ccc" />
     </g>
-    <text
-       sodipodi:linespacing="100%"
-       id="text13075-9-2-91-9"
-       y="821.42676"
-       x="3527.9685"
-       style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       xml:space="preserve"><tspan
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial"
-         y="821.42676"
-         x="3527.9685"
-         sodipodi:role="line"
-         id="tspan4553-4-16">Other options</tspan></text>
     <rect
        ry="1.0951967"
        rx="1.9586718"
@@ -9061,7 +9084,7 @@
          y="1779.8364"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial">Save for later</tspan></text>
     <g
-       transform="matrix(1.0002786,0,0,0.95714504,3247.3673,-166.12132)"
+       transform="matrix(1.0002786,0,0,0.95714504,3250.1957,-225.51829)"
        id="g4360-9-1-2-9-0-2-2"
        style="display:inline">
       <g
@@ -9191,7 +9214,7 @@
     <path
        sodipodi:end="11.327128"
        sodipodi:start="5.4977871"
-       transform="matrix(0.31506847,0,0,0.31506846,3026.8224,168.49717)"
+       transform="matrix(0.31506847,0,0,0.31506846,3029.6508,109.1002)"
        d="m 3190.9033,521.72192 a 51.618793,49.497475 0 1 1 -19.6974,-11.80173 l -16.8026,46.80173 z"
        sodipodi:ry="49.497475"
        sodipodi:rx="51.618793"
@@ -9203,20 +9226,20 @@
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4046.3354"
-       y="348.70038"
+       x="4049.1638"
+       y="289.30341"
        id="text13075-9-2-9-6-6-7-1-0-02-6"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-2-4"
          sodipodi:role="line"
-         x="4046.3354"
-         y="348.70038"
+         x="4049.1638"
+         y="289.30341"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Sending signature using mail.riseup.net ...</tspan></text>
     <rect
        ry="0"
        rx="0"
-       y="376.13885"
-       x="3994.0303"
+       y="316.74188"
+       x="3996.8586"
        height="371.99997"
        width="406.75757"
        id="rect8298-7-3-1-3"
@@ -9224,56 +9247,56 @@
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4052.2576"
-       y="556.35498"
+       x="4055.0859"
+       y="496.95801"
        id="text13075-9-2-9-6-6-0-0-2-88"
        sodipodi:linespacing="100%"><tspan
          id="tspan4557-4-4-0-3-9-4"
          sodipodi:role="line"
-         x="4052.2576"
-         y="556.35498"
+         x="4055.0859"
+         y="496.95801"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">&lt; still frame with Monkeycode highlighted &gt;</tspan></text>
     <rect
        style="color:#000000;fill:url(#linearGradient8655);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.27433634;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect12355-96-8-0-3-6-5-7-2-9"
        width="151.64604"
        height="30.584068"
-       x="4192.2485"
-       y="799.3266"
+       x="4195.0771"
+       y="739.92963"
        rx="2.5486724"
        ry="2.5486724" />
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4272.0771"
-       y="819.0791"
+       x="4274.9058"
+       y="759.68213"
        id="text13075-2-7-7-4-3-5-2-5-1-1"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan13077-5-2-1-1-9-7-1-3-3-3"
-         x="4272.0771"
-         y="819.0791"
+         x="4274.9058"
+         y="759.68213"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial">Cancel</tspan></text>
     <rect
        style="color:#000000;fill:url(#linearGradient6835-5);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.27433634;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        id="rect12355-96-8-0-3-6-5-9-2-5"
        width="151.64604"
        height="30.584068"
-       x="4356.9233"
-       y="798.84131"
+       x="4359.752"
+       y="739.44434"
        rx="2.5486724"
        ry="2.5486724" />
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4436.7461"
-       y="818.59375"
+       x="4439.5747"
+       y="759.19678"
        id="text13075-2-7-7-4-3-5-2-9-1-2"
        sodipodi:linespacing="100%"><tspan
          sodipodi:role="line"
          id="tspan13077-5-2-1-1-9-7-1-1-6-9"
-         x="4436.7461"
-         y="818.59375"
+         x="4439.5747"
+         y="759.19678"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial">Back</tspan></text>
     <rect
        ry="2.2164285"
@@ -9429,5 +9452,36 @@
        y="727.66302"
        rx="1.9999999"
        ry="1.9999995" />
+    <flowRoot
+       transform="translate(3806.3058,-41.168094)"
+       style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
+       id="flowRoot5203-6-7-3-2-7-2-2"
+       xml:space="preserve"><flowRegion
+         id="flowRegion5205-5-9-0-0-0-5-8"><rect
+           style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial"
+           y="850.12964"
+           x="42.426407"
+           height="179.60513"
+           width="691.55042"
+           id="rect5207-9-1-7-6-5-9-3" /></flowRegion><flowPara
+         id="flowPara5209-9-7-7-9-3-3-7">7a. <flowSpan
+   style="font-weight:bold"
+   id="flowSpan9045">Sending email, autoconfigure success</flowSpan></flowPara></flowRoot>    <text
+       xml:space="preserve"
+       style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+       x="3522.3132"
+       y="919.49341"
+       id="text13075-9-2-9-6-6-7-1-0-1-8-7-2-2"
+       sodipodi:linespacing="100%"><tspan
+         id="tspan4912-0-7-2-3-7"
+         sodipodi:role="line"
+         x="3522.3132"
+         y="919.49341"
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Save for later</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 3636.4508,771.40748 -0.3536,28.28427 0,-1.06066 z"
+       id="path9165"
+       inkscape:connector-curvature="0" />
   </g>
 </svg>
