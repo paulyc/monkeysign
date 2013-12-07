@@ -5417,60 +5417,6 @@
        y2="484.86215" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#gradient_buttonlike-5-3-2-5-1"
-       id="linearGradient8066"
-       gradientUnits="userSpaceOnUse"
-       x1="158.03836"
-       y1="248.10315"
-       x2="158.03836"
-       y2="229.01125" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_3Deffect-0-1-9-5-0"
-       id="linearGradient8068"
-       gradientUnits="userSpaceOnUse"
-       x1="171.29663"
-       y1="254.7854"
-       x2="171.29663"
-       y2="229.96588" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_buttonlike-5-3-2-5-1"
-       id="linearGradient8070"
-       gradientUnits="userSpaceOnUse"
-       x1="158.03836"
-       y1="248.10315"
-       x2="158.03836"
-       y2="229.01125" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_3Deffect-0-1-9-5-0"
-       id="linearGradient8072"
-       gradientUnits="userSpaceOnUse"
-       x1="171.29663"
-       y1="254.7854"
-       x2="171.29663"
-       y2="229.96588" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_buttonlike-5-3-2-5-1"
-       id="linearGradient8074"
-       gradientUnits="userSpaceOnUse"
-       x1="158.03836"
-       y1="248.10315"
-       x2="158.03836"
-       y2="229.01125" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#gradient_3Deffect-0-1-9-5-0"
-       id="linearGradient8076"
-       gradientUnits="userSpaceOnUse"
-       x1="171.29663"
-       y1="254.7854"
-       x2="171.29663"
-       y2="229.96588" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-8-31"
        id="linearGradient6483-4"
        gradientUnits="userSpaceOnUse"
@@ -5810,16 +5756,6 @@
        x1="375"
        gradientTransform="matrix(2.0697928,0,0,1.2601419,2898.0938,248.88094)"
        gradientUnits="userSpaceOnUse"
-       id="linearGradient9088"
-       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5"
-       inkscape:collect="always" />
-    <linearGradient
-       y2="496.36218"
-       x2="375"
-       y1="474.36218"
-       x1="375"
-       gradientTransform="matrix(2.0697928,0,0,1.2601419,2898.0938,248.88094)"
-       gradientUnits="userSpaceOnUse"
        id="linearGradient9088-4"
        xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-5"
        inkscape:collect="always" />
@@ -5838,16 +5774,6 @@
          offset="1"
          id="stop12133-0-9-4-5-4-5-5-6-3-0-7" />
     </linearGradient>
-    <linearGradient
-       y2="496.36218"
-       x2="375"
-       y1="474.36218"
-       x1="375"
-       gradientTransform="matrix(2.0697928,0,0,1.2601419,2886.5938,314.38091)"
-       gradientUnits="userSpaceOnUse"
-       id="linearGradient9125"
-       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-5"
-       inkscape:collect="always" />
     <linearGradient
        y2="496.36218"
        x2="375"
@@ -5873,16 +5799,6 @@
          offset="1"
          id="stop12133-0-9-4-5-4-5-5-6-3-0-77" />
     </linearGradient>
-    <linearGradient
-       y2="496.36218"
-       x2="375"
-       y1="474.36218"
-       x1="375"
-       gradientTransform="matrix(2.0697928,0,0,1.2601419,2886.5938,349.88091)"
-       gradientUnits="userSpaceOnUse"
-       id="linearGradient9125-2"
-       xlink:href="#gradient_buttonlike-4-5-4-4-6-2-9-2-3-5-2"
-       inkscape:collect="always" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#gradient_titlebar-1-0-0-2-4"
@@ -5955,9 +5871,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.4142136"
-     inkscape:cx="3683.3948"
-     inkscape:cy="976.01363"
+     inkscape:zoom="0.5"
+     inkscape:cx="656.34758"
+     inkscape:cy="840.1946"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -7066,16 +6982,16 @@
          id="g3480-5-9-7-1"
          transform="translate(119.96658,-4.1790949)">
         <rect
-           style="fill:#c8c8c8;fill-opacity:1;stroke:#a0a0a0;stroke-width:0.6254636;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+           style="fill:#c8c8c8;fill-opacity:1;stroke:#a0a0a0;stroke-width:0.67453098;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
            id="rect4350-6-7-6-8"
-           width="690.07281"
-           height="565.3053"
-           x="474.80539"
-           y="480.24969"
+           width="690.02435"
+           height="657.52649"
+           x="474.82962"
+           y="388.00369"
            rx="0"
            ry="0" />
         <rect
-           transform="matrix(0.69114381,0,0,0.56558221,142.5094,185.83917)"
+           transform="matrix(0.69114381,0,0,0.56558221,142.5094,93.568352)"
            y="472.86212"
            x="480.5"
            height="59"
@@ -7086,7 +7002,7 @@
            rx="5"
            ry="5" />
         <g
-           transform="matrix(0.9477211,0,0,1,459.38574,-85.402941)"
+           transform="matrix(0.9477211,0,0,1,459.38574,-177.67378)"
            inkscape:label="radio_unselected"
            id="g17161-1-0-1-5">
           <path
@@ -7113,7 +7029,7 @@
         <g
            id="g17171-1-2-1-9"
            inkscape:label="radio_unselected"
-           transform="matrix(0.9477211,0,0,1,478.34016,-85.402941)">
+           transform="matrix(0.9477211,0,0,1,478.34016,-177.67378)">
           <path
              sodipodi:type="arc"
              style="color:#000000;fill:url(#linearGradient3460-0-33-2-3);fill-opacity:1;fill-rule:nonzero;stroke:#a0a0a0;stroke-width:1.96979809;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
@@ -7136,7 +7052,7 @@
              sodipodi:type="arc" />
         </g>
         <g
-           transform="matrix(0.9477211,0,0,1,497.29458,-85.402941)"
+           transform="matrix(0.9477211,0,0,1,497.29458,-177.67378)"
            inkscape:label="radio_unselected"
            id="g17181-7-1-3-3">
           <path
@@ -7175,13 +7091,13 @@
       <text
          sodipodi:linespacing="100%"
          id="text13075-4-8-5-6"
-         y="457.97873"
+         y="367.71918"
          x="960.68585"
          style="font-size:16.05588341px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
          xml:space="preserve"
          transform="scale(0.97820165,1.0222841)"><tspan
            style="font-size:14.82081509px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial"
-           y="457.97873"
+           y="367.71918"
            x="960.68585"
            id="tspan13077-7-6-9-1"
            sodipodi:role="line">Monkeysign</tspan></text>
@@ -7328,12 +7244,12 @@
        rx="5"
        ry="5" />
     <rect
-       style="fill:#c8c8c8;fill-opacity:1;stroke:#a0a0a0;stroke-width:0.13769598;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       style="fill:#e6e6e6;fill-opacity:1;stroke:#a0a0a0;stroke-width:0.13769598;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
        id="rect4350-6-7-6-8-1-0"
        width="218.39134"
        height="86.572701"
        x="3510.052"
-       y="803.93713"
+       y="801.93713"
        rx="0"
        ry="0" />
     <text
@@ -7370,7 +7286,7 @@
          y="791.3299"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;text-anchor:middle;font-family:Arial;-inkscape-font-specification:Arial">Cancel</tspan></text>
     <flowRoot
-       transform="translate(2953.6641,176.94571)"
+       transform="translate(2953.6641,52.94571)"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Arial;-inkscape-font-specification:Arial"
        id="flowRoot5203-6-7-3-2-7"
        xml:space="preserve"><flowRegion
@@ -7609,26 +7525,14 @@
          sodipodi:role="line"
          x="4791.6406"
          y="353.29376"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Monkeysign sucessfully completed the selected key signing operation.</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="4812.9985"
-       y="425.90845"
-       id="text13075-9-2-9-6-6-7-1-0-1-2"
-       sodipodi:linespacing="100%"><tspan
-         id="tspan4912-0-8"
-         sodipodi:role="line"
-         x="4812.9985"
-         y="425.90845"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Save it locally to a file</tspan></text>
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Monkeysign sucessfully saved your non-exportable certification to a file.</tspan></text>
     <image
-       width="32"
-       height="31.999998"
+       width="41"
+       height="40.999996"
        xlink:href="data:image/png;base64,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 Pt5+bFfE4QAAAABJRU5ErkJggg== "
        id="image5423"
-       x="4773.2378"
-       y="403.95154" />
+       x="4738.2378"
+       y="301.95154" />
     <flowRoot
        transform="translate(43.409043,246.84286)"
        style="font-size:24px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Tondu;-inkscape-font-specification:Tondu"
@@ -7910,55 +7814,55 @@
        height="45.999996"
        xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABHNCSVQICAgIfAhkiAAABZlJREFU WIWtl01sXFcVx3/nfc3Hm/EQj+1xase4SqCIlqJIrVQssUCYShEqrCIS8aGqCCFUwYJVJaiAHRIr NiwKCBW1LlFACmLRoi5BQgWJRjI0CjiJZDux6xmPPW88H+/zsJhnZ2zP2InJlY7ue/fdd/6/c969 586IqvKw7aqI04UpCyYBz4LVi6qNh3YEyIMAvCZiuzAvcEngBUyzmCkWu5l8Po6CwPB3dpyw2xUT /h7BGyZcu6z64SMBWBC5KPDzkdOn3YnZ2UJpZsbIFIuo76NhiFgWksmQqOKtrlJbWWlXl5ZUw/CX PvzkRdXtEwFcETmrcM2dnJw99+yzhWyhQFitEtdqxK1W72WR1Isgto01NoY5Nobhuqxcv+6vLi4G miTf/arq6w8FsCDyOUSunZubc8dnZ03/zh2ijY09sYPiB3vTdXEef5zIMFh8552W32j86r/w/R+p JscCvCHyBdtxrj05P5/POQ7dDz5A4/iQ0FEAu719+jT2mTPcfPfd1tbdu3+6rHr5IIDRf/NbkY8b In94an4+n4kiOouLPfHj2hCIcG2N4OZNnnj+edcdG3vhTZFXhgJcFTFtePuJuTk3Y5r4S0swZH0c in4olxB7HuHt2zx54YKbyeVefUvkMwMBAnjp1NTUxOiZM0b3xo1jgz5CdT8kENVqaL3Ox+bmcgq/ OATwmkjeEPnpR595puAvLcGwtB8V8bBn6XiwvExpZkYK4+PnFkS+vA/AhYujMzN2xrIIa7VjgzxR SxKC5WVmz58vCLy6D8CAr41NTxfD9fWjnRxVtIY96xuPNjYoTk2BaX7qqsgogHFVxEHksx+ZniY6 Jnrt64daKqiqh8Y1jtF2m/Jjj4UhXAAwQph2crlQgMT37wsccJAcdDZAvB90b96upWOR51EcH3cN +CSAlcCUncvFcafDwSQ+fevWkRl5kPbv554jaTZTMiXpdrFdF4VzAJYBU04uZ8Td7iGAR9U0FVcg DgJs10VgBnoZaCdBoHsT+196FOJ9n2DXbxQEKLShl4G7fqcDhnHoW75/9mzv4pi6P7Ayptf7AlEF 2ybY2UHgDoAVwF2z27Xjdpuw0UBME0wTMc3eWW+aQ4uM7PnV3pzdPhU7mMW42QTLouV5SQy3AKwX VdcXRFrtzc1cEgR7Z/2+Zhg9INvumWVhOM79e9O8v993hdNtl3Q6JJ0OcauFhiF2pcJ2vd5W+BuA lUr8vlGvf2ukVDKjQQBJgiYJhOHATOzL8hHPjGyWGAh2diQDf4G0Egq8uV2vt41SCe1bCw9jCQdq xQCzKxW2NzYi4I8XVeM9gMuqfw19/1/NRiOxyuUTiR83RzIZKBaprq0FMfxwLyu7FwIvf7ix0ZGR ESSbfWRRK6AiOFNT1NbX/SSOX/+66p1DAJdU30+i6Hfra2s7dqUClvV/R72X+slJWr6vjVrNi/pO wn0AADvwnVa7faO2tRXYlQrY9smjTiO3JyaIbJu1e/c6NfjSN1Q3hwJ8G6wF+Oam561Xt7e79vg4 ksudKGosC2dyEl9El1dW/H+q/uB7sCYibr/mvl/F0jujR6dh+hX4WdlxnqqUSlkjSYg8D32AbSiG gVksYhQKbDeb8Zbnda7Aj9+G94BNoKaq1WEAJWAUKFtQfhm+ch4u5XM5azSft00R1PdJwvB+bRBB DKNXnLJZxLZpdTpabzajlSRZ/DX85lav7G4CdWBVVdsDAVKIEWAMOAWcmoDJl+DSJ+DztmlK3nHs jGUZhmFgGAaoEqsSxzFeEARxGJpV1dtX4K334AawDWylAPf6xQcCpBAGUATKQAkomlD4Inz6aZgr w0wOyhkoRBB0YcuD6n/g+p/hH+s9sRbgAVVgU1UHlNgH+HOawjhADsimlknNprc2Q8DvszbQUdVj F83/AAqyFmOE59RWAAAAAElFTkSuQmCC "
        id="image4538"
-       x="3080.5283"
-       y="1270.6805" />
+       x="3078.5283"
+       y="1177.6805" />
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="3143.8325"
-       y="1252.6514"
+       x="3137.8325"
+       y="1189.6514"
        id="text13075-9-2-9-6-6-7-1"
        sodipodi:linespacing="100%"><tspan
          id="tspan4557-4-4-9-3"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1252.6514"
+         x="3137.8325"
+         y="1189.6514"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Key not found!</tspan><tspan
          id="tspan4562"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1267.9434"
+         x="3137.8325"
+         y="1204.9434"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial" /><tspan
          id="tspan4564"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1283.2355"
+         x="3137.8325"
+         y="1220.2355"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Sorry, we couldn't find the key matching this Monkeycode.</tspan><tspan
          id="tspan4566"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1298.5275"
+         x="3137.8325"
+         y="1235.5275"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial" /><tspan
          id="tspan4568"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1313.8195"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">To fix this :</tspan><tspan
+         x="3137.8325"
+         y="1250.8195"
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">( To fix this :</tspan><tspan
          id="tspan5906"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1329.1116"
+         x="3137.8325"
+         y="1266.1116"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">- check internet access (network-manager?)</tspan><tspan
          id="tspan5908"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1344.4036"
+         x="3137.8325"
+         y="1281.4036"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">- key not found on keyserver</tspan><tspan
          id="tspan5910"
          sodipodi:role="line"
-         x="3143.8325"
-         y="1359.6956"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">- keyserver borked</tspan></text>
+         x="3137.8325"
+         y="1296.6956"
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">- keyserver borked )</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
@@ -8901,7 +8805,7 @@
          id="flowPara7497" /></flowRoot>    <rect
        ry="0"
        rx="0"
-       y="2112.1304"
+       y="2132.1304"
        x="3130.6626"
        height="371.99997"
        width="406.75757"
@@ -8911,13 +8815,13 @@
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
        x="3188.8899"
-       y="2292.3464"
+       y="2312.3464"
        id="text13075-9-2-9-6-6-0-0-2-8"
        sodipodi:linespacing="100%"><tspan
          id="tspan4557-4-4-0-3-9-1"
          sodipodi:role="line"
          x="3188.8899"
-         y="2292.3464"
+         y="2312.3464"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">&lt; still frame with Monkeycode highlighted &gt;</tspan></text>
     <text
        xml:space="preserve"
@@ -8976,23 +8880,23 @@
     <rect
        ry="0"
        rx="0"
-       y="1373.8856"
-       x="3146.5955"
-       height="226.7579"
-       width="406.89166"
+       y="1313.9153"
+       x="3146.6252"
+       height="286.69849"
+       width="406.83224"
        id="rect8298-7-3-1-4-7"
-       style="fill:#d2d2d2;fill-opacity:1;stroke:#000000;stroke-width:0.47789532;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
+       style="fill:#d2d2d2;fill-opacity:1;stroke:#000000;stroke-width:0.53731942;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline" />
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="3201.8899"
-       y="1512.1687"
+       x="3194.8899"
+       y="1462.1687"
        id="text13075-9-2-9-6-6-0-0-2-8-3"
        sodipodi:linespacing="100%"><tspan
          id="tspan4557-4-4-0-3-9-1-8"
          sodipodi:role="line"
-         x="3201.8899"
-         y="1512.1687"
+         x="3194.8899"
+         y="1462.1687"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">&lt; still frame with Monkeycode highlighted &gt;</tspan></text>
     <image
        width="32"
@@ -9012,25 +8916,25 @@
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
        x="3522.1455"
-       y="825.5838"
+       y="823.5838"
        id="text13075-9-2-9-6-6-7-1-0-1-28"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-2"
          sodipodi:role="line"
          x="3522.1455"
-         y="825.5838"
+         y="823.5838"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Sign locally</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
        x="3522.1646"
-       y="851.42053"
+       y="849.42053"
        id="text13075-9-2-9-6-6-7-1-0-1-8-7-2"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-7-2-3"
          sodipodi:role="line"
          x="3522.1646"
-         y="851.42053"
+         y="849.42053"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Sign and send to keyservers</tspan></text>
     <text
        xml:space="preserve"
@@ -9044,16 +8948,37 @@
          id="tspan7764"></tspan></text>
     <text
        xml:space="preserve"
-       style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
-       x="3741.7751"
-       y="52.573578"
+       style="font-size:68.54414368px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+       x="4107.0479"
+       y="899.1264"
        id="text13075-9-2-9-6-6-7-1-0-1-28-3"
-       sodipodi:linespacing="100%"><tspan
+       sodipodi:linespacing="100%"
+       transform="scale(0.94552508,1.0576134)"><tspan
          id="tspan4912-0-2-1"
          sodipodi:role="line"
-         x="3741.7751"
-         y="52.573578"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Options</tspan></text>
+         x="4107.0479"
+         y="899.1264"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial">Issues at this point :</tspan><tspan
+         sodipodi:role="line"
+         x="4107.0479"
+         y="962.39795"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9267">- STMP settings</tspan><tspan
+         sodipodi:role="line"
+         x="4107.0479"
+         y="1025.6694"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9271">- 7a Cancel/Back</tspan><tspan
+         sodipodi:role="line"
+         x="4107.0479"
+         y="1088.9409"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9275">- 8b buttons &amp; text</tspan><tspan
+         sodipodi:role="line"
+         x="4107.0479"
+         y="1152.2124"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9286">- More notes?</tspan></text>
     <rect
        ry="0"
        rx="0"
@@ -9370,7 +9295,7 @@
          sodipodi:role="line"
          x="145.71915"
          y="480.14157"
-         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Saved Monkeycodes :</tspan></text>
+         style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Pending work :</tspan></text>
     <text
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
@@ -9416,7 +9341,7 @@
     <rect
        ry="0.40072125"
        rx="1.9604673"
-       y="1625.0029"
+       y="1631.0029"
        x="3145.3354"
        height="19.775585"
        width="410.42389"
@@ -9427,13 +9352,13 @@
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
        x="3145.4177"
-       y="1618.479"
+       y="1624.479"
        id="text13075-9-2-9-6-6-7-1-0-05-8-6"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-5-9-5"
          sodipodi:role="line"
          x="3145.4177"
-         y="1618.479"
+         y="1624.479"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">What is this person's name?</tspan></text>
     <text
        xml:space="preserve"
@@ -9521,13 +9446,13 @@
        xml:space="preserve"
        style="font-size:16.56637192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
        x="3522.3132"
-       y="877.49341"
+       y="875.49341"
        id="text13075-9-2-9-6-6-7-1-0-1-8-7-2-2"
        sodipodi:linespacing="100%"><tspan
          id="tspan4912-0-7-2-3-7"
          sodipodi:role="line"
          x="3522.3132"
-         y="877.49341"
+         y="875.49341"
          style="font-size:15.2920351px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Save for later</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
@@ -9546,5 +9471,63 @@
          x="3649.8467"
          y="882.49689"
          style="font-size:8.24283409px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Jerome's doing this</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16.18499947px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+       x="3174.8201"
+       y="2107.1169"
+       id="text13075-5-0"
+       sodipodi:linespacing="100%"><tspan
+         sodipodi:role="line"
+         id="tspan13077-5-8-1"
+         x="3174.8201"
+         y="2107.1169"
+         style="font-size:14.94000053px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;font-family:Arial;-inkscape-font-specification:Arial">Jerome Charaoui &lt;jerome@riseup.net&gt; (1970-01-01, expired)</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:68.54414368px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+       x="827.79077"
+       y="998.56958"
+       id="text13075-9-2-9-6-6-7-1-0-1-28-3-5"
+       sodipodi:linespacing="100%"
+       transform="scale(0.94552508,1.0576134)"><tspan
+         id="tspan4912-0-2-1-0"
+         sodipodi:role="line"
+         x="827.79077"
+         y="998.56958"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial">Issues at this point :</tspan><tspan
+         sodipodi:role="line"
+         x="827.79077"
+         y="1061.8411"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9286-1">- User has NO private key</tspan><tspan
+         sodipodi:role="line"
+         x="827.79077"
+         y="1125.1125"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9330">- User has &gt;1 private keys</tspan><tspan
+         sodipodi:role="line"
+         x="827.79077"
+         y="1188.384"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9332">- more?</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:68.54414368px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:100%;letter-spacing:0;word-spacing:0;writing-mode:lr-tb;text-anchor:start;fill:#ff0000;fill-opacity:1;stroke:none;display:inline;font-family:Droid Sans;-inkscape-font-specification:Droid Sans"
+       x="3138.0684"
+       y="2614.9053"
+       id="text13075-9-2-9-6-6-7-1-0-1-28-3-5-5"
+       sodipodi:linespacing="100%"
+       transform="scale(0.94552508,1.0576134)"><tspan
+         id="tspan4912-0-2-1-0-0"
+         sodipodi:role="line"
+         x="3138.0684"
+         y="2614.9053"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial">Issues at this point :</tspan><tspan
+         sodipodi:role="line"
+         x="3138.0684"
+         y="2678.1768"
+         style="font-size:63.27151489px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;text-anchor:start;fill:#ff0000;font-family:Arial;-inkscape-font-specification:Arial"
+         id="tspan9332-1">- User cross-signs their own key</tspan></text>
   </g>
 </svg>
