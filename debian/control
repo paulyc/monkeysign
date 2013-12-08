@@ -20,7 +20,8 @@ Depends: ${shlibs:Depends},
          ${misc:Depends},
          ${python:Depends},
          python-pkg-resources,
-         gnupg
+         gnupg,
+         gnupg-agent
 Recommends: python-qrencode,
             python-gtk2,
             python-zbar,
