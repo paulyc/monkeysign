@@ -43,6 +43,8 @@ master_doc = 'index'
 project = u'Monkeysign'
 copyright = u'2014, Antoine Beaupré'
 
+# look for monkeysign in the parent directory
+sys.path.insert(0, os.path.dirname(__file__) + '/..')
 from monkeysign import __version__ as version
 
 # The version info for the project you're documenting, acts as replacement for
