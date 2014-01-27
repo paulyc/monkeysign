@@ -489,7 +489,7 @@ class Keyring():
                 try:
                     self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
                 except GpgProtocolError as e:
-                    if 'ALREADY_SIGNED' in str(e):
+                    if 'ALREADY_SIGNED' in str(e) or 'sign_uid.dupe_okay' in str(e):
                         raise GpgRuntimeError(self.context.returncode, _('you already signed that key'))
                     else:
                         # propagate gpg error message up

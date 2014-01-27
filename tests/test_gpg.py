@@ -248,8 +248,9 @@ class TestKeyringWithKeys(TestKeyringBase):
     def test_sign_already_signed(self):
         """test if signing a already signed key fails with a meaningful message"""
         self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
-        with self.assertRaises(GpgRuntimeError):
+        with self.assertRaises(GpgRuntimeError) as e:
             self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>')
+            self.assertIn('you already signed that key', str(e))
 
     def test_encrypt_decrypt_data_armored_untrusted(self):
         """test if we can encrypt data to our private key (and decrypt it)"""
