@@ -163,5 +163,6 @@ class build_slides(Command):
         self.announce('processing slides from %s to %s' % (self.file, html), 2)
         os.system('rst2s5 --theme default "%s" "%s"' % (self.file, html))
 
+# (function, predicate), see http://docs.python.org/2/distutils/apiref.html#distutils.cmd.Command.sub_commands
 build.sub_commands.append(('build_manpage', None))
 build.sub_commands.append(('build_slides', None))
