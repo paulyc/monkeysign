@@ -1,0 +1,4 @@
+We could allow users to explain how or why they signed a key in
+--cert-notation.
+
+For example it could explain why a signature was made locally.
