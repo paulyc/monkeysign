@@ -163,5 +163,10 @@ class build_slides(Command):
         self.announce('processing slides from %s to %s' % (self.file, html), 2)
         os.system('rst2s5 --theme default "%s" "%s"' % (self.file, html))
 
+def has_rst2s5(build):
+    """predicate for this class: do not fail if rst2s5 is missing"""
+    return (os.system('rst2s5 < /dev/null > /dev/null') == 0)
+
+# (function, predicate), see http://docs.python.org/2/distutils/apiref.html#distutils.cmd.Command.sub_commands
 build.sub_commands.append(('build_manpage', None))
-build.sub_commands.append(('build_slides', None))
+build.sub_commands.append(('build_slides', has_rst2s5))
