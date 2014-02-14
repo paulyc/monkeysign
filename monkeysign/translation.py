@@ -42,8 +42,8 @@ class build_trans(Command):
     description = 'Compile .po files into .mo files'
 
     user_options = [
-            ('build-lib', None, "lib build folder"),
-            ('po-dir', 'po/', 'directory where .po files are stored, relative to the current directory'),
+            ('build-lib=', None, "lib build folder"),
+            ('po-dir=', 'p', 'directory where .po files are stored, relative to the current directory'),
     ]
 
     def initialize_options(self):
