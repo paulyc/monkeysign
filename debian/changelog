@@ -14,6 +14,15 @@ monkeysign (2.0~git0) experimental; urgency=low
 
  -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:34:48 +0200
 
+monkeysign (1.2~git0) UNRELEASED; urgency=low
+
+  * improve python 3 compatibility, partially (Closes: #725059)
+  * update translation strings
+  * spanish translation, thanks to lilbit
+  * partial french translation
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:42:58 +0200
+
 monkeysign (1.1) unstable; urgency=low
 
   [Antoine Beaupré]

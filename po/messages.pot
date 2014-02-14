@@ -2,14 +2,12 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-14 23:21-0400\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2013-10-14 22:59-0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -79,12 +77,24 @@ msgstr ""
 msgid "decryption failed: %s"
 msgstr ""
 
-#: ../monkeysign/gpg.py:452 ../monkeysign/gpg.py:461 ../monkeysign/gpg.py:490
+#: ../monkeysign/gpg.py:462
+msgid "you already signed that key"
+msgstr ""
+
+#: ../monkeysign/gpg.py:464 ../monkeysign/gpg.py:496 ../monkeysign/gpg.py:504
 #, python-format
 msgid "unable to open key for editing: %s"
 msgstr ""
 
-#: ../monkeysign/gpg.py:506
+#: ../monkeysign/gpg.py:472
+msgid "unable to prompt for passphrase, is gpg-agent running?"
+msgstr ""
+
+#: ../monkeysign/gpg.py:513
+msgid "key is expired, cannot sign"
+msgstr ""
+
+#: ../monkeysign/gpg.py:520
 msgid "password confirmation failed"
 msgstr ""
 
@@ -202,25 +212,35 @@ msgstr ""
 msgid "keyserver to fetch keys from"
 msgstr ""
 
-#: ../monkeysign/ui.py:79
-msgid "SMTP server to use"
+#: ../monkeysign/ui.py:83
+msgid ""
+"SMTP server to use, use a colon to specify the port number if non-standard"
 msgstr ""
 
-#: ../monkeysign/ui.py:81
+#: ../monkeysign/ui.py:84
+msgid "username for the SMTP server (default: no user)"
+msgstr ""
+
+#: ../monkeysign/ui.py:85
+msgid ""
+"password for the SMTP server (default: prompted, if --smtpuser is specified)"
+msgstr ""
+
+#: ../monkeysign/ui.py:87
 msgid "Do not send email at all. (Default is to use sendmail.)"
 msgstr ""
 
-#: ../monkeysign/ui.py:83
+#: ../monkeysign/ui.py:89
 msgid ""
 "Override destination email for testing (default is to use the first uid on "
 "the key or send email to each uid chosen)"
 msgstr ""
 
-#: ../monkeysign/ui.py:128
+#: ../monkeysign/ui.py:132
 msgid "Initializing UI"
 msgstr ""
 
-#: ../monkeysign/ui.py:139
+#: ../monkeysign/ui.py:143
 #, python-format
 msgid "deleting the temporary keyring %s"
 msgstr ""
@@ -358,11 +378,14 @@ msgstr ""
 msgid "Your signed OpenPGP key"
 msgstr ""
 
-#: ../monkeysign/ui.py:362
+#: ../monkeysign/ui.py:381
 msgid ""
 "\n"
 "Please find attached your signed PGP key. You can import the signed\n"
 "key by running each through `gpg --import`.\n"
+"\n"
+"If you have multiple user ids, each signature was sent in a separate\n"
+"email to each user id.\n"
 "\n"
 "Note that your key was not uploaded to any keyservers. If you want\n"
 "this new signature to be available to others, please upload it\n"
