@@ -86,6 +86,8 @@ class build_trans(Command):
                             
         if uptoDate:
             self.announce('po files already upto date.', 2)
+        else:
+            self.announce('done', 2)
 
 
 build.sub_commands.append(('build_trans', None))
