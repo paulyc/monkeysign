@@ -159,7 +159,7 @@ class build_slides(Command):
             raise DistutilsOptionError('\'file\' option is required')
 
     def run(self):
-        html = os.path.dirname(self.file) + os.path.splitext(os.path.basename(self.file))[0] + '.html'
+        html = os.path.join(os.path.dirname(self.file), os.path.splitext(os.path.basename(self.file))[0] + '.html')
         self.announce('processing slides from %s to %s' % (self.file, html), 2)
         os.system('rst2s5 --theme default "%s" "%s"' % (self.file, html))
 
