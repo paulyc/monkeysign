@@ -87,7 +87,7 @@ class build_manpage(Command):
         author = '%s <%s>' % (self.distribution.get_author(),
                               self.distribution.get_author_email())
         ret.append(('.SH AUTHORS\n.B %s\nwas written by %s.\n'
-                    % (self._markup(appname), self._markup(author))))
+                    % (self._markup(appname), self._markup(author))).decode('utf-8'))
         homepage = self.distribution.get_url()
         ret.append(('.SH DISTRIBUTION\nThe latest version of %s may '
                     'be downloaded from\n'
@@ -109,7 +109,7 @@ class build_manpage(Command):
             path = os.path.join(self.output, parser.prog + '.1')
             self.announce('writing man page to %s' % path, 2)
             stream = open(path, 'w')
-            stream.write(''.join(manpage))
+            stream.write(''.join(manpage).encode('utf-8'))
             stream.close()
 
 
