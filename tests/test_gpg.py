@@ -117,8 +117,6 @@ class TestKeyringBase(unittest.TestCase):
         self.tmp = tempfile.mkdtemp(prefix="pygpg-")
         self.gpg = Keyring(self.tmp)
         self.assertEqual(self.gpg.context.options['homedir'], self.tmp)
-        # to avoid rebuilding the trust base after uid changes and so on
-        self.gpg.context.set_option('always-trust')
 
     def tearDown(self):
         """trash the temporary directory we created"""
@@ -308,6 +306,8 @@ class TestKeyringWithKeys(TestKeyringBase):
         userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
         keys = self.gpg.get_keys('7B75921E')
         todelete = []
+        # XXX: otherwise test fails with GpgProtocolError: [Errno 0] expected "^\[GNUPG:\] GET_LINE keyedit.prompt", found "gpg: vérification de la base de confiance"
+        self.gpg.context.set_option('always-trust')
         for fpr, key in keys.iteritems():
             for u, uid in key.uids.iteritems():
                 if userid != uid.uid:
