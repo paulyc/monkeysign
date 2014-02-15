@@ -192,7 +192,9 @@ class TestKeyringBasics(TestKeyringBase):
             self.gpg.sign_key('7B75921E')
 
     def test_failed_revoke(self):
+        self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
         self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-revoke.asc').read())
+        self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read())
         with self.assertRaises(GpgRuntimeError):
             self.gpg.sign_key('7B75921E', True)
 
