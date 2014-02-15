@@ -235,7 +235,8 @@ class TestKeyringWithKeys(TestKeyringBase):
 
     def test_sign_key_one_uid(self):
         """test signature of a single uid"""
-        self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
+        self.gpg.context.debug = sys.stderr
+        self.assertTrue(self.gpg.sign_key(u'Antoine Beaupré <anarcat@debian.org>'))
         self.gpg.context.call_command(['list-sigs', '7B75921E'])
         self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
@@ -284,9 +285,10 @@ class TestKeyringWithKeys(TestKeyringBase):
 
     def test_del_uid(self):
         """test uid deletion, gpg.del_uid()"""
-        userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
+        userid = u'Antoine Beaupré <anarcat@orangeseeds.org>'
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         found = False
+        self.gpg.context.debug = sys.stderr
         keys = self.gpg.get_keys('7B75921E')
         for fpr, key in keys.iteritems():
             for u, uid in key.uids.iteritems():
@@ -303,7 +305,7 @@ class TestKeyringWithKeys(TestKeyringBase):
     def test_del_uid_except(self):
         """see if we can easily delete all uids except a certain one"""
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
+        userid = u'Antoine Beaupré <anarcat@orangeseeds.org>'
         keys = self.gpg.get_keys('7B75921E')
         todelete = []
         # XXX: otherwise test fails with GpgProtocolError: [Errno 0] expected "^\[GNUPG:\] GET_LINE keyedit.prompt", found "gpg: vérification de la base de confiance"

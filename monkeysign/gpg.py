@@ -358,7 +358,7 @@ class Keyring():
                 for keydata in self.context.stdout.split("pub:"):
                     if not keydata: continue
                     keydata = "pub:" + keydata
-                    key = OpenPGPkey(keydata)
+                    key = OpenPGPkey(keydata.decode('utf-8'))
                     keys[key.fpr] = key
             elif self.context.returncode == 2:
                 return None
@@ -415,7 +415,7 @@ class Keyring():
         self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
         while True:
             m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
-            if m and m.group(1) == pattern:
+            if m and m.group(1).decode('utf-8') == pattern:
                 # XXX: we don't have the +1 that sign_key has, why?
                 index = int(m.group(2))
                 break
@@ -452,7 +452,7 @@ class Keyring():
         # keyid, but we should really load those uids from the
         # output of --sign-key
         if self.context.debug: print >>self.context.debug, 'command:', self.context.build_command([['sign-key', 'lsign-key'][local], pattern])
-        proc = subprocess.Popen(self.context.build_command([['sign-key', 'lsign-key'][local], pattern]), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        proc = subprocess.Popen(self.context.build_command([['sign-key', 'lsign-key'][local], pattern.encode('utf-8')]), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         # if there are multiple uids to sign, we'll get this point, and a whole other interface
         try:
