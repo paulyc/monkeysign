@@ -206,7 +206,7 @@ class Context():
             if self.debug: print >>self.debug, "FOUND:", line,
             return match
         else:
-            raise GpgProtocolError(self.returncode, _("could not find pattern '%s' in input") % pattern)
+            raise GpgProtocolError(self.returncode, _("could not find pattern '%s' in input, last skipped '%s'") % (pattern, line))
 
     def seek(self, fd, pattern):
         """look for a specific GNUPG status line in the output
@@ -461,7 +461,7 @@ class Keyring():
             if 'sign_uid.okay' in str(e):
                 multiuid = False
             else:
-                raise GpgRuntimeError(self.context.returncode, _('cannot sign: %s') % re.sub(r'^.*found "(.*)', r'\1', str(e)))
+                raise GpgRuntimeError(self.context.returncode, _('cannot sign: %s') % re.sub(r'^.*found "(.*)', r'\1', str(e)).decode('utf-8'))
         if multiuid:
             if signall: # special case, sign all keys
                 print >>proc.stdin, "y"
@@ -473,7 +473,8 @@ class Keyring():
                     if 'sign_uid.dupe_okay' in str(e):
                         raise GpgRuntimeError(self.context.returncode, _('you already signed that key'))
                     else:
-                        raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
+                        # propagate gpg error message up
+                        raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % re.sub(r'^expected.*, found "(.*)$"', r'\1', str(e)).decode('utf-8'))
                 print >>proc.stdin, 'y'
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
@@ -504,8 +505,9 @@ class Keyring():
             # confirm signature
             try:
                 self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
-            except GpgProtocolError:
-                raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
+            except GpgProtocolError as e:
+                # propagate gpg error message up
+                raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % re.sub(r'^expected.*, found "(.*)$"', r'\1', str(e)).decode('utf-8'))
 
         # we fallthrough here if there's only one key to sign
         print >>proc.stdin, 'y'
@@ -518,7 +520,7 @@ class Keyring():
             if 'EXPIRED' in str(e):
                 raise GpgRuntimeError(self.context.returncode, _('key is expired, cannot sign'))
             else:
-                raise
+                raise GpgRuntimeError(self.context.returncode, _('cannot sign, unknown error from gpg: %s') % str(e) + proc.stderr.read())
         # expect the passphrase confirmation
         try:
             self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
