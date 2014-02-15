@@ -30,7 +30,7 @@ sys.path.append(os.path.dirname(__file__) + '/..')
 from monkeysign.ui import MonkeysignUi, EmailFactory
 from monkeysign.gpg import TempKeyring
 
-from test_lib import TestTimeLimit
+from test_lib import TestTimeLimit, AlarmException
 
 class CliBaseTest(unittest.TestCase):
     def setUp(self):
