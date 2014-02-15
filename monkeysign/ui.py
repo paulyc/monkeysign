@@ -412,7 +412,9 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         self.tmpkeyring.import_data(keydata)
         # prepare for email transport
         self.tmpkeyring.context.set_option('armor')
-        # XXX: why is this necessary?
+        # this is necessary because we reimport keys from outside our
+        # keyring, so gpg doesn't trust them anymore
+        # but we know we do, so we ignore the trustdb
         self.tmpkeyring.context.set_option('always-trust')
         # remove UIDs we don't want to send
         self.cleanup_uids()
