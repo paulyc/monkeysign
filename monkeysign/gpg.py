@@ -457,8 +457,11 @@ class Keyring():
         # if there are multiple uids to sign, we'll get this point, and a whole other interface
         try:
             multiuid = self.context.expect(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
-        except GpgProtocolError:
-            multiuid = False
+        except GpgProtocolError as e:
+            if 'sign_uid.okay' in str(e):
+                multiuid = False
+            else:
+                raise GpgRuntimeError(self.context.returncode, _('cannot sign: %s') % re.sub(r'^.*found "(.*)', r'\1', str(e)))
         if multiuid:
             if signall: # special case, sign all keys
                 print >>proc.stdin, "y"
@@ -505,14 +508,8 @@ class Keyring():
                 raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
 
         # we fallthrough here if there's only one key to sign
-        try:
-            print >>proc.stdin, 'y'
-        except IOError as e:
-            if e.errno == 32:
-                # broken pipe, probably that key is missing
-                raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % self.context.stderr.decode('utf-8'))
-            else:
-                pass
+        print >>proc.stdin, 'y'
+
         try:
             self.context.expect(proc.stderr, 'GOT_IT')
         except GpgProtocolError as e:
