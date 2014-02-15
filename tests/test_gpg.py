@@ -253,7 +253,8 @@ class TestKeyringWithKeys(TestKeyringBase):
         """test if we can encrypt data to our private key (and decrypt it)"""
         plaintext = 'i come in peace'
 
-        self.gpg.context.set_option('always-trust') # evil?
+        # we trust all keys blindly to avoid having to set trust on that key
+        self.gpg.context.set_option('always-trust')
         self.gpg.context.set_option('armor')
         cyphertext = self.gpg.encrypt_data(plaintext, '96F47C6A')
         self.assertTrue(cyphertext)
