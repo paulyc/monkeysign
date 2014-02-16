@@ -254,7 +254,7 @@ class TestKeyringWithKeys(TestKeyringBase):
         plaintext = 'i come in peace'
 
         # we trust all keys blindly to avoid having to set trust on that key
-        self.gpg.context.set_option('always-trust')
+        self.gpg.context.set_option('trust-model', 'always')
         self.gpg.context.set_option('armor')
         cyphertext = self.gpg.encrypt_data(plaintext, '96F47C6A')
         self.assertTrue(cyphertext)
@@ -307,7 +307,7 @@ class TestKeyringWithKeys(TestKeyringBase):
         keys = self.gpg.get_keys('7B75921E')
         todelete = []
         # XXX: otherwise test fails with GpgProtocolError: [Errno 0] expected "^\[GNUPG:\] GET_LINE keyedit.prompt", found "gpg: vérification de la base de confiance"
-        self.gpg.context.set_option('always-trust')
+        self.gpg.context.set_option('trust-model', 'always')
         for fpr, key in keys.iteritems():
             for u, uid in key.uids.iteritems():
                 if userid != uid.uid:
