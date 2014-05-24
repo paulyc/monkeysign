@@ -1,0 +1,6 @@
+i wrote a good config file parser in:
+
+http://src.anarc.at/scripts.git/blob/refs/heads/master:/bup-cron
+
+it is based on argparse and should answers most of our needs.
+
