@@ -15,6 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from monkeysign import __version__
 # gpg interface
 from monkeysign.gpg import Keyring, TempKeyring, GpgRuntimeError
 import monkeysign.translation
@@ -68,6 +69,8 @@ class MonkeysignUi(object):
     def parser(self):
         """parse the commandline arguments"""
         parser = optparse.OptionParser(description=self.__doc__, usage=self.usage, epilog=self.epilog, formatter=NowrapHelpFormatter())
+        parser.add_option('--version', dest='version', default=False, action='store_true',
+                          help=_('show version information and quit'))
         parser.add_option('-d', '--debug', dest='debug', default=False, action='store_true',
                           help=_('request debugging information from GPG engine (lots of garbage)'))
         parser.add_option('-v', '--verbose', dest='verbose', default=False, action='store_true',
@@ -149,6 +152,8 @@ class MonkeysignUi(object):
         # initialize the temporary keyring directory
         self.tmpkeyring = TempKeyring()
 
+        if self.options.version:
+            self.abort(monkeysign.__version__)
         if self.options.debug:
             self.tmpkeyring.context.debug = self.logfile
             self.keyring.context.debug = self.logfile

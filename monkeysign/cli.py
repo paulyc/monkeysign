@@ -40,7 +40,7 @@ passwords."""
     def parse_args(self, args):
         """override main parsing: we absolutely need an argument"""
         parser = MonkeysignUi.parse_args(self, args)
-        if self.pattern is None:
+        if self.pattern is None and not self.options.version:
             parser.print_usage()
             sys.exit(_('wrong number of arguments, use -h for full help'))
 
