@@ -1,0 +1,10 @@
+work has started on this in the dev/monkeysign branch
+
+i don't hope to create the keyring class, i am not sure i see the
+point anymore
+
+found a bug upstream, see: https://github.com/isislovecruft/python-gnupg/pull/61
+
+the biggest hurdle here will be key signing, that is missing right now
+from upstream
+
