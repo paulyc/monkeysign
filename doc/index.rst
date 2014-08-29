@@ -15,6 +15,7 @@ Contents:
 
    api
    presentation
+   ui-mockups/index
 
 Indices and tables
 ==================
