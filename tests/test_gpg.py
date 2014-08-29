@@ -29,7 +29,8 @@ import re
 
 sys.path.append(os.path.dirname(__file__) + '/..')
 
-from monkeysign.gpg import *
+#from monkeysign.gpg import *
+import gnupg
 
 class TestContext(unittest.TestCase):
     """Tests for the Context class.
@@ -37,18 +38,15 @@ class TestContext(unittest.TestCase):
     Those should be limited to talking to the GPG binary, not
     operating on actual keyrings or GPG data."""
 
-    # those need to match the options in the Gpg class
-    options = Context.options
-
     # ... and this is the rendered version of the above
     rendered_options = ['gpg', '--command-fd', '0', '--with-fingerprint', '--list-options', 'show-sig-subpackets,show-uid-validity,show-unusable-uids,show-unusable-subkeys,show-keyring,show-sig-expire', '--batch', '--fixed-list-mode', '--no-tty', '--with-colons', '--use-agent', '--status-fd', '2', '--quiet' ]
 
     def setUp(self):
-        self.gpg = Context()
+        self.gpg = gnupg.GPG()
 
     def test_plain(self):
         """make sure other instances do not poison us"""
-        d = Context()
+        d = gnupg.GPG()
         d.set_option('homedir', '/var/nonexistent')
         self.assertNotIn('homedir', self.gpg.options)
 
@@ -85,7 +83,7 @@ class TestContext(unittest.TestCase):
         k = TempKeyring()
         k.context.debug = True
         with self.assertRaises(AttributeError):
-            k.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
+            k.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
 
 class TestTempKeyring(unittest.TestCase):
     """Test the TempKeyring class."""
@@ -115,8 +113,8 @@ class TestKeyringBase(unittest.TestCase):
         tearDown() function for that.
         """
         self.tmp = tempfile.mkdtemp(prefix="pygpg-")
-        self.gpg = Keyring(self.tmp)
-        self.assertEqual(self.gpg.context.options['homedir'], self.tmp)
+        self.gpg = gnupg.GPG(homedir=self.tmp)
+        self.assertEqual(self.gpg.homedir, self.tmp)
 
     def tearDown(self):
         """trash the temporary directory we created"""
@@ -127,54 +125,54 @@ class TestKeyringBasics(TestKeyringBase):
 
     def test_home(self):
         """test if the homedir is properly set and populated"""
-        self.gpg.export_data('') # dummy call to make gpg populate his directory
+        self.gpg.export_keys('') # dummy call to make gpg populate his directory
         self.assertTrue(open(self.tmp + '/pubring.gpg'))
 
     def test_import(self):
-        """make sure import_data returns true on known good data
+        """make sure import_keys returns true on known good data
 
         it should throw an exception if there's something wrong with the backend too
         """
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
 
     def test_import_fail(self):
-        """test that import_data() throws an error on wrong data"""
-        self.assertFalse(self.gpg.import_data(''))
+        """test that import_keys() throws an error on wrong data"""
+        self.assertFalse(self.gpg.import_keys(''))
 
     def test_export(self):
         """test that we can export data similar to what we import
 
         @todo this will probably fail if tests are ran on a different GPG version
         """
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         k1 = re.sub(r'Version:.*$', r'', open(os.path.dirname(__file__) + '/96F47C6A.asc').read(), flags=re.MULTILINE)
         self.gpg.context.set_option('armor')
         self.gpg.context.set_option('export-options', 'export-minimal')
-        k2 = re.sub(r'Version:.*$', r'', self.gpg.export_data('96F47C6A'), flags=re.MULTILINE)
+        k2 = re.sub(r'Version:.*$', r'', self.gpg.export_keys('96F47C6A'), flags=re.MULTILINE)
         self.assertEqual(k1,k2)
 
     def test_get_missing_secret_keys(self):
         """make sure we fail to get secret keys when they are missing"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         # this shouldn't show anything, as this is just a public key blob
         self.assertFalse(self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E', True, False))
 
     def test_export_secret(self):
         """make sure we can import and export secret data"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.secret = self.gpg.export_data('96F47C6A', True)
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.secret = self.gpg.export_keys('96F47C6A', True)
         self.assertTrue(self.secret)
 
     def test_list_imported_secrets(self):
         """make sure we can print imported secrets"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         self.assertTrue(self.gpg.get_keys(None, True, False))
 
     def test_empty_keyring(self):
         """a test should work on an empty keyring
 
         this is also a test of exporting an empty keyring"""
-        self.assertEqual(self.gpg.export_data(), '')
+        self.assertEqual(self.gpg.export_keys(), '')
 
     def test_sign_key_missing_key(self):
         """try to sign a missing key
@@ -185,23 +183,23 @@ class TestKeyringBasics(TestKeyringBase):
         however, gpg returns the wrong exit code here, so we end up at
         looking if there is really no output
         """
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
         with self.assertRaises(GpgRuntimeError):
             self.gpg.sign_key('7B75921E')
 
     def test_failed_revoke(self):
-        self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
-        self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-revoke.asc').read())
-        self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read())
+        self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
+        self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-revoke.asc').read())
+        self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read())
         with self.assertRaises(GpgRuntimeError):
             self.gpg.sign_key('7B75921E', True)
 
 class TestKeyringWithKeys(TestKeyringBase):
     def setUp(self):
         TestKeyringBase.setUp(self)
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
     def test_get_keys(self):
         """test that we can list the keys after importing them
@@ -228,7 +226,7 @@ class TestKeyringWithKeys(TestKeyringBase):
 
     def test_sign_key_single_uid(self):
         """test signing a key with a single uid"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
         self.assertTrue(self.gpg.sign_key('323F39BD', True))
         self.gpg.context.call_command(['list-sigs', '323F39BD'])
         self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:A31E75E4323F39BD:[^:]*::::Monkeysphere second test key <bar@example.com>:[0-9]*x:')
@@ -274,8 +272,8 @@ class TestKeyringWithKeys(TestKeyringBase):
     def test_multi_secrets(self):
         """test if we get confused with multiple secret keys"""
 
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/323F39BD-secret.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/323F39BD-secret.asc').read()))
 
         keys = self.gpg.get_keys(None, True, False)
         self.assertEqual(len(keys.keys()), 2)
@@ -285,7 +283,7 @@ class TestKeyringWithKeys(TestKeyringBase):
     def test_del_uid(self):
         """test uid deletion, gpg.del_uid()"""
         userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         found = False
         keys = self.gpg.get_keys('7B75921E')
         for fpr, key in keys.iteritems():
@@ -302,7 +300,7 @@ class TestKeyringWithKeys(TestKeyringBase):
 
     def test_del_uid_except(self):
         """see if we can easily delete all uids except a certain one"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
         keys = self.gpg.get_keys('7B75921E')
         todelete = []
