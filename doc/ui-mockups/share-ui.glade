@@ -33,7 +33,7 @@ You may ask someone to point their camera device at this screen and sign your ke
               <object class="GtkImage" id="Monkeycode">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="pixbuf">monkeycode-jerome.png</property>
+                <property name="pixbuf">monkeycode-example.png</property>
               </object>
               <packing>
                 <property name="expand">False</property>
