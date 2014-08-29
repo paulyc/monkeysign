@@ -125,7 +125,7 @@ class TestKeyringBasics(TestKeyringBase):
 
     def test_home(self):
         """test if the homedir is properly set and populated"""
-        self.gpg.export_keys('') # dummy call to make gpg populate his directory
+        self.gpg.export_keys('0000000') # dummy call to make gpg populate his directory
         self.assertTrue(open(self.tmp + '/pubring.gpg'))
 
     def test_import(self):
@@ -172,7 +172,7 @@ class TestKeyringBasics(TestKeyringBase):
         """a test should work on an empty keyring
 
         this is also a test of exporting an empty keyring"""
-        self.assertEqual(self.gpg.export_keys(), '')
+        self.assertEqual(self.gpg.export_keys(''), '')
 
     def test_sign_key_missing_key(self):
         """try to sign a missing key
