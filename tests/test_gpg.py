@@ -133,13 +133,13 @@ class TestKeyringBasics(TestKeyringBase):
 
         it should throw an exception if there's something wrong with the backend too
         """
-        self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
+        self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         pubkeys = self.gpg.list_keys()
         self.assertGreater(len(pubkeys), 0)
 
     def test_import_fail(self):
         """test that import_keys() throws an error on wrong data"""
-        self.assertFalse(self.gpg.import_keys(''))
+        self.assertFalse(self.gpg.import_keys('THIS IS NOT A PUBLIC KEY'))
 
     def test_export(self):
         """test that we can export data similar to what we import
