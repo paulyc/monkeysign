@@ -657,7 +657,8 @@ class OpenPGPkey():
             if rectype == 'tru':
                 (rectype, trust, selflen, algo, keyid, creation, expiry, serial) = record
             elif rectype == 'fpr':
-                self.fpr = record[9]
+                if not self.fpr:
+                    self.fpr = record[9]
             elif rectype == 'pub':
                 (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record
                 for p in self.purpose:
