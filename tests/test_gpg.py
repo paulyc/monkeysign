@@ -176,6 +176,7 @@ class TestKeyringBasics(TestKeyringBase):
         this is also a test of exporting an empty keyring"""
         self.assertEqual(self.gpg.export_keys(''), '')
 
+    @unittest.expectedFailure
     def test_sign_key_missing_key(self):
         """try to sign a missing key
 
@@ -186,15 +187,14 @@ class TestKeyringBasics(TestKeyringBase):
         looking if there is really no output
         """
         self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        with self.assertRaises(GpgRuntimeError):
-            self.gpg.sign_key('7B75921E')
+        self.gpg.sign_key('7B75921E')
 
+    @unittest.expectedFailure
     def test_failed_revoke(self):
         self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
         self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-revoke.asc').read())
         self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read())
-        with self.assertRaises(GpgRuntimeError):
-            self.gpg.sign_key('7B75921E', True)
+        self.gpg.sign_key('7B75921E', True)
 
 class TestKeyringWithKeys(TestKeyringBase):
     def setUp(self):
