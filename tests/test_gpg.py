@@ -138,8 +138,14 @@ class TestKeyringBasics(TestKeyringBase):
         self.assertGreater(len(pubkeys), 0)
 
     def test_import_fail(self):
-        """test that import_keys() throws an error on wrong data"""
-        self.assertFalse(self.gpg.import_keys('THIS IS NOT A PUBLIC KEY'))
+        """test that import_keys() throws an error on wrong data
+
+        XXX: this fails when more than one tests are ran, for an
+        unknown reason"""
+        res = self.gpg.import_keys('THIS IS NOT A PUBLIC KEY')
+        if res:
+            print "unexpected fingerprints: %s, counts: %s" % (res.fingerprints, res.counts)
+        self.assertFalse(res)
 
     def test_export(self):
         """test that we can export data similar to what we import
