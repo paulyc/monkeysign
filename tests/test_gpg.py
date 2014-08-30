@@ -157,7 +157,7 @@ class TestKeyringBasics(TestKeyringBase):
         """make sure we fail to get secret keys when they are missing"""
         self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         # this shouldn't show anything, as this is just a public key blob
-        self.assertFalse(self.gpg.get_keys('8DC901CE64146C048AD50FBB792152527B75921E', True, False))
+        self.assertFalse(self.gpg.list_keys('8DC901CE64146C048AD50FBB792152527B75921E', True, False))
 
     def test_export_secret(self):
         """make sure we can import and export secret data"""
@@ -168,7 +168,7 @@ class TestKeyringBasics(TestKeyringBase):
     def test_list_imported_secrets(self):
         """make sure we can print imported secrets"""
         self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
-        self.assertTrue(self.gpg.get_keys(None, True, False))
+        self.assertTrue(self.gpg.list_keys(None, True, False))
 
     def test_empty_keyring(self):
         """a test should work on an empty keyring
@@ -209,7 +209,7 @@ class TestKeyringWithKeys(TestKeyringBase):
         @todo we should check the data structure
         """
         # just a cute display for now
-        for fpr, key in self.gpg.get_keys('96F47C6A').iteritems():
+        for fpr, key in self.gpg.list_keys('96F47C6A').iteritems():
             print key
 
     def test_sign_key_wrong_user(self):
@@ -277,7 +277,7 @@ class TestKeyringWithKeys(TestKeyringBase):
         self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/323F39BD.asc').read()))
         self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/323F39BD-secret.asc').read()))
 
-        keys = self.gpg.get_keys(None, True, False)
+        keys = self.gpg.list_keys(None, True, False)
         self.assertEqual(len(keys.keys()), 2)
         #for fpr, key in keys.iteritems():
         #    print >>sys.stderr, "key:", key
@@ -287,7 +287,7 @@ class TestKeyringWithKeys(TestKeyringBase):
         userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
         self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         found = False
-        keys = self.gpg.get_keys('7B75921E')
+        keys = self.gpg.list_keys('7B75921E')
         for fpr, key in keys.iteritems():
             for u, uid in key.uids.iteritems():
                 self.assertIsInstance(uid, OpenPGPuid)
@@ -296,7 +296,7 @@ class TestKeyringWithKeys(TestKeyringBase):
                     break
         self.assertTrue(found, "that we can find the userid before removing it")
         self.assertTrue(self.gpg.del_uid(fpr, userid))
-        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+        for fpr, key in self.gpg.list_keys('7B75921E').iteritems():
             for u, uid in key.uids.iteritems():
                 self.assertNotEqual(userid, uid.uid)
 
@@ -304,7 +304,7 @@ class TestKeyringWithKeys(TestKeyringBase):
         """see if we can easily delete all uids except a certain one"""
         self.assertTrue(self.gpg.import_keys(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
         userid = 'Antoine Beaupré <anarcat@orangeseeds.org>'
-        keys = self.gpg.get_keys('7B75921E')
+        keys = self.gpg.list_keys('7B75921E')
         todelete = []
         # XXX: otherwise test fails with GpgProtocolError: [Errno 0] expected "^\[GNUPG:\] GET_LINE keyedit.prompt", found "gpg: vérification de la base de confiance"
         self.gpg.context.set_option('trust-model', 'always')
@@ -314,7 +314,7 @@ class TestKeyringWithKeys(TestKeyringBase):
                     todelete.append(uid.uid)
             for uid in todelete:
                 self.gpg.del_uid(fpr, uid)
-        for fpr, key in self.gpg.get_keys('7B75921E').iteritems():
+        for fpr, key in self.gpg.list_keys('7B75921E').iteritems():
             for u, uid in key.uids.iteritems():
                 self.assertEqual(userid, uid.uid)
 
