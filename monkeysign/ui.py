@@ -345,9 +345,9 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 try:
                     (code, msg) = server.connect(self.options.smtpserver)
                 except (socket.error, socket.timeout) as e:
-                    self.abort(_('Error connecting to SMTP server: %s') % e)
+                    self.abort(_('Error connecting to SMTP server %s: %s') % (self.options.smtpserver, e))
                 if code != 220:
-                    self.abort(_('Unexpected SMTP server '%s' error code: %s (%s)') % (self.options.smtpserver, code, msg))
+                    self.abort(_('Unexpected SMTP server error while talking to %s, code: %s (%s)') % (self.options.smtpserver, code, msg))
                 try:
                     server.starttls()
                 except SMTPException:
@@ -371,7 +371,7 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 self.warn(_("""\
 not sending email to %s, as requested, here's the email message:
 
-%s""") % (msg.mailto, msg.create_mail_from_block(msg.tmpkeyring.export_data(msg.keyfpr))))
+%s""") % (msg.mailto, msg.create_mail_from_block()))
 
 
 class EmailFactory:
@@ -454,7 +454,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
         # introduction and the signed key material
-        message = self.create_mail_from_block(self.tmpkeyring.export_data(self.keyfpr))
+        message = self.create_mail_from_block()
         encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.keyfpr)
 
         # the second layer up, made of two parts: a version number
@@ -467,7 +467,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
     def as_string(self):
         return self.__str__()
 
-    def create_mail_from_block(self, data):
+    def create_mail_from_block(self):
         """
         a multipart/mixed message containing a plain-text message
         explaining what this is, and a second part containing PGP data
@@ -481,12 +481,12 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         Charset.add_charset('utf-8', Charset.QP, Charset.QP, 'utf-8')
 
         text = MIMEText(self.body, 'plain', 'utf-8')
-        filename = "yourkey.asc" # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
+        filename = 'signed-%s.asc' % self.keyfpr # should be 0xkeyid.uididx.signed-by-0xkeyid.asc
         keypart = MIMEBase('application', 'pgp-keys', name=filename)
         keypart.add_header('Content-Disposition', 'attachment', filename=filename)
         keypart.add_header('Content-Transfer-Encoding', '7bit')
-        keypart.add_header('Content-Description', _('PGP Key <keyid>, uid <uid> (<idx), signed by <keyid>'))
-        keypart.set_payload(data)
+        keypart.add_header('Content-Description', (_('signed PGP Key %s, uid %s') % (self.keyfpr, self.recipient.decode('utf-8'))))
+        keypart.set_payload(self.tmpkeyring.export_data(self.keyfpr))
         return MIMEMultipart('mixed', None, [text, keypart])
 
     def wrap_crypted_mail(self, encrypted):

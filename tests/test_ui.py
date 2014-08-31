@@ -168,8 +168,8 @@ this duplicates tests from the gpg code, but is necessary to test later function
                 msg = EmailFactory(self.ui.tmpkeyring.export_data(fpr), fpr, uid.uid, 'unittests@localhost', 'devnull@localhost')
                 if oldmsg is not None:
                     self.assertNotEqual(oldmsg.as_string(), msg.as_string())
-                    self.assertNotEqual(oldmsg.create_mail_from_block(oldmsg.tmpkeyring.export_data(fpr)).as_string(),
-                                        msg.create_mail_from_block(oldmsg.tmpkeyring.export_data(fpr)).as_string())
+                    self.assertNotEqual(oldmsg.create_mail_from_block().as_string(),
+                                        msg.create_mail_from_block().as_string())
                     self.assertNotEqual(oldmsg.tmpkeyring.export_data(fpr),
                                         msg.tmpkeyring.export_data(fpr))
                 oldmsg = msg
@@ -195,9 +195,7 @@ class EmailFactoryTest(BaseTestCase):
 
     def test_mail_key(self):
         """test if we can generate a mail with a key inside"""
-        data = self.email.tmpkeyring.export_data(self.pattern)
-        self.assertNotEqual(data, '')
-        message = self.email.create_mail_from_block(data)
+        message = self.email.create_mail_from_block()
         match = re.compile("""Content-Type: multipart/mixed; boundary="===============[0-9]*=="
 MIME-Version: 1.0
 
@@ -208,11 +206,12 @@ Content-Transfer-Encoding: quoted-printable
 
 %s
 --===============[0-9]*==
-Content-Type: application/pgp-keys; name="yourkey.asc"
+Content-Type: application/pgp-keys; name="signed-7B75921E.asc"
 MIME-Version: 1.0
-Content-Disposition: attachment; filename="yourkey.asc"
+Content-Disposition: attachment; filename="signed-7B75921E.asc"
 Content-Transfer-Encoding: 7bit
-Content-Description: PGP Key <keyid>, uid <uid> \(<idx\), signed by <keyid>
+Content-Description: =\?utf-8\?q\?signed_PGP_Key_7B75921E=2C_uid_Antoine_Beaup\?=
+ =\?utf-8\?b\?csOpIDxhbmFyY2F0QG9yYW5nZXNlZWRzLm9yZz4=\?=
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 .*
