@@ -338,8 +338,16 @@ Sign all identities? [y/N] \
 expects an EmailFactory email, but will not mail if nomail is set"""
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
-                server = smtplib.SMTP(self.options.smtpserver)
+                server = smtplib.SMTP()
                 server.set_debuglevel(self.options.debug)
+                # to be nicer to users, we could catch socket.error exceptions from
+                # server.connect() here and display a meaningful message to stderr.
+                try:
+                    (code, msg) = server.connect(self.options.smtpserver)
+                except (socket.error, socket.timeout) as e:
+                    self.abort(_('Error connecting to SMTP server: %s') % e)
+                if code != 220:
+                    self.abort(_('Unexpected SMTP server '%s' error code: %s (%s)') % (self.options.smtpserver, code, msg))
                 try:
                     server.starttls()
                 except SMTPException:
