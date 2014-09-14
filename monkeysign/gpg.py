@@ -460,6 +460,15 @@ class Keyring():
         except GpgProtocolError as e:
             if 'sign_uid.okay' in str(e):
                 multiuid = False
+            elif '[GNUPG:]' not in str(e):
+                # this is not a protocol message, try again but skipping now
+                # this was necessary in order to sign Zack's key, as it was spewing:
+                # gpg: moving a key signature to the correct place
+                # instead of a [GNUGPG:] message
+                try:
+                    multiuid = self.context.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
+                except GpgProtocolError as e:
+                    raise GpgRuntimeError(self.context.returncode, _('cannot sign: %s') % re.sub(r'^.*found "(.*)', r'\1', str(e)).decode('utf-8'))
             else:
                 raise GpgRuntimeError(self.context.returncode, _('cannot sign: %s') % re.sub(r'^.*found "(.*)', r'\1', str(e)).decode('utf-8'))
         if multiuid:
