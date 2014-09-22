@@ -343,11 +343,11 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 # to be nicer to users, we could catch socket.error exceptions from
                 # server.connect() here and display a meaningful message to stderr.
                 try:
-                    (code, msg) = server.connect(self.options.smtpserver)
+                    (code, srvmsg) = server.connect(self.options.smtpserver)
                 except (socket.error, socket.timeout) as e:
                     self.abort(_('Error connecting to SMTP server %s: %s') % (self.options.smtpserver, e))
                 if code != 220:
-                    self.abort(_('Unexpected SMTP server error while talking to %s, code: %s (%s)') % (self.options.smtpserver, code, msg))
+                    self.abort(_('Unexpected SMTP server error while talking to %s, code: %s (%s)') % (self.options.smtpserver, code, srvmsg))
                 try:
                     server.starttls()
                 except SMTPException:
