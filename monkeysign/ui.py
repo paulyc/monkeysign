@@ -37,6 +37,7 @@ import sys
 import re
 import os
 import shutil
+import socket
 
 class MonkeysignUi(object):
     """User interface abstraction for monkeysign.
