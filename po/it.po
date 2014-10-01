@@ -7,14 +7,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-14 23:21-0400\n"
-"PO-Revision-Date: 2013-08-14 23:21-0400\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2014-10-01 17:45+0200\n"
+"Last-Translator: Michael R. Lawrence <michaellonewolf359@gmail.com>\n"
+"Language-Team: Italian "
+"<https://hosted.weblate.org/projects/monkeysphere/monkeysign/it/>\n"
 "Language: it\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ASCII\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 1.10-dev\n"
 
 #: ../monkeysign/cli.py:24
 msgid ""
@@ -28,18 +30,29 @@ msgid ""
 "This program assumes you have gpg-agent configured to prompt for\n"
 "passwords."
 msgstr ""
+"firmare una chiave in una cassetta di sicurezza fashion.↵\n"
+"↵\n"
+"Questo comando firma un tasto sulla base delle impronte digitali o l'utente "
+"id↵\n"
+"specificato sulla linea di comando, cifrare il risultato e inviarlo a the↵\n"
+"utente. Questo lascia la scelta di pubblicare la certificazione di that↵\n"
+"persona e fa in modo che la persona possiede il signed.↵ identità\n"
+"↵\n"
+"Questo programma presuppone che si è gpg-agent configurato per richiedere "
+"for↵\n"
+"password."
 
 #: ../monkeysign/cli.py:35
 msgid "%prog [options] <keyid>"
-msgstr ""
+msgstr "% prog [opzioni] <keyid>"
 
 #: ../monkeysign/cli.py:36
 msgid "<keyid>: a GPG fingerprint or key id"
-msgstr ""
+msgstr "<keyid>: un id di impronte digitali o la chiave GPG"
 
 #: ../monkeysign/cli.py:43 ../monkeysign/ui.py:99
 msgid "wrong number of arguments, use -h for full help"
-msgstr ""
+msgstr "numero errato di argomenti, usa -h aiuto completo"
 
 #: ../monkeysign/cli.py:59
 #, python-format
@@ -47,62 +60,62 @@ msgid ""
 "Preparing to sign with this key\n"
 "\n"
 "%s"
-msgstr ""
+msgstr "Appresta a firmare con questa chiave %s"
 
 #: ../monkeysign/cli.py:88
 #, python-format
 msgid " (1-%d or full UID, control-c to abort): "
-msgstr ""
+msgstr " (1-%d o UID completo, control-c per interrompere l'operazione): "
 
 #: ../monkeysign/cli.py:92
 msgid "invalid uid"
-msgstr ""
+msgstr "uid non valido"
 
 #: ../monkeysign/gpg.py:209
 #, python-format
 msgid "could not find pattern '%s' in input"
-msgstr ""
+msgstr "Non riusciva a trovare modello '%s' in ingresso"
 
 #: ../monkeysign/gpg.py:357 ../monkeysign/gpg.py:377
 #, python-format
 msgid "unexpected GPG exit code in list-keys: %d"
-msgstr ""
+msgstr "GPG inaspettata uscita codice nell'elenco-chiavi: %d"
 
 #: ../monkeysign/gpg.py:389
 #, python-format
 msgid "encryption to %s failed: %s."
-msgstr ""
+msgstr "crittografia a %s non riuscita: %s."
 
 #: ../monkeysign/gpg.py:400
 #, python-format
 msgid "decryption failed: %s"
-msgstr ""
+msgstr "decrittografia non riuscita: %s"
 
 #: ../monkeysign/gpg.py:462
 msgid "you already signed that key"
-msgstr ""
+msgstr "Hai già firmato quella chiave"
 
 #: ../monkeysign/gpg.py:464 ../monkeysign/gpg.py:496 ../monkeysign/gpg.py:504
 #, python-format
 msgid "unable to open key for editing: %s"
-msgstr ""
+msgstr "Impossibile aprire la chiave per la modifica: %s"
 
 #: ../monkeysign/gpg.py:472
 msgid "unable to prompt for passphrase, is gpg-agent running?"
-msgstr ""
+msgstr "incapace per la richiesta di passphrase, è gpg-agent in esecuzione?"
 
 #: ../monkeysign/gpg.py:513
 msgid "key is expired, cannot sign"
-msgstr ""
+msgstr "chiave è scaduto, non può firmare"
 
 #: ../monkeysign/gpg.py:520
 msgid "password confirmation failed"
-msgstr ""
+msgstr "conferma della password non riuscita"
 
 #: ../monkeysign/gpg.py:676
 #, python-format
 msgid "record type '%s' not implemented"
-msgstr ""
+msgstr "tipo di record '%s' non implementata"
 
 #: ../monkeysign/gtkui.py:38
 msgid ""
@@ -123,113 +136,144 @@ msgid ""
 "This program assumes you have gpg-agent configure to prompt for\n"
 "passwords.\n"
 msgstr ""
+"firmare una chiave in modo sicuro utilizzando una webcam per eseguire la "
+"scansione di QR-codes↵\n"
+"↵\n"
+"Questo comando accendere una interfaccia grafica e accendere la webcam↵\n"
+"(se disponibile) su questo computer. Si mostrerà anche un qr-code of↵\n"
+"il vostro principale key.↵ OpenPGP\n"
+"↵\n"
+"La webcam è usata per catturare un impronta digitale OpenPGP rappresentate "
+"come a↵\n"
+"qrcode (o qualunque sia la biblioteca zbar può analizzare) e poi passare "
+"attraverso a↵\n"
+"firma process.↵\n"
+"↵\n"
+"La firma viene poi crittografato e inviato per l'utente. Questo the↵ "
+"congedo\n"
+"scelta di pubblicare la certificazione a quella persona e la rende sure↵\n"
+"che la persona possiede il signed.↵ identità\n"
+"↵\n"
+"Questo programma presuppone che configure-agente gpg per richiedere for↵\n"
+"passwords.↵\n"
 
 #: ../monkeysign/gtkui.py:121
 msgid "okay, signing"
-msgstr ""
+msgstr "va bene, la firma"
 
 #: ../monkeysign/gtkui.py:124
 msgid "user denied signature"
-msgstr ""
+msgstr "utente negato firma"
 
 #: ../monkeysign/gtkui.py:151
 msgid "Monkeysign (scan)"
-msgstr ""
+msgstr "Monkeysign (scansione)"
 
 #: ../monkeysign/gtkui.py:161
 msgid "_File"
-msgstr ""
+msgstr "_archivio"
 
 #: ../monkeysign/gtkui.py:162
 msgid "_Save as..."
-msgstr ""
+msgstr "_Salva come..."
 
 #: ../monkeysign/gtkui.py:163
 msgid "_Print"
-msgstr ""
+msgstr "_Stampa"
 
 #: ../monkeysign/gtkui.py:165
 msgid "Copy image to clipboard"
-msgstr ""
+msgstr "Copia immagine negli appunti"
 
 #: ../monkeysign/gtkui.py:165
 msgid "_Copy"
-msgstr ""
+msgstr "_Copia"
 
 #: ../monkeysign/gtkui.py:166
 msgid "_Quit"
-msgstr ""
+msgstr "_Smettere"
 
 #: ../monkeysign/gtkui.py:207
 msgid "No video device detected."
-msgstr ""
+msgstr "Nessun dispositivo video rilevato."
 
 #: ../monkeysign/gtkui.py:313
 msgid "Save QR code"
-msgstr ""
+msgstr "Salvare il codice QR"
 
 #: ../monkeysign/gtkui.py:375
 msgid "fetching finished"
-msgstr ""
+msgstr "recupero finito"
 
 #: ../monkeysign/gtkui.py:425
 msgid "Please wait"
-msgstr ""
+msgstr "Attendi per favore"
 
 #: ../monkeysign/gtkui.py:427
+#, fuzzy
 msgid "Retrieving public key from server..."
-msgstr ""
+msgstr "Recupero chiave pubblica dal server..."
 
 #: ../monkeysign/gtkui.py:442
-#, python-format
+#, fuzzy, python-format
 msgid "ignoring found data: %s"
-msgstr ""
+msgstr "ignorando trovato dati: %s"
 
 #: ../monkeysign/ui.py:66
+#, fuzzy
 msgid "parse the commandline arguments"
-msgstr ""
+msgstr "analizzare gli argomenti della riga di comando"
 
 #: ../monkeysign/ui.py:69
+#, fuzzy
 msgid "request debugging information from GPG engine (lots of garbage)"
 msgstr ""
+"richiedere informazioni di debug dal motore di GPG (un sacco di spazzatura)"
 
 #: ../monkeysign/ui.py:71
+#, fuzzy
 msgid "explain what we do along the way"
-msgstr ""
+msgstr "spiegare quello che facciamo lungo la strada"
 
 #: ../monkeysign/ui.py:73
 msgid "do not actually do anything"
-msgstr ""
+msgstr "realtà non non fare nulla"
 
 #: ../monkeysign/ui.py:74
 msgid "user id to sign the key with"
-msgstr ""
+msgstr "id utente di firmare la chiave con"
 
 #: ../monkeysign/ui.py:76
 msgid "import in normal keyring a local certification"
-msgstr ""
+msgstr "importare in un normale portachiavi una certificazione locale"
 
 #: ../monkeysign/ui.py:78
 msgid "keyserver to fetch keys from"
-msgstr ""
+msgstr "keyserver recuperare chiavi da"
 
 #: ../monkeysign/ui.py:83
 msgid ""
 "SMTP server to use, use a colon to specify the port number if non-standard"
 msgstr ""
+"Server SMTP da utilizzare, utilizzare i due punti per specificare il numero "
+"di porta se non standard"
 
 #: ../monkeysign/ui.py:84
 msgid "username for the SMTP server (default: no user)"
 msgstr ""
+"nome utente per il server SMTP (impostazione predefinita: nessun utente)"
 
 #: ../monkeysign/ui.py:85
 msgid ""
 "password for the SMTP server (default: prompted, if --smtpuser is specified)"
 msgstr ""
+"password per il server SMTP (impostazione predefinita: richiesto, se è "
+"specificato - smtpuser)"
 
 #: ../monkeysign/ui.py:87
 msgid "Do not send email at all. (Default is to use sendmail.)"
 msgstr ""
+"Non inviare e-mail a tutti. (Il valore predefinito è utilizzare sendmail)"
 
 #: ../monkeysign/ui.py:89
 msgid ""
