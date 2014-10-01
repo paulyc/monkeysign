@@ -14,14 +14,21 @@ monkeysign (2.0~git0) experimental; urgency=low
 
  -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:34:48 +0200
 
-monkeysign (1.2~git0) UNRELEASED; urgency=low
+monkeysign (1.2) unstable; urgency=medium
 
   * improve python 3 compatibility, partially (Closes: #725059)
   * update translation strings
   * spanish translation, thanks to lilbit
   * partial french translation
+  * Czech translation, thanks to Michal Čihař
+  * Bug fix: "build_slides fails of two reasons", thanks to Felix Dreissig
+    (Closes: #738731).
+  * Bug fix: "build_manpage only works because of PyGTK encoding changes",
+    thanks to Felix Dreissig (Closes: #738730).
+  * Bug fix: "build_trans fails if called seperately", thanks to Felix
+    Dreissig (Closes: #738732).
 
- -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:42:58 +0200
+ -- Antoine Beaupré <anarcat@debian.org>  Thu, 28 Aug 2014 20:23:57 -0700
 
 monkeysign (1.1) unstable; urgency=low
 
