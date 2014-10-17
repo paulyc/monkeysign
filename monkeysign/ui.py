@@ -231,7 +231,7 @@ this should not interrupt the flow of the program, but must be visible to the us
             self.log(_('key not in local keyring'))
 
             # 1.a) if allowed, from the keyservers
-            self.log(_('fetching key %s from keyservers') % self.pattern)
+            self.log(_('fetching key %s from keyserver') % self.pattern)
 
             if not re.search('^[0-9A-F]*$', self.pattern, re.IGNORECASE): # this is not a keyid
                 # the problem here is that we need to implement --search-keys, and it's a pain
