@@ -273,6 +273,10 @@ work.
 
         keys = self.tmpkeyring.get_keys(self.pattern)
 
+        self.tmpkeyring.context.call_command(['--check-trustdb'])
+        if not self.tmpkeyring.context.returncode == 0:
+            raise GpgRuntimeError(self.context.returncode, _('decryption failed: %s') % self.context.stderr.split("\n")[-2])
+
         self.log(_('found %d keys matching your request') % len(keys))
 
         for key in keys:
@@ -426,10 +430,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         self.tmpkeyring.import_data(keydata)
         # prepare for email transport
         self.tmpkeyring.context.set_option('armor')
-        # this is necessary because we reimport keys from outside our
-        # keyring, so gpg doesn't trust them anymore
-        # but we know we do, so we ignore the trustdb
-        self.tmpkeyring.context.set_option('trust-model', 'always')
+        self.tmpkeyring.context.set_option('no-auto-check-trustdb')
         # remove UIDs we don't want to send
         self.cleanup_uids()
         # cleanup email addresses

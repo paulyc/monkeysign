@@ -431,7 +431,7 @@ class Keyring():
         self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
         print >>proc.stdin, 'save'
         self.context.expect(proc.stderr, 'GOT_IT')
-        return proc.wait() == 0
+        return proc.wait() == 0 and self.check_trustdb()
 
     def sign_key(self, pattern, signall = False, local = False):
         """sign a OpenPGP public key
@@ -541,6 +541,16 @@ class Keyring():
             print >>proc.stdin, "save"
             self.context.expect(proc.stderr, 'GOT_IT')
         return proc.wait() == 0
+
+    def check_trustdb(self):
+        """regenerate the trustdb
+
+we run under --no-auto-check-trustdb so we need to call this from time to time ourselves
+"""
+        self.context.call_command(['check-trustdb'])
+        if not self.context.returncode == 0:
+            raise GpgRuntimeError(self.context.returncode, _('check-trustdb failed: %s') % self.context.stderr.split("\n")[-2])
+        return True        
 
 class TempKeyring(Keyring):
     def __init__(self):

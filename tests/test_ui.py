@@ -185,6 +185,7 @@ class EmailFactoryTest(BaseTestCase):
         self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
         self.assertTrue(self.ui.tmpkeyring.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
+        self.ui.tmpkeyring.context.set_option('always-trust')
         self.email = EmailFactory(self.ui.tmpkeyring.export_data(self.pattern), self.pattern, 'Antoine Beaupré <anarcat@orangeseeds.org>', 'nobody@example.com', 'nobody@example.com')
 
     def test_cleanup_uids(self):
