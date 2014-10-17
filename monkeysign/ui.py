@@ -168,8 +168,8 @@ class MonkeysignUi(object):
 
         # copy the gpg.conf from the real keyring
         try:
+            self.log(_('copying your gpg.conf in temporary keyring'))
             shutil.copy(self.keyring.homedir + '/gpg.conf', self.tmpkeyring.homedir)
-            self.log(_('copied your gpg.conf in temporary keyring'))
         except IOError as e:
             # no such file or directory is alright: it means the use
             # has no gpg.conf (because we are certain the temp homedir
