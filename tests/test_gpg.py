@@ -322,6 +322,24 @@ class TestKeyringWithKeys(TestKeyringBase):
         """test verify_file()"""
         self.assertTrue(self.gpg.verify_file(os.path.dirname(__file__) + '/testfile.txt.asc', os.path.dirname(__file__) + '/testfile.txt'))
 
+class TestKeyringWithAbnormalKeys(TestKeyringBase):
+    """this tests specifically weird keys"""
+    def setUp(self):
+        TestKeyringBase.setUp(self)
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+
+    def test_wrongly_place_sigs(self):
+        """this provokes an exception with:
+
+    monkeysign.gpg.GpgProtocolError: [Errno 0] expected "^\[GNUPG:\] GOT_IT", found "gpg: moving a key signature to the correct place"
+
+seems like it's a key not respecting standard: http://lists.nongnu.org/archive/html/sks-devel/2012-07/msg00122.html"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/6D866396.asc').read()))
+        self.assertTrue(self.gpg.sign_key('6D866396', True))
+        self.gpg.context.call_command(['list-sigs', '6D866396'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
+
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
         self.key = OpenPGPkey("""tru::1:1343350431:0:3:1:5
