@@ -26,12 +26,16 @@ here's a short overview:
     # register all changes in git
     be commit
 
+A more convenient HTML view can be served using:
+
+    be html
+
+Use the `--port` option if port 8000 is busy with icecast.
+
  [bugs-everywhere]: http://bugseverywhere.org/
  [Full documentation]: http://docs.bugseverywhere.org/
 
-This is a new bug tracking designed to replace the overflowing TODO
-file and experiment with this decentralised bugtracking tool. There
-are also bugs reported by email over the [Debian BTS][]. See the
+There are also bugs reported by email over the [Debian BTS][]. See the
 [website][] for more information.
 
  [Debian BTS]: http://bugs.debian.org/monkeysign
