@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-14 23:21-0400\n"
-"PO-Revision-Date: 2014-10-16 23:13-0400\n"
+"PO-Revision-Date: 2014-10-16 23:47-0400\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
@@ -569,9 +569,9 @@ msgstr ""
 msgid "could not find public key material, do you have a GPG key?"
 msgstr ""
 
-#: ../monkeysign/ui.py:272
-msgid "sign the key uids, as specified"
-msgstr ""
+#~ #: ../monkeysign/ui.py:272
+#~ msgid "sign the key uids, as specified"
+#~ msgstr ""
 
 #: ../monkeysign/ui.py:276
 #, python-format
