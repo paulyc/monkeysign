@@ -1,18 +1,28 @@
-monkeysign (2.0~git0) experimental; urgency=low
+monkeysign (2.0) unstable; urgency=medium
 
-  * Upload to experimental new crazy features.
-  * implement qrcode image import, to allow people without webcams to
-    import pictures from a trusted camera - the images must be signed with
-    a detached signature on pain of a ugly warning with instructions.
+  * new features:
+    * implement qrcode image import, to allow people without webcams to
+      import pictures from a trusted camera - the images must be signed with
+      a detached signature on pain of a ugly warning with instructions.
+    * move to bugs-everywhere instead of that crazy TODO file
+    * udate french translation
   * usability improvements:
     * interface simplified: only the qrcode and webcam with instructions
     * all options moved to menus, including the print/save buttons, the
       video and identity dropdowns
     * properly handle exceptions in gtk UI
     * avoid duplicate camera listing and display nicer name (Closes: #718796)
-  * move to bugs-everywhere instead of that crazy TODO file
+    * create a set of mockups for a UI redesign and API documentation
+      rendered at http://monkeysign.readthedocs.org/
+  * bug fixes:
+    * fix "Content-description" to be more useful (Closes: #723677)
+    * support monkeysign --version", thanks to Gabriel Fillion (Closes: #725113)
+    * add debugging info from smtp connection, thanks to Gabriel Filion
+      (Closes: #756540)
+    * some improvements were done in the GnuPG library to work around
+      certain GnuPG corner cases and describe problems better
 
- -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 14:34:48 +0200
+ -- Antoine Beaupré <anarcat@debian.org>  Fri, 17 Oct 2014 00:28:21 -0400
 
 monkeysign (1.2) unstable; urgency=medium
 
