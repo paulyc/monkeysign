@@ -266,7 +266,7 @@ work.
 
         # export public key material associated with detected private
         if not self.tmpkeyring.import_data(self.keyring.export_data(self.signing_key.fpr)):
-            self.abort(_('could not find public key material, do you have a GPG key?'))
+            self.abort(_('could not find public key material, do you have an OpenPGP key?'))
 
     def sign_key(self):
         """sign the key uids, as specified"""
@@ -393,8 +393,8 @@ mail.
 
     # the email body
     body = _("""
-Please find attached your signed PGP key. You can import the signed
-key by running each through `gpg --import`.
+Please find attached your signed OpenPGP key. You can import the
+signed key by running each through `gpg --import`.
 
 If you have multiple user ids, each signature was sent in a separate
 email to each user id.
@@ -491,7 +491,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         keypart = MIMEBase('application', 'pgp-keys', name=filename)
         keypart.add_header('Content-Disposition', 'attachment', filename=filename)
         keypart.add_header('Content-Transfer-Encoding', '7bit')
-        keypart.add_header('Content-Description', (_('signed PGP Key %s, uid %s') % (self.keyfpr, self.recipient.decode('utf-8'))))
+        keypart.add_header('Content-Description', (_('signed OpenPGP Key %s, uid %s') % (self.keyfpr, self.recipient.decode('utf-8'))))
         keypart.set_payload(self.tmpkeyring.export_data(self.keyfpr))
         return MIMEMultipart('mixed', None, [text, keypart])
 
@@ -504,7 +504,7 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
         p2.add_header('Content-Transfer-Encoding', '7bit')
         p2.set_payload(encrypted)
         msg = MIMEMultipart('encrypted', None, [p1, p2], protocol="application/pgp-encrypted")
-        msg.preamble = _('This is a multi-part message in PGP/MIME format...')
+        msg.preamble = _('This is a multi-part message in OpenPGP/MIME format...')
         msg['Subject'] = Header(self.subject.encode('utf-8'), 'UTF-8').encode()
         name, address = parseaddr(self.mailfrom)
         msg['From'] = formataddr((Header(name.encode('utf-8'), 'UTF-8').encode(), address))

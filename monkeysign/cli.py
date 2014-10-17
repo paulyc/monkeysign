@@ -35,7 +35,7 @@ passwords."""
 
     # override default options to allow passing a keyid
     usage = _('%prog [options] <keyid>')
-    epilog = _('<keyid>: a GPG fingerprint or key id')
+    epilog = _('<keyid>: a OpenPGP fingerprint or key id')
 
     def parse_args(self, args):
         """override main parsing: we absolutely need an argument"""
