@@ -1,5 +1,6 @@
+# we strip the obsoleted entries from the template, otherwise they are naively copied in
 *.po: messages.pot
-	msgmerge -U $@ $<
+	msgattrib --no-obsolete $< | msgmerge -U $@ -
 
 messages.pot: ../monkeysign/cli.py ../monkeysign/gtkui.py ../monkeysign/ui.py ../monkeysign/gpg.py
 	pygettext -k_ -kN_ -D -o $@ $^
