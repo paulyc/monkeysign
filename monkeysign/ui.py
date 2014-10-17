@@ -88,9 +88,9 @@ class MonkeysignUi(object):
         parser.add_option('--smtpuser', dest='smtpuser', help=_('username for the SMTP server (default: no user)'))
         parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
-                          help=_('Do not send email at all. (Default is to use sendmail.)'))
+                          help=_('do not send email at all (default: use sendmail)'))
         parser.add_option('-t', '--to', dest='to', 
-                          help=_('Override destination email for testing (default is to use the first uid on the key or send email to each uid chosen)'))
+                          help=_('override destination email for testing (default: use the first uid on the key or send email to each uid chosen)'))
         return parser
 
     def parse_args(self, args):
