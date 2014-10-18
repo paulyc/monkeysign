@@ -2,30 +2,30 @@ Source: monkeysign
 Section: utils
 Priority: optional
 Maintainer: Antoine Beaupré <anarcat@debian.org>
-Build-Depends: debhelper (>= 9),
-               python (>= 2.6),
-               python-setuptools,
-               python-qrencode,
-               python-gtk2,
-               python-zbar,
-               python-zbarpygtk,
-               python-docutils
+Build-Depends: debhelper (>= 9)
+             , python (>= 2.6)
+             , python-setuptools
+             , python-qrencode
+             , python-gtk2
+             , python-zbar
+             , python-zbarpygtk
+             , python-docutils
 Standards-Version: 3.9.6
 Homepage: http://web.monkeysphere.info/monkeysign
 Vcs-Git: git://git.monkeysphere.info/monkeysign
 
 Package: monkeysign
 Architecture: all
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         ${python:Depends},
-         python-pkg-resources,
-         gnupg,
-         gnupg-agent
-Recommends: python-qrencode,
-            python-gtk2,
-            python-zbar,
-            python-zbarpygtk
+Depends: ${shlibs:Depends}
+       , ${misc:Depends}
+       , ${python:Depends}
+       , python-pkg-resources
+       , gnupg
+       , gnupg-agent
+Recommends: python-qrencode
+          , python-gtk2
+          , python-zbar
+          , python-zbarpygtk
 Description: OpenPGP key signing and exchange for humans
  monkeysign is a tool to overhaul the OpenPGP keysigning experience
  and bring it closer to something that most primates can understand.
