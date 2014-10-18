@@ -21,6 +21,7 @@ monkeysign (2.0.0) unstable; urgency=medium
       (Closes: #756540)
     * some improvements were done in the GnuPG library to work around
       certain GnuPG corner cases and describe problems better
+    * install monkeyscan command as a symlink properly (Closes: #743150)
   * switch to long term support strategy for the 2.0.x release in
     preparation for Debian Jessie
 

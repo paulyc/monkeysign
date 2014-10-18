@@ -9,3 +9,9 @@ export DH_OPTIONS
 
 %:
 	dh $@  --with=python2
+
+override_dh_auto_install:
+	dh_auto_install
+        # workaround a limitation in distutils, see
+        # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=743150
+	ln -sf monkeysign debian/monkeysign/usr/bin/monkeyscan
