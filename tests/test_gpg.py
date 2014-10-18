@@ -150,6 +150,7 @@ class TestKeyringBasics(TestKeyringBase):
         k1 = re.sub(r'Version:.*$', r'', open(os.path.dirname(__file__) + '/96F47C6A.asc').read(), flags=re.MULTILINE)
         self.gpg.context.set_option('armor')
         self.gpg.context.set_option('export-options', 'export-minimal')
+        self.gpg.context.set_option('no-emit-version')
         k2 = re.sub(r'Version:.*$', r'', self.gpg.export_data('96F47C6A'), flags=re.MULTILINE)
         self.assertEqual(k1,k2)
 
