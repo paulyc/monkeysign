@@ -210,8 +210,7 @@ Content-Type: application/pgp-keys; name="signed-7B75921E.asc"
 MIME-Version: 1.0
 Content-Disposition: attachment; filename="signed-7B75921E.asc"
 Content-Transfer-Encoding: 7bit
-Content-Description: =\?utf-8\?q\?signed_PGP_Key_7B75921E=2C_uid_Antoine_Beaup\?=
- =\?utf-8\?b\?csOpIDxhbmFyY2F0QG9yYW5nZXNlZWRzLm9yZz4=\?=
+Content-Description: =\?utf-8\?q\?signed_OpenPGP_Key_7B75921E.*
 
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 .*
@@ -229,7 +228,7 @@ Subject: .*
 From: nobody@example.com
 To: nobody@example.com
 
-This is a multi-part message in PGP/MIME format...
+This is a multi-part message in OpenPGP/MIME format...
 --===============%s==
 Content-Type: application/pgp-encrypted; filename="signedkey.msg"
 MIME-Version: 1.0
