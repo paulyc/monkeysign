@@ -10,6 +10,14 @@ Release process
  * push commits and tags to the git repository
  * add announcement on website and mailing list <monkeysphere@lists.riseup.net>
 
+Support schedule
+================
+
+The 2.0.x branch will be featured in Debian Jessie and will therefore
+be maintained for security fixes for the lifetime of that release. New
+development will then happen on the 3.0 branch, and some features may
+be backported in 2.x point releases.
+
 Bug tracking
 ============
 

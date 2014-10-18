@@ -1,4 +1,4 @@
-monkeysign (2.0) unstable; urgency=medium
+monkeysign (2.0.0) unstable; urgency=medium
 
   * new features:
     * implement qrcode image import, to allow people without webcams to
@@ -21,8 +21,10 @@ monkeysign (2.0) unstable; urgency=medium
       (Closes: #756540)
     * some improvements were done in the GnuPG library to work around
       certain GnuPG corner cases and describe problems better
+  * switch to long term support strategy for the 2.0.x release in
+    preparation for Debian Jessie
 
- -- Antoine Beaupré <anarcat@debian.org>  Fri, 17 Oct 2014 00:28:21 -0400
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 18 Oct 2014 13:25:54 -0400
 
 monkeysign (1.2) unstable; urgency=medium
 
