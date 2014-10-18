@@ -8,10 +8,14 @@
 export DH_OPTIONS
 
 %:
-	dh $@  --with=python2
+	dh $@  --with=python2,sphinxdoc
 
 override_dh_auto_install:
 	dh_auto_install
         # workaround a limitation in distutils, see
         # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=743150
 	ln -sf monkeysign debian/monkeysign/usr/bin/monkeyscan
+
+override_dh_auto_build:
+	dh_auto_build
+	python setup.py build_sphinx
