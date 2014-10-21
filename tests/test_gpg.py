@@ -150,6 +150,7 @@ class TestKeyringBasics(TestKeyringBase):
         k1 = re.sub(r'Version:.*$', r'', open(os.path.dirname(__file__) + '/96F47C6A.asc').read(), flags=re.MULTILINE)
         self.gpg.context.set_option('armor')
         self.gpg.context.set_option('export-options', 'export-minimal')
+        self.gpg.context.set_option('no-emit-version')
         k2 = re.sub(r'Version:.*$', r'', self.gpg.export_data('96F47C6A'), flags=re.MULTILINE)
         self.assertEqual(k1,k2)
 
@@ -244,10 +245,11 @@ class TestKeyringWithKeys(TestKeyringBase):
         self.gpg.context.set_option('local-user', '96F47C6A')
         self.assertTrue(self.gpg.sign_key('7B75921E', True))
 
-    @unittest.expectedFailure
     def test_sign_already_signed(self):
         """test if signing a already signed key fails with a meaningful message"""
-        raise NotImplementedError('not detecting already signed keys properly yet')
+        self.assertTrue(self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>'))
+        with self.assertRaises(GpgRuntimeError):
+            self.gpg.sign_key('Antoine Beaupré <anarcat@debian.org>')
 
     def test_encrypt_decrypt_data_armored_untrusted(self):
         """test if we can encrypt data to our private key (and decrypt it)"""

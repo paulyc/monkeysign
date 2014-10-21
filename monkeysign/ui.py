@@ -78,8 +78,10 @@ class MonkeysignUi(object):
                           help=_('explain what we do along the way'))
         parser.add_option('-n', '--dry-run', dest='dryrun', default=False, action='store_true',
                           help=_('do not actually do anything'))
-        parser.add_option('-u', '--user', dest='user', help=_('user id to sign the key with'))
-        parser.add_option('--cert-level', dest='certlevel', help=_('certification level to sign the key with'))
+        parser.add_option('-u', '--user', dest='user',
+                          help=_('user id to sign the key with (equivalent to GPG\'s --local-user option)'))
+        parser.add_option('--cert-level', dest='certlevel',
+                          help=_('certification level to sign the key with (equivalent to GPG\'s --default-cert-level)'))
         parser.add_option('-l', '--local', dest='local', default=False, action='store_true',
                           help=_('import in normal keyring a local certification'))
         parser.add_option('-k', '--keyserver', dest='keyserver',
@@ -90,7 +92,7 @@ class MonkeysignUi(object):
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
                           help=_('do not send email at all (default: use sendmail)'))
         parser.add_option('-t', '--to', dest='to', 
-                          help=_('override destination email for testing (default: use the first uid on the key or send email to each uid chosen)'))
+                          help=_('override destination email for testing (default: send individually encrypted email to each uid chosen)'))
         return parser
 
     def parse_args(self, args):

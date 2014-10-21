@@ -1,3 +1,12 @@
+monkeysign (2.0.1) unstable; urgency=medium
+
+  * hot patch release while we still can before jessie:
+    * fix tests under GnuPG 2.x
+    * improve usage to clarify -u, --cert-level and --to 
+    * fix version number to include patch release
+
+ -- Antoine Beaupré <anarcat@debian.org>  Mon, 20 Oct 2014 22:24:37 -0400
+
 monkeysign (2.0.0) unstable; urgency=medium
 
   * new features:

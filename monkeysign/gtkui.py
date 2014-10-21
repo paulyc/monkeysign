@@ -264,7 +264,7 @@ class MonkeysignScan(gtk.Window):
                 self.clip = gtk.Clipboard() # Clipboard
                 self.qrcodewidget = gtk.VBox()
                 swin = gtk.ScrolledWindow()
-                swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+                swin.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
                 swin.add_with_viewport(self.qrcode)
                 label = gtk.Label(_('This is a QR-code version of your OpenPGP fingerprint. Scan this with another Monkeysign to transfer your fingerprint.'))
                 label.set_line_wrap(True)
@@ -356,7 +356,7 @@ class MonkeysignScan(gtk.Window):
                                        for suffix in [ '.asc', '.sig' ]:
                                                if os.path.exists(filename + suffix):
                                                        # armored signature exists, verify it
-                                                       verified = self.msui.keyring.verify_file(filename + suffix, filename)
+                                                       verified = self.msui.keyring.verify_file(filename, filename + suffix)
                                        if not verified:
                                                raise GpgRuntimeError(0, _('cannot find signature for image file'))
                                except GpgRuntimeError as e:
