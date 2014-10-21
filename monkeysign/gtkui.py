@@ -264,7 +264,7 @@ class MonkeysignScan(gtk.Window):
                 self.clip = gtk.Clipboard() # Clipboard
                 self.qrcodewidget = gtk.VBox()
                 swin = gtk.ScrolledWindow()
-                swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+                swin.set_policy(gtk.POLICY_NEVER, gtk.POLICY_NEVER)
                 swin.add_with_viewport(self.qrcode)
                 label = gtk.Label(_('This is a QR-code version of your OpenPGP fingerprint. Scan this with another Monkeysign to transfer your fingerprint.'))
                 label.set_line_wrap(True)
