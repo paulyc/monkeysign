@@ -356,7 +356,7 @@ class MonkeysignScan(gtk.Window):
                                        for suffix in [ '.asc', '.sig' ]:
                                                if os.path.exists(filename + suffix):
                                                        # armored signature exists, verify it
-                                                       verified = self.msui.keyring.verify_file(filename, filename + suffix)
+                                                       verified = self.msui.keyring.verify_file(filename + suffix, filename)
                                        if not verified:
                                                raise GpgRuntimeError(0, _('cannot find signature for image file'))
                                except GpgRuntimeError as e:
