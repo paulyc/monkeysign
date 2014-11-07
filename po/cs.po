@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-14 23:21-0400\n"
-"PO-Revision-Date: 2013-10-18 14:07+0200\n"
-"Last-Translator: Michal Čihař Čihař <michal@cihar.com>\n"
-"Language-Team: Czech <http://hosted.weblate.org/projects/monkeysphere/"
-"monkeysign/cs/>\n"
+"PO-Revision-Date: 2014-11-07 09:52+0200\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
+"Language-Team: Czech "
+"<https://hosted.weblate.org/projects/monkeysphere/monkeysign/cs/>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Weblate 1.8-dev\n"
+"X-Generator: Weblate 2.0\n"
 
 #: ../monkeysign/cli.py:26
 msgid ""
@@ -168,9 +168,8 @@ msgid "Open image..."
 msgstr ""
 
 #: ../monkeysign/gtkui.py:186
-#, fuzzy
 msgid "_Save QR code as..."
-msgstr "Uložit QR kód"
+msgstr "_Uložit QR kód jako..."
 
 #: ../monkeysign/gtkui.py:187
 msgid "_Print QR code..."
@@ -181,9 +180,8 @@ msgid "Copy image to clipboard"
 msgstr "Kopírovat obrázek do schránky"
 
 #: ../monkeysign/gtkui.py:189
-#, fuzzy
 msgid "_Copy QR code"
-msgstr "Uložit QR kód"
+msgstr "_Kopírovat QR kód"
 
 #: ../monkeysign/gtkui.py:190
 msgid "Choose identity"
@@ -194,9 +192,8 @@ msgid "Identity"
 msgstr ""
 
 #: ../monkeysign/gtkui.py:191
-#, fuzzy
 msgid "Select video device to use"
-msgstr "Nebylo zjištěno žádné video zařízení."
+msgstr "Zvolte video zařízení"
 
 #: ../monkeysign/gtkui.py:191
 msgid "Video device"
@@ -227,9 +224,8 @@ msgid ""
 msgstr ""
 
 #: ../monkeysign/gtkui.py:291 ../monkeysign/gtkui.py:292
-#, fuzzy
 msgid "Hide QR code"
-msgstr "Uložit QR kód"
+msgstr "Skrýt QR kód"
 
 #: ../monkeysign/gtkui.py:361
 msgid "cannot find signature for image file"
