@@ -356,7 +356,7 @@ class MonkeysignScan(gtk.Window):
                                        for suffix in [ '.asc', '.sig' ]:
                                                if os.path.exists(filename + suffix):
                                                        # armored signature exists, verify it
-                                                       verified = self.msui.keyring.verify_file(filename, filename + suffix)
+                                                       verified = self.msui.keyring.verify_file(filename + suffix, filename)
                                        if not verified:
                                                raise GpgRuntimeError(0, _('cannot find signature for image file'))
                                except GpgRuntimeError as e:
@@ -394,13 +394,17 @@ class MonkeysignScan(gtk.Window):
                 # extract results
                 found = False
                 for symbol in rawimage:
-                        self.zbarframe.remove(self.zbar)
+                        try:
+                                self.zbarframe.remove(self.zbar)
+                        except AttributeError:
+                                # no video display, ignore
+                                pass
                         self.zbarframe.add(self.capture)
                         self.zbarframe.set_shadow_type(gtk.SHADOW_ETCHED_IN)
                         self.process_scan(symbol.data)
                         found = True
                 if not found:
-                        self.msui.warn(_('data found in image!'))
+                        self.msui.warn(_('no data found in image!'))
 
         
         def save_qrcode(self, widget=None):

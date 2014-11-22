@@ -320,8 +320,8 @@ class Keyring():
         self.context.call_command(command)
         return self.context.stdout
 
-    def verify_file(self, filename, sigfile):
-        self.context.call_command(['verify', filename, sigfile])
+    def verify_file(self, sigfile, filename):
+        self.context.call_command(['verify', sigfile, filename])
         fd = StringIO(self.context.stderr)
         try:
             self.context.seek(fd, 'VALIDSIG')
