@@ -156,7 +156,8 @@ class MonkeysignUi(object):
         self.tmpkeyring = TempKeyring()
 
         if self.options.version:
-            self.abort(monkeysign.__version__)
+            print(monkeysign.__version__)
+            sys.exit()
         if self.options.debug:
             self.tmpkeyring.context.debug = self.logfile
             self.keyring.context.debug = self.logfile
