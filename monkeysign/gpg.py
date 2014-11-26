@@ -426,7 +426,6 @@ class Keyring():
         while True:
             m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
             if m and m.group(1) == pattern:
-                # XXX: we don't have the +1 that sign_key has, why?
                 index = int(m.group(2))
                 break
         self.context.write(proc.stdin, str(index))
@@ -513,7 +512,7 @@ class Keyring():
                 # XXX: this will hang if the pattern requested is not found, we need a better way!
                 m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
                 if m and m.group(1) == pattern:
-                    index = int(m.group(2)) + 1
+                    index = int(m.group(2))
                     break
             self.context.write(proc.stdin, str(index))
             self.context.expect(proc.stderr, 'GOT_IT')
