@@ -250,7 +250,7 @@ class Context():
         """
         if self.debug:
             print >>self.debug, "WROTE:", message
-        return print >>fd, message
+        print >>fd, message
     
     def version(self):
         """return the version of the GPG binary"""
