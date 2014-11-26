@@ -503,7 +503,7 @@ class Keyring():
                 # XXX: this will hang if the pattern requested is not found, we need a better way!
                 m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
                 if m and m.group(1) == pattern:
-                    index = int(m.group(2)) + 1
+                    index = int(m.group(2))
                     break
             print >>proc.stdin, str(index)
             self.context.expect(proc.stderr, 'GOT_IT')
