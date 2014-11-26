@@ -478,7 +478,14 @@ class MonkeysignScan(gtk.Window):
                 """callback invoked when gpg key download is finished
                 """
                 self.keep_pulsing=False
-                self.dialog.destroy()
+                try:
+                        self.dialog.destroy()
+                except AttributeError:
+                        # XXX: this should be handled better, bugfix for:
+                        # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=770900
+                        # this is actually because the key was
+                        # imported without having to create a dialog
+                        pass
                 self.msui.log(_('fetching finished'))
                 if condition == 0:
                         # 2. copy the signing key secrets into the keyring
