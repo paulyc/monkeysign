@@ -99,10 +99,11 @@ passwords."""
 
             prompt += _(' (1-%d or full UID, control-c to abort): ') % len(allowed_uids)
 
-            pattern = raw_input(prompt)
+            # workaround http://bugs.python.org/issue7768
+            pattern = raw_input(prompt.encode(sys.stdout.encoding))
             while not (pattern in allowed_uids or (pattern.isdigit() and int(pattern)-1 in range(0,len(allowed_uids)))):
                 print _('invalid uid')
-                pattern = raw_input(prompt)
+                pattern = raw_input(prompt.encode(sys.stdout.encoding))
             if pattern.isdigit():
                 pattern = allowed_uids[int(pattern)-1]
             return pattern
