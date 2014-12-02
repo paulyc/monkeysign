@@ -545,9 +545,12 @@ class MonkeysignScan(gtk.Window):
                         self.msui.log(_('looking for key %s in your keyring') % self.msui.pattern)
                         self.msui.keyring.context.set_option('export-options', 'export-minimal')
                         if self.msui.tmpkeyring.import_data(self.msui.keyring.export_data(self.msui.pattern)):
-                                # XXXX: this actually hangs when signing the key, maybe because we're not in a callback?
-                                # it's the prompting that hangs, see msui.ask...
-                                self.watch_out_callback(0, 0) # XXX: hack, the callback should call a cleaner function
+                                # for some reason, we were holding on to a lock already, release it
+                                gtk.gdk.threads_leave()
+                                self.msui.copy_secrets()
+                                self.msui.sign_key()
+                                self.msui.export_key()
+                                self.resume_capture()
                                 return # XXX: also ugly, reindent everything instead
 
                         # 1.b) if allowed (@todo), from the keyservers
