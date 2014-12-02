@@ -1,3 +1,30 @@
+monkeysign (2.0.2) unstable; urgency=medium
+
+  * this patch releases fixes critical issues...
+  * reported in the Debian BTS:
+    * encode prompt properly before prompting (closes: #771032)
+    * try to handle error when import actually works in GTK UI
+      (closes: #770900)
+    * improve debugging by wrapping all writes to gnupg in debug
+    * use the proper index when selecting key to sign
+      (closes: #771034)
+  * reported on the Monkeysphere mailing list:
+    * hotfix: properly verify the image signature file
+    * hotfix: disable scrolling in qrcode window
+    * don't try to remove non-existent video device, and clarify error
+      message
+    * output --version to stdout and don't make it an error
+  * those fix FTBS issues:
+    * fix tests after cd4e18c: guess encoding properly
+    * update zack's key so tests succeed again
+
+  * and this makes sure this package will be easier to support for the
+    lifetime of jessie
+    * improve error handling again: distinguish different failure cases
+      and clearly transmit GPG errors
+
+ -- Antoine Beaupré <anarcat@debian.org>  Mon, 01 Dec 2014 21:03:56 -0500
+
 monkeysign (2.0.1) unstable; urgency=medium
 
   * hot patch release while we still can before jessie:
