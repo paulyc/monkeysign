@@ -15,6 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import locale
 import sys
 import os
 import getpass
@@ -78,14 +79,14 @@ passwords."""
         # implicit
 
     def yes_no(self, prompt, default = None):
-        ans = raw_input(prompt.encode('utf-8'))
+        ans = raw_input(prompt.encode(sys.stdout.encoding or locale.getpreferredencoding(True)))
         while default is None and ans.lower() not in ["y", "n"]:
-            ans = raw_input(prompt)
+            ans = raw_input(prompt.encode(sys.stdout.encoding or locale.getpreferredencoding(True)))
         if default: return default
         else: return ans.lower() == 'y'
 
     def prompt_line(self, prompt):
-        return raw_input(prompt.encode('utf-8'))
+        return raw_input(prompt.encode(sys.stdout.encoding or locale.getpreferredencoding(True)))
 
     def prompt_pass(self, prompt):
         return getpass.getpass(prompt)
@@ -100,10 +101,10 @@ passwords."""
             prompt += _(' (1-%d or full UID, control-c to abort): ') % len(allowed_uids)
 
             # workaround http://bugs.python.org/issue7768
-            pattern = raw_input(prompt.encode(sys.stdout.encoding))
+            pattern = raw_input(prompt.encode(sys.stdout.encoding or locale.getpreferredencoding(True)))
             while not (pattern in allowed_uids or (pattern.isdigit() and int(pattern)-1 in range(0,len(allowed_uids)))):
                 print _('invalid uid')
-                pattern = raw_input(prompt.encode(sys.stdout.encoding))
+                pattern = raw_input(prompt.encode(sys.stdout.encoding or locale.getpreferredencoding(True)))
             if pattern.isdigit():
                 pattern = allowed_uids[int(pattern)-1]
             return pattern

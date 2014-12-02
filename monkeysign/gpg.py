@@ -242,6 +242,16 @@ class Context():
         """
         return self.expect_pattern(fd, '^\[GNUPG:\] ' + pattern)
 
+    def write(self, fd, message):
+        """write the specified message to gnupg, usually on stdout
+
+        but really, the pipes are often setup outside of here so the
+        fd is hardcoded here
+        """
+        if self.debug:
+            print >>self.debug, "WROTE:", message
+        print >>fd, message
+    
     def version(self):
         """return the version of the GPG binary"""
         self.call_command(['version'])
@@ -416,20 +426,19 @@ class Keyring():
         while True:
             m = self.context.seek_pattern(proc.stdout, '^uid:.::::::::([^:]*):::[^:]*:(\d+),[^:]*:')
             if m and m.group(1) == pattern:
-                # XXX: we don't have the +1 that sign_key has, why?
                 index = int(m.group(2))
                 break
-        print >>proc.stdin, str(index)
+        self.context.write(proc.stdin, str(index))
         self.context.expect(proc.stderr, 'GOT_IT')
         self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
         # end of copy-paste from sign_key()
-        print >>proc.stdin, 'deluid'
+        self.context.write(proc.stdin, 'deluid')
         self.context.expect(proc.stderr, 'GOT_IT')
         self.context.expect(proc.stderr, 'GET_BOOL keyedit.remove.uid.okay')
-        print >>proc.stdin, 'y'
+        self.context.write(proc.stdin, 'y')
         self.context.expect(proc.stderr, 'GOT_IT')
         self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-        print >>proc.stdin, 'save'
+        self.context.write(proc.stdin, 'save')
         self.context.expect(proc.stderr, 'GOT_IT')
         return proc.wait() == 0
 
@@ -468,12 +477,12 @@ class Keyring():
                 try:
                     multiuid = self.context.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
                 except GpgProtocolError as e:
-                    raise GpgRuntimeError(self.context.returncode, _('cannot sign: %s') % re.sub(r'^.*found "(.*)', r'\1', str(e)).decode('utf-8'))
+                    raise GpgRuntimeError(self.context.returncode, _('cannot select uid for signing: %s') % e.found().decode('utf-8'))
             else:
-                raise GpgRuntimeError(self.context.returncode, _('cannot sign: %s') % re.sub(r'^.*found "(.*)', r'\1', str(e)).decode('utf-8'))
+                raise GpgRuntimeError(self.context.returncode, _('cannot select uid for signing: %s') % e.found().decode('utf-8'))
         if multiuid:
             if signall: # special case, sign all keys
-                print >>proc.stdin, "y"
+                self.context.write(proc.stdin, "y")
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # confirm signature
                 try:
@@ -483,8 +492,8 @@ class Keyring():
                         raise GpgRuntimeError(self.context.returncode, _('you already signed that key'))
                     else:
                         # propagate gpg error message up
-                        raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % re.sub(r'^expected.*, found "(.*)$"', r'\1', str(e)).decode('utf-8'))
-                print >>proc.stdin, 'y'
+                        raise GpgRuntimeError(self.context.returncode, _('unable to confirm key signing: %s') % e.found().decode('utf-8'))
+                self.context.write(proc.stdin, 'y')
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
                 # we seek because i have seen a USERID_HINT <keyid> <uid> in some cases
@@ -495,7 +504,7 @@ class Keyring():
                 return proc.wait() == 0
 
             # don't sign all uids
-            print >>proc.stdin, "n"
+            self.context.write(proc.stdin, "n")
             self.context.expect(proc.stderr, 'GOT_IT')
             # select the uid
             self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
@@ -505,21 +514,21 @@ class Keyring():
                 if m and m.group(1) == pattern:
                     index = int(m.group(2))
                     break
-            print >>proc.stdin, str(index)
+            self.context.write(proc.stdin, str(index))
             self.context.expect(proc.stderr, 'GOT_IT')
             # sign the selected uid
             self.context.seek(proc.stderr, 'GET_LINE keyedit.prompt')
-            print >>proc.stdin, "sign"
+            self.context.write(proc.stdin, "sign")
             self.context.expect(proc.stderr, 'GOT_IT')
             # confirm signature
             try:
                 self.context.expect(proc.stderr, 'GET_BOOL sign_uid.okay')
             except GpgProtocolError as e:
                 # propagate gpg error message up
-                raise GpgRuntimeError(self.context.returncode, _('unable to open key for editing: %s') % re.sub(r'^expected.*, found "(.*)$"', r'\1', str(e)).decode('utf-8'))
+                raise GpgRuntimeError(self.context.returncode, _('unable to confirm signing one key: %s') % e.found().decode('utf-8'))
 
         # we fallthrough here if there's only one key to sign
-        print >>proc.stdin, 'y'
+        self.context.write(proc.stdin, 'y')
 
         try:
             self.context.expect(proc.stderr, 'GOT_IT')
@@ -529,7 +538,7 @@ class Keyring():
             if 'EXPIRED' in str(e):
                 raise GpgRuntimeError(self.context.returncode, _('key is expired, cannot sign'))
             else:
-                raise GpgRuntimeError(self.context.returncode, _('cannot sign, unknown error from gpg: %s') % str(e) + proc.stderr.read())
+                raise GpgRuntimeError(self.context.returncode, _('unable to signing a single key: %s') % e.found().decode('utf-8') + proc.stderr.read())
         # expect the passphrase confirmation
         try:
             self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
@@ -538,7 +547,7 @@ class Keyring():
         if multiuid:
             # we save the resulting key in uid selection mode
             self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
-            print >>proc.stdin, "save"
+            self.context.write(proc.stdin, "save")
             self.context.expect(proc.stderr, 'GOT_IT')
         return proc.wait() == 0
 
@@ -764,7 +773,21 @@ class GpgProtocolError(IOError):
     module should instead raise a GpgRutimeError with a user-readable
     error message (e.g. "key not found").
     """
-    pass
+
+    def match(self):
+        return re.search(r'(?:\[Errno [0-9]*\] )?expected "([^"]*)", found "(.*)\n*"', str(self))
+
+    def found(self):
+        if self.match():
+            return self.match().group(2)
+        else:
+            return '<no error found in GPG output>'
+
+    def expected(self):
+        if self.match():
+            return self.match().group(1)
+        else:
+            return '<not waiting for pattern>'
 
 class GpgRuntimeError(IOError):
     pass
