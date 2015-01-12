@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-14 23:21-0400\n"
-"PO-Revision-Date: 2014-12-19 23:10+0200\n"
-"Last-Translator: Ahmed El Azzabi <ahmedtek1993@gmail.com>\n"
+"PO-Revision-Date: 2015-01-12 13:34+0200\n"
+"Last-Translator: Michal Čihař <michal@cihar.com>\n"
 "Language-Team: French "
 "<https://hosted.weblate.org/projects/monkeysphere/monkeysign/fr/>\n"
 "Language: fr\n"
@@ -119,7 +119,7 @@ msgstr "impossible d'ouvrir la clé pour l'édition: %s"
 
 #: ../monkeysign/gpg.py:494
 msgid "unable to prompt for passphrase, is gpg-agent running?"
-msgstr "imposssible d'obtenir le mot de passe, est-ce que gpg-agent est lancé?"
+msgstr "imposssible d'obtenir le mot de passe, est-ce que gpg-agent est lancé ?"
 
 #: ../monkeysign/gpg.py:530
 msgid "key is expired, cannot sign"
@@ -302,7 +302,7 @@ msgstr "Lire une image pour un code QR"
 
 #: ../monkeysign/gtkui.py:403
 msgid "data found in image!"
-msgstr "données trouvées dans l'image!"
+msgstr "données trouvées dans l'image !"
 
 #: ../monkeysign/gtkui.py:410 ../monkeysign/gtkui.py:435
 msgid ""
@@ -464,7 +464,7 @@ msgstr "clé de signature choisie: %s"
 #: ../monkeysign/ui.py:269
 msgid "could not find public key material, do you have a GPG key?"
 msgstr ""
-"impossible de trouver une clé publique, est-ce que vous avez une clé GPG?"
+"impossible de trouver une clé publique, est-ce que vous avez une clé GPG ?"
 
 #: ../monkeysign/ui.py:276
 #, python-format
@@ -591,6 +591,7 @@ msgid ""
 "\n"
 "Regards,\n"
 msgstr ""
+"\n"
 "Veuillez trouver en pièce jointe votre clé OpenPGP signée. Vous pouvez\n"
 "importer la clé en passant la pièce jointe dans `gpg --import`.\n"
 "\n"
