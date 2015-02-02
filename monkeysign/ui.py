@@ -359,7 +359,7 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                     self.abort(_('Unexpected SMTP server error while talking to %s, code: %s (%s)') % (self.options.smtpserver, code, srvmsg))
                 try:
                     server.starttls()
-                except SMTPException:
+                except smtplib.SMTPException:
                     self.warn(_('SMTP server does not support STARTTLS'))
                     if self.options.smtpuser: self.warn(_('authentication credentials will be sent in clear text'))
                 if self.options.smtpuser:
