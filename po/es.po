@@ -6,16 +6,16 @@ msgstr ""
 "Project-Id-Version: monkeysign2.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-08-14 23:21-0400\n"
-"PO-Revision-Date: 2013-10-16 05:26+0200\n"
-"Last-Translator: Antoine Beaupré <anarcat@debian.org>\n"
-"Language-Team: Spanish <http://hosted.weblate.org/projects/monkeysphere/"
-"monkeysign/es/>\n"
+"PO-Revision-Date: 2015-02-03 22:54+0200\n"
+"Last-Translator: Gonzalo Exequiel Pedone <hipersayan.x@gmail.com>\n"
+"Language-Team: Spanish "
+"<https://hosted.weblate.org/projects/monkeysphere/monkeysign/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 1.7\n"
+"X-Generator: Weblate 2.2-dev\n"
 
 #: ../monkeysign/cli.py:26
 msgid ""
@@ -55,7 +55,7 @@ msgstr "incorrecto numero de argumentos, prueba -h para ayuda"
 #: ../monkeysign/cli.py:57
 #, python-format
 msgid "reset GPG_TTY to %s"
-msgstr ""
+msgstr "reiniciar GPG_TTY a %s"
 
 #: ../monkeysign/cli.py:65
 #, python-format
@@ -78,14 +78,14 @@ msgid "invalid uid"
 msgstr "uid invalido"
 
 #: ../monkeysign/gpg.py:209
-#, fuzzy, python-format
+#, python-format
 msgid "could not find pattern '%s' in input, last skipped '%s'"
-msgstr "no se encuentra paterna '%s' en input"
+msgstr "no se encuentra el patrón '%s' en la entrada, último omitido '%s'"
 
 #: ../monkeysign/gpg.py:329
-#, fuzzy, python-format
+#, python-format
 msgid "verifying file %s failed: %s."
-msgstr "encripcíon a %s se falló: %s."
+msgstr "La verificación del archivo %s a fallado: %s."
 
 #: ../monkeysign/gpg.py:366 ../monkeysign/gpg.py:386
 #, python-format
@@ -105,12 +105,11 @@ msgstr "descifrar se falló: %s"
 #: ../monkeysign/gpg.py:471 ../monkeysign/gpg.py:473
 #, python-format
 msgid "cannot sign: %s"
-msgstr ""
+msgstr "No se puede firmar: %s"
 
 #: ../monkeysign/gpg.py:483
-#, fuzzy
 msgid "you already signed that key"
-msgstr "Tu firmado OpenPGP clave"
+msgstr "Ya has firmado esa clave"
 
 #: ../monkeysign/gpg.py:486 ../monkeysign/gpg.py:519
 #, python-format
@@ -120,15 +119,17 @@ msgstr "imposible a abrir clave a editar:%s"
 #: ../monkeysign/gpg.py:494
 msgid "unable to prompt for passphrase, is gpg-agent running?"
 msgstr ""
+"no se puede obtener la frase de contraseña,  ¿esta el agente gpg en "
+"ejecución?"
 
 #: ../monkeysign/gpg.py:530
 msgid "key is expired, cannot sign"
-msgstr ""
+msgstr "la clave ha expirado, no se puede firmar"
 
 #: ../monkeysign/gpg.py:532
 #, python-format
 msgid "cannot sign, unknown error from gpg: %s"
-msgstr ""
+msgstr "no se puede firmar, error desconocido de gpg: %s"
 
 #: ../monkeysign/gpg.py:537
 msgid "password confirmation failed"
@@ -193,43 +194,39 @@ msgstr "_Fichero"
 
 #: ../monkeysign/gtkui.py:185
 msgid "Open image..."
-msgstr ""
+msgstr "Abrir imagen..."
 
 #: ../monkeysign/gtkui.py:186
-#, fuzzy
 msgid "_Save QR code as..."
-msgstr "Guardar código-qr"
+msgstr "Guardar código QR como (_S)..."
 
 #: ../monkeysign/gtkui.py:187
 msgid "_Print QR code..."
-msgstr ""
+msgstr "Im_primir el código QR..."
 
 #: ../monkeysign/gtkui.py:189
 msgid "Copy image to clipboard"
 msgstr "Copiar imagen a carpeta"
 
 #: ../monkeysign/gtkui.py:189
-#, fuzzy
 msgid "_Copy QR code"
-msgstr "Guardar código-qr"
+msgstr "_Copiar código QR"
 
 #: ../monkeysign/gtkui.py:190
-#, fuzzy
 msgid "Choose identity"
-msgstr "Elige el identidad a firmar"
+msgstr "Elegir la identidad para firmar"
 
 #: ../monkeysign/gtkui.py:190
 msgid "Identity"
-msgstr ""
+msgstr "Identidad"
 
 #: ../monkeysign/gtkui.py:191
-#, fuzzy
 msgid "Select video device to use"
-msgstr "No dispositivo de vídeo encontrado."
+msgstr "Seleccione el dispositivo de video a usar"
 
 #: ../monkeysign/gtkui.py:191
 msgid "Video device"
-msgstr ""
+msgstr "Dispositivo de video"
 
 #: ../monkeysign/gtkui.py:192
 msgid "_Quit"
@@ -237,7 +234,7 @@ msgstr "_Salir"
 
 #: ../monkeysign/gtkui.py:201
 msgid "Disable video"
-msgstr ""
+msgstr "Deshabilitar video"
 
 #: ../monkeysign/gtkui.py:245
 msgid "No video device detected."
@@ -248,21 +245,24 @@ msgid ""
 "This is the output of your webcam, align a qrcode in the image to scan a "
 "fingerprint."
 msgstr ""
+"Esta es la salida de tu webcam, alinea un código QR en la imagen para "
+"escanear la huella."
 
 #: ../monkeysign/gtkui.py:269
 msgid ""
 "This is a QR-code version of your PGP fingerprint. Scan this with another "
 "monkeysign to transfer your fingerprint."
 msgstr ""
+"Esta es un versión en código QR de tu firma. Escanea este código con otro "
+"monkeysign para transferir tu huella."
 
 #: ../monkeysign/gtkui.py:291 ../monkeysign/gtkui.py:292
-#, fuzzy
 msgid "Hide QR code"
-msgstr "Guardar código-qr"
+msgstr "Ocultar código QR"
 
 #: ../monkeysign/gtkui.py:361
 msgid "cannot find signature for image file"
-msgstr ""
+msgstr "no se pudo encontrar la firma para el archivo de imagen"
 
 #: ../monkeysign/gtkui.py:363
 #, python-format
@@ -279,6 +279,18 @@ msgid ""
 "\n"
 "    gpg -s --detach %s\n"
 msgstr ""
+"La imagen provista no puede ser verificada usando una firma OpenPGP de "
+"confianza.\n"
+"\n"
+"¡Compruebe que la imagen viene de una fuente confiable (ej. su propia "
+"cámara, la cual nunca ha dejado sin vigilar) antes de firmarla!\n"
+"\n"
+"¡NUNCA FIRME HUELLAS EN LAS QUE NO CONFÍA!\n"
+"\n"
+"Para quitar esta advertencia, si realmente confía en la imagen, use el "
+"siguiente comando para firmar el archivo\n"
+"\n"
+"    gpg -s --detach %s\n"
 
 #: ../monkeysign/gtkui.py:365
 msgid "image signature verified successfully"
