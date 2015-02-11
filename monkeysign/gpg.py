@@ -68,6 +68,7 @@ to the user.
 """
 
 import os, tempfile, shutil, subprocess, re
+from datetime import datetime
 
 from StringIO import StringIO
 
@@ -570,9 +571,18 @@ class OpenPGPkey():
     # @todo - not implemented
     revoked = False
 
-    # the expiry date is set and it is passed
-    # @todo - not implemented
-    expired = False
+    @property
+    def expired(self):
+        if not self.expiry:
+            ret = False
+        else:
+            expiry = int(self.expiry)
+            if expiry == 0:
+                ret = False
+            else:
+                exp = datetime.fromtimestamp(expiry)
+                ret = datetime.now() > exp
+        return ret
 
     # the key has been disabled
     # @todo - not implemented
