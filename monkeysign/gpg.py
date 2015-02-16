@@ -743,6 +743,14 @@ class OpenPGPkey():
             ret += u"\n"
         return ret
 
+
+    def __repr__(self):
+        s = '<OpenPGPKey(%s UIDs:%d)>'
+        s %= (self.fpr,  len(self.uidslist))
+        
+        return s
+
+
     def format_fpr(self):
         """display a clean version of the fingerprint
 
