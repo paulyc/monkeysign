@@ -566,9 +566,27 @@ class OpenPGPkey():
     Some of this datastructure is taken verbatim from GPGME.
     """
 
-    # the key has a revocation certificate
-    # @todo - not implemented
-    revoked = False
+    @property
+    def revoked(self):
+        '''Returns whether GnuPG thinks the key has been revoked
+        
+        This is the second field of the result of the --list-key --with-colons
+        call.  Note that this information is only present on public keys,
+        i.e. not on secret keys.
+        
+        Returns None if it cannot be determined whether this key has
+        been revoked.'''
+        if self.trust == '-':
+            # We cannot determine whether this key has been revoked.
+            # Locate the public key and try again.
+            is_revoked = None
+        elif self.trust == 'r':
+            is_revoked = True
+        else:
+            is_revoked = False
+            
+        return is_revoked
+
 
     # the expiry date is set and it is passed
     # @todo - not implemented
