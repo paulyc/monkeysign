@@ -772,6 +772,13 @@ class OpenPGPuid():
     def get_trust(self):
         return OpenPGPkey.trust_map[self.trust]
 
+    def __repr__(self):
+        s = '<OpenPGPuid(%s) [%s:%s:%s]>' 
+        s %= (self.uid, self.trust, self.creation, self.expire)
+
+        return s
+
+
 class GpgProtocolError(IOError):
     """simple exception raised when we have trouble talking with GPG
 
