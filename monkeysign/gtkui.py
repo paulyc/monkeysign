@@ -275,8 +275,12 @@ class MonkeysignScan(gtk.Window):
                 """list the secret keys for selection somewhere"""
                 i = 0
                 radiogroup = None
-                for key in Keyring().get_keys(None, True, False).values():
-                        if key.invalid or key.disabled or key.expired or key.revoked:
+                for fpr, key in Keyring().get_keys(None, True, False).items():
+                        pub_keys = Keyring().get_keys(fpr, public=True, secret=False)
+                        assert len(pub_keys) == 1
+                        pub_key = pub_keys[fpr]
+                        if     pub_key.invalid or pub_key.disabled \
+                            or pub_key.expired or pub_key.revoked:
                                 continue
                         uid = key.uidslist[0].uid
                         self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', key.fpr, key.fpr, gtk.UI_MANAGER_AUTO, True)
