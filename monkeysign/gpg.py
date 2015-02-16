@@ -777,6 +777,27 @@ class OpenPGPuid():
         self.expire = expire
         self.uidhash = uidhash
 
+
+    @property
+    def revoked(self):
+        '''Whether this UID has been revoked
+        
+        Note that, due to GnuPG not exporting that information
+        for secret keys, UIDs of secret keys do not carry that
+        information.
+        
+        Return None if it cannot be determined whether this UID
+        has been revoked.  Try again with the public key.'''
+        if self.trust == '-':
+            is_revoked = None
+        elif self.trust == 'r':
+            is_revoked = True
+        else:
+            is_revoked = False
+            
+        return is_revoked
+
+
     def get_trust(self):
         return OpenPGPkey.trust_map[self.trust]
 
