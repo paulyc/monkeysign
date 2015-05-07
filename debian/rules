@@ -4,6 +4,11 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+LAST_CHANGE=$(shell dpkg-parsechangelog -S Date)
+BUILD_TIMESTAMP=$(shell LC_ALL=C date -u "+%s" -d "$(LAST_CHANGE)")
+
+export BUILD_TIMESTAMP
+
 # This has to be exported to make some magic below work.
 export DH_OPTIONS
 

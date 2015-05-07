@@ -4,6 +4,7 @@
 
 import os
 import datetime
+import time
 from distutils.command.build import build
 from distutils.core import Command
 from distutils.errors import DistutilsOptionError
@@ -28,7 +29,7 @@ class build_manpage(Command):
             raise DistutilsOptionError('\'output\' option is required')
         if self.parsers is None:
             raise DistutilsOptionError('\'parser\' option is required')
-        self._today = datetime.date.today()
+        self._today = datetime.date.fromtimestamp(float(os.getenv('BUILD_TIMESTAMP', time.time())))
         self._parsers = []
         for parser in self.parsers.split():
             scriptname, mod_name, func_name = parser.split(':')
