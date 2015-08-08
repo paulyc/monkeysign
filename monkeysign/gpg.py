@@ -683,35 +683,35 @@ class OpenPGPkey():
             #print >>sys.stderr, "\n"
             rectype = record[0]
             if rectype == 'tru':
-                (rectype, trust, selflen, algo, keyid, creation, expiry, serial) = record[:9]
+                (rectype, trust, selflen, algo, keyid, creation, expiry, serial) = record[:8]
             elif rectype == 'fpr':
                 if not self.fpr:
                     self.fpr = record[9]
             elif rectype == 'pub':
-                (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:12]
+                (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:13]
                 for p in self.purpose:
                     self.purpose[p] = p[0].lower() in purpose.lower()
                 if self.trust == '':
                     self.trust = '-'
             elif rectype == 'uid':
-                (rectype, trust, null, null, null, creation, expiry, uidhash, null, uid) = record[:11]
+                (rectype, trust, null, null, null, creation, expiry, uidhash, null, uid) = record[:10]
                 uid = OpenPGPuid(uid, trust, creation, expiry, uidhash)
                 self.uids[uidhash] = uid
                 uidslist.append(uid)
             elif rectype == 'sub':
                 subkey = OpenPGPkey()
-                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:14]
+                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:13]
                 for p in subkey.purpose:
                     subkey.purpose[p] = p[0].lower() in purpose.lower()
                 self.subkeys[subkey._keyid] = subkey
             elif rectype == 'sec':
-                (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:14]
+                (null, self.trust, self.length, self.algo, keyid, self.creation, self.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:13]
                 self.secret = True
                 if self.trust == '':
                     self.trust = '-'
             elif rectype == 'ssb':
                 subkey = OpenPGPkey()
-                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:14]
+                (rectype, trust, subkey.length, subkey.algo, subkey._keyid, subkey.creation, subkey.expiry, serial, trust, uid, sigclass, purpose, smime) = record[:13]
                 if subkey._keyid in self.subkeys:
                     # XXX: nothing else to add here?
                     self.subkeys[subkey._keyid].secret = True
