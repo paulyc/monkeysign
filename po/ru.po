@@ -1,0 +1,529 @@
+# Russian translations for PACKAGE package.
+# Copyright (C) 2015 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Automatically generated, 2015.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-08-14 23:21-0400\n"
+"PO-Revision-Date: 2013-08-14 23:21-0400\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#: ../monkeysign/cli.py:26
+msgid ""
+"sign a key in a safe fashion.\n"
+"\n"
+"This command signs a key based on the fingerprint or user id\n"
+"specified on the commandline, encrypt the result and mail it to the\n"
+"user. This leave the choice of publishing the certification to that\n"
+"person and makes sure that person owns the identity signed.\n"
+"\n"
+"This program assumes you have gpg-agent configured to prompt for\n"
+"passwords."
+msgstr ""
+
+#: ../monkeysign/cli.py:37
+msgid "%prog [options] <keyid>"
+msgstr ""
+
+#: ../monkeysign/cli.py:38
+msgid "<keyid>: a GPG fingerprint or key id"
+msgstr ""
+
+#: ../monkeysign/cli.py:45
+msgid "wrong number of arguments, use -h for full help"
+msgstr ""
+
+#: ../monkeysign/cli.py:57
+#, python-format
+msgid "reset GPG_TTY to %s"
+msgstr ""
+
+#: ../monkeysign/cli.py:65
+#, python-format
+msgid ""
+"Preparing to sign with this key\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../monkeysign/cli.py:100
+#, python-format
+msgid " (1-%d or full UID, control-c to abort): "
+msgstr ""
+
+#: ../monkeysign/cli.py:104
+msgid "invalid uid"
+msgstr ""
+
+#: ../monkeysign/gpg.py:209
+#, python-format
+msgid "could not find pattern '%s' in input, last skipped '%s'"
+msgstr ""
+
+#: ../monkeysign/gpg.py:329
+#, python-format
+msgid "verifying file %s failed: %s."
+msgstr ""
+
+#: ../monkeysign/gpg.py:366 ../monkeysign/gpg.py:386
+#, python-format
+msgid "unexpected GPG exit code in list-keys: %d"
+msgstr ""
+
+#: ../monkeysign/gpg.py:398
+#, python-format
+msgid "encryption to %s failed: %s."
+msgstr ""
+
+#: ../monkeysign/gpg.py:409
+#, python-format
+msgid "decryption failed: %s"
+msgstr ""
+
+#: ../monkeysign/gpg.py:471 ../monkeysign/gpg.py:473
+#, python-format
+msgid "cannot sign: %s"
+msgstr ""
+
+#: ../monkeysign/gpg.py:483
+msgid "you already signed that key"
+msgstr ""
+
+#: ../monkeysign/gpg.py:486 ../monkeysign/gpg.py:519
+#, python-format
+msgid "unable to open key for editing: %s"
+msgstr ""
+
+#: ../monkeysign/gpg.py:494
+msgid "unable to prompt for passphrase, is gpg-agent running?"
+msgstr ""
+
+#: ../monkeysign/gpg.py:530
+msgid "key is expired, cannot sign"
+msgstr ""
+
+#: ../monkeysign/gpg.py:532
+#, python-format
+msgid "cannot sign, unknown error from gpg: %s"
+msgstr ""
+
+#: ../monkeysign/gpg.py:537
+msgid "password confirmation failed"
+msgstr ""
+
+#: ../monkeysign/gpg.py:708
+#, python-format
+msgid "record type '%s' not implemented"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:40
+msgid ""
+"sign a key in a safe fashion using a webcam to scan for qr-codes\n"
+"\n"
+"This command will fire up a graphical interface and turn on the webcam\n"
+"(if available) on this computer. It will also display a qr-code of\n"
+"your main OpenPGP key.\n"
+"\n"
+"The webcam is used to capture an OpenPGP fingerprint represented as a\n"
+"qrcode (or whatever the zbar library can parse) and then go through a\n"
+"signing process.\n"
+"\n"
+"The signature is then encrypted and mailed to the user. This leave the\n"
+"choice of publishing the certification to that person and makes sure\n"
+"that person owns the identity signed.\n"
+"\n"
+"This program assumes you have gpg-agent configure to prompt for\n"
+"passwords.\n"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:120
+msgid "okay, signing"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:123
+msgid "user denied signature"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:152
+msgid "Monkeysign (scan)"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:184
+msgid "_File"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:185
+msgid "Open image..."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:186
+msgid "_Save QR code as..."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:187
+msgid "_Print QR code..."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:189
+msgid "Copy image to clipboard"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:189
+msgid "_Copy QR code"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:190
+msgid "Choose identity"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:190
+msgid "Identity"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:191
+msgid "Select video device to use"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:191
+msgid "Video device"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:192
+msgid "_Quit"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:201
+msgid "Disable video"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:245
+msgid "No video device detected."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:251
+msgid ""
+"This is the output of your webcam, align a qrcode in the image to scan a "
+"fingerprint."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:269
+msgid ""
+"This is a QR-code version of your PGP fingerprint. Scan this with another "
+"monkeysign to transfer your fingerprint."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:291 ../monkeysign/gtkui.py:292
+msgid "Hide QR code"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:361
+msgid "cannot find signature for image file"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:363
+#, python-format
+msgid ""
+"The image provided cannot be verified using a trusted OpenPGP signature.\n"
+"\n"
+"Make sure the image comes from a trusted source (e.g. your own camera, which "
+"you have never left unsurveilled) before signing this!\n"
+"\n"
+"DO NOT SIGN UNTRUSTED FINGERPRINTS!\n"
+"\n"
+"To get rid of this warning, if you really trust this image, use the "
+"following command to sign the file\n"
+"\n"
+"    gpg -s --detach %s\n"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:365
+msgid "image signature verified successfully"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:370
+msgid "Scan an image for QR codes"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:403
+msgid "data found in image!"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:410 ../monkeysign/gtkui.py:435
+msgid ""
+"No identity selected. Select one from the identiy menu or generate a OpenPGP "
+"key if none is available."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:414
+msgid "Save QR code"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:478
+msgid "fetching finished"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:523
+msgid "zbar captured a frame, looking for 40 character hexadecimal fingerprint"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:534 ../monkeysign/ui.py:229
+#, python-format
+msgid "looking for key %s in your keyring"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:547
+msgid "Please wait"
+msgstr ""
+
+#: ../monkeysign/gtkui.py:549
+msgid "Retrieving public key from server..."
+msgstr ""
+
+#: ../monkeysign/gtkui.py:563
+#, python-format
+msgid "data found in barcode does not match a OpenPGP fingerprint pattern: %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:74
+msgid "show version information and quit"
+msgstr ""
+
+#: ../monkeysign/ui.py:76
+msgid "request debugging information from GPG engine (lots of garbage)"
+msgstr ""
+
+#: ../monkeysign/ui.py:78
+msgid "explain what we do along the way"
+msgstr ""
+
+#: ../monkeysign/ui.py:80
+msgid "do not actually do anything"
+msgstr ""
+
+#: ../monkeysign/ui.py:81
+msgid "user id to sign the key with"
+msgstr ""
+
+#: ../monkeysign/ui.py:82
+msgid "certification level to sign the key with"
+msgstr ""
+
+#: ../monkeysign/ui.py:84
+msgid "import in normal keyring a local certification"
+msgstr ""
+
+#: ../monkeysign/ui.py:86
+msgid "keyserver to fetch keys from"
+msgstr ""
+
+#: ../monkeysign/ui.py:87
+msgid ""
+"SMTP server to use, use a colon to specify the port number if non-standard"
+msgstr ""
+
+#: ../monkeysign/ui.py:88
+msgid "username for the SMTP server (default: no user)"
+msgstr ""
+
+#: ../monkeysign/ui.py:89
+msgid ""
+"password for the SMTP server (default: prompted, if --smtpuser is specified)"
+msgstr ""
+
+#: ../monkeysign/ui.py:91
+msgid "Do not send email at all. (Default is to use sendmail.)"
+msgstr ""
+
+#: ../monkeysign/ui.py:93
+msgid ""
+"Override destination email for testing (default is to use the first uid on "
+"the key or send email to each uid chosen)"
+msgstr ""
+
+#: ../monkeysign/ui.py:136
+msgid "Initializing UI"
+msgstr ""
+
+#: ../monkeysign/ui.py:147
+#, python-format
+msgid "deleting the temporary keyring %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:172
+msgid "copied your gpg.conf in temporary keyring"
+msgstr ""
+
+#: ../monkeysign/ui.py:231
+msgid "key not in local keyring"
+msgstr ""
+
+#: ../monkeysign/ui.py:234
+#, python-format
+msgid "fetching key %s from keyservers"
+msgstr ""
+
+#: ../monkeysign/ui.py:238
+msgid "please provide a keyid or fingerprint, uids are not supported yet"
+msgstr ""
+
+#: ../monkeysign/ui.py:241
+#, python-format
+msgid "could not find key %s in your keyring or keyservers"
+msgstr ""
+
+#: ../monkeysign/ui.py:250
+#, python-format
+msgid "copying your private key to temporary keyring in %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:258
+#, python-format
+msgid "found secret key: %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:264
+msgid "no default secret key found, abort!"
+msgstr ""
+
+#: ../monkeysign/ui.py:265
+#, python-format
+msgid "signing key chosen: %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:269
+msgid "could not find public key material, do you have a GPG key?"
+msgstr ""
+
+#: ../monkeysign/ui.py:276
+#, python-format
+msgid "found %d keys matching your request"
+msgstr ""
+
+#: ../monkeysign/ui.py:279
+#, python-format
+msgid ""
+"Signing the following key\n"
+"\n"
+"%s\n"
+"\n"
+"Sign all identities? [y/N] "
+msgstr ""
+
+#: ../monkeysign/ui.py:291
+msgid "Choose the identity to sign"
+msgstr ""
+
+#: ../monkeysign/ui.py:293
+msgid "no identity chosen"
+msgstr ""
+
+#: ../monkeysign/ui.py:300
+msgid "Really sign key? [y/N] "
+msgstr ""
+
+#: ../monkeysign/ui.py:303
+msgid "key signing failed"
+msgstr ""
+
+#: ../monkeysign/ui.py:307
+msgid "making a non-exportable signature"
+msgstr ""
+
+#: ../monkeysign/ui.py:312
+msgid ""
+"could not import public key back into public keyring, something is wrong"
+msgstr ""
+
+#: ../monkeysign/ui.py:314
+msgid "local key signing failed"
+msgstr ""
+
+#: ../monkeysign/ui.py:322
+msgid "no key signed, nothing to export"
+msgstr ""
+
+#: ../monkeysign/ui.py:330 ../monkeysign/ui.py:337
+#, python-format
+msgid "failed to create email: %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:354
+#, python-format
+msgid "Error connecting to SMTP server %s: %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:356
+#, python-format
+msgid "Unexpected SMTP server error while talking to %s, code: %s (%s)"
+msgstr ""
+
+#: ../monkeysign/ui.py:360
+msgid "SMTP server does not support STARTTLS"
+msgstr ""
+
+#: ../monkeysign/ui.py:361
+msgid "authentication credentials will be sent in clear text"
+msgstr ""
+
+#: ../monkeysign/ui.py:364
+#, python-format
+msgid "enter SMTP password for server %s: "
+msgstr ""
+
+#: ../monkeysign/ui.py:368
+#, python-format
+msgid "sent message through SMTP server %s to %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:374
+#, python-format
+msgid "sent message through sendmail to %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:377
+#, python-format
+msgid ""
+"not sending email to %s, as requested, here's the email message:\n"
+"\n"
+"%s"
+msgstr ""
+
+#: ../monkeysign/ui.py:392
+msgid "Your signed OpenPGP key"
+msgstr ""
+
+#: ../monkeysign/ui.py:395
+msgid ""
+"\n"
+"Please find attached your signed PGP key. You can import the signed\n"
+"key by running each through `gpg --import`.\n"
+"\n"
+"If you have multiple user ids, each signature was sent in a separate\n"
+"email to each user id.\n"
+"\n"
+"Note that your key was not uploaded to any keyservers. If you want\n"
+"this new signature to be available to others, please upload it\n"
+"yourself.  With GnuPG this can be done using:\n"
+"\n"
+"    gpg --keyserver pool.sks-keyservers.net --send-key <keyid>\n"
+"\n"
+"Regards,\n"
+msgstr ""
+
+#: ../monkeysign/ui.py:494
+#, python-format
+msgid "signed PGP Key %s, uid %s"
+msgstr ""
+
+#: ../monkeysign/ui.py:507
+msgid "This is a multi-part message in PGP/MIME format..."
+msgstr ""
