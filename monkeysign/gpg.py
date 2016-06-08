@@ -576,12 +576,7 @@ class OpenPGPkey():
         if not self.expiry:
             ret = False
         else:
-            expiry = int(self.expiry)
-            if expiry == 0:
-                ret = False
-            else:
-                exp = datetime.fromtimestamp(expiry)
-                ret = datetime.now() > exp
+            ret = datetime.now() > self.expiry
         return ret
 
     # the key has been disabled
@@ -726,6 +721,15 @@ class OpenPGPkey():
             else:
                 raise NotImplementedError(_("record type '%s' not implemented") % rectype)
         if uidslist: self.uidslist = uidslist
+
+        # Here we try to make a more Pythonic datetime object from
+        # the epoch.
+        if self.expiry:
+            expiry = int(self.expiry)
+            if expiry > 0:
+                self.expiry = datetime.fromtimestamp(expiry)
+        elif self.expiry == '':
+                self.expiry = None
 
     def __str__(self):
         ret = u'pub  [%s] %sR/' % (self.get_trust(), self.length)
