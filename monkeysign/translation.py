@@ -15,6 +15,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
 import os
 import sys
 import msgfmt
@@ -33,7 +34,7 @@ try:
         locale.textdomain('monkeysign')
     gettext.install('monkeysign', pkg_resources.resource_filename('monkeysign', "po"), unicode=True, names='ngettext')
 except Exception as e:
-    print "Unable to initialize translations: %s" % e
+    print ("Unable to initialize translations: %s" % e)
     import __builtin__
     __builtin__.__dict__["_"] = lambda x: x
 
