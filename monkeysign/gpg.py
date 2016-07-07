@@ -498,10 +498,19 @@ class Keyring():
                 self.context.expect(proc.stderr, 'GOT_IT')
                 # expect the passphrase confirmation
                 # we seek because i have seen a USERID_HINT <keyid> <uid> in some cases
-                try:
-                    self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
-                except GpgProtocolError:
-                    raise GpgRuntimeError(self.context.returncode, _('unable to prompt for passphrase, is gpg-agent running?'))
+
+                # The GnuPG (1.4 and 2.1) man page states that all is fine
+                # if gpg exits with 0.  So let's assume that once we see
+                # 0, we're good.
+                # We have seen instances in which the GOOD_PASSPHRASE
+                # is not sent with GnuPG 2.1, maybe because the agent
+                # cached the passphrase.
+                if self.context.returncode != 0:
+                    try:
+                        self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+                    except GpgProtocolError:
+                        raise GpgRuntimeError(self.context.returncode,
+                                              _('unable to prompt for passphrase, is gpg-agent running?'))
                 return proc.wait() == 0
 
             # don't sign all uids
@@ -540,11 +549,12 @@ class Keyring():
                 raise GpgRuntimeError(self.context.returncode, _('key is expired, cannot sign'))
             else:
                 raise GpgRuntimeError(self.context.returncode, _('unable to signing a single key: %s') % e.found().decode('utf-8') + proc.stderr.read())
-        # expect the passphrase confirmation
-        try:
-            self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
-        except GpgProtocolError:
-            raise GpgRuntimeError(self.context.returncode, _('password confirmation failed'))
+        # expect the passphrase confirmation if return code indicates problems
+        if self.context.returncode != 0:
+            try:
+                self.context.seek(proc.stderr, 'GOOD_PASSPHRASE')
+            except GpgProtocolError:
+                raise GpgRuntimeError(self.context.returncode, _('password confirmation failed'))
         if multiuid:
             # we save the resulting key in uid selection mode
             self.context.expect(proc.stderr, 'GET_LINE keyedit.prompt')
