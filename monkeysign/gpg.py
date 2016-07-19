@@ -225,8 +225,17 @@ class Context():
 
         this therefore looks only at the next line, but may also hang
         like seek_pattern()
+
+        if the beginning of the line matches a pattern which is
+        being ignored, it will skip it and look at the next line
         """
         line = fd.readline()
+        ignored = ('[GNUPG:] KEYEXPIRED', '[GNUPG:] SIGEXPIRED', 'gpg: ')
+
+        while line and line.startswith(ignored):
+            if self.debug: print >>self.debug, "SKIPPED:", line,
+            line = fd.readline()
+
         match = re.search(pattern, line)
 
         if self.debug:
@@ -470,15 +479,6 @@ class Keyring():
         except GpgProtocolError as e:
             if 'sign_uid.okay' in str(e):
                 multiuid = False
-            elif '[GNUPG:]' not in str(e):
-                # this is not a protocol message, try again but skipping now
-                # this was necessary in order to sign Zack's key, as it was spewing:
-                # gpg: moving a key signature to the correct place
-                # instead of a [GNUGPG:] message
-                try:
-                    multiuid = self.context.seek(proc.stderr, 'GET_BOOL keyedit.sign_all.okay')
-                except GpgProtocolError as e:
-                    raise GpgRuntimeError(self.context.returncode, _('cannot select uid for signing: %s') % e.found().decode('utf-8'))
             else:
                 raise GpgRuntimeError(self.context.returncode, _('cannot select uid for signing: %s') % e.found().decode('utf-8'))
         if multiuid:
