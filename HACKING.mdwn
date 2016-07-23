@@ -1,3 +1,25 @@
+Unit tests
+==========
+
+Unit tests should be ran before sending patches. They can be ran with
+`./test.py`.
+
+It is possible that some keys used in the tests expire. The built-in
+keys do not have specific expiry dates, but some keys are provided to
+test some corner cases and *those* keys may have new expiration dates.
+
+To renew the keys, try:
+
+    mkdir ~/.gpg-tmp
+    chmod 700 ~/.gpg-tmp
+    gpg --homedir ~/.gpg-tmp --import 7B75921E.asc
+    gpg --homedir ~/.gpg-tmp --refresh-keys 8DC901CE64146C048AD50FBB792152527B75921E
+    gpg --homedir ~/.gpg-tmp --export-options export-minimal --armor --export 8DC901CE64146C048AD50FBB792152527B75921E > 7B75921E.asc
+
+It is also possible the key is just expired and there is no
+replacement. In this case the solution is to try and find a similar
+test case and replace the key, or simply disable that test.
+
 Release process
 ===============
 
