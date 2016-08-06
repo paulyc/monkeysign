@@ -93,6 +93,12 @@ class MonkeysignUi(object):
                                  'connexion and fail if unsupported (default: '
                                  'deliver using the "sendmail -t" command)') %
                           {'port': smtplib.SMTP_PORT})
+        parser.add_option('--tls', default=False, action='store_true',
+                          help=_('use a complete TLS connexion instead of '
+                                 'using STARTTLS to upgrade the connexion. '
+                                 'will change the default SMTP port to '
+                                 '%(port)d')
+                          % {'port': smtplib.SMTP_SSL_PORT})
         parser.add_option('--smtpuser', dest='smtpuser', help=_('username for the SMTP server (default: no user)'))
         parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
