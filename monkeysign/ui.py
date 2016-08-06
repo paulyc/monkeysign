@@ -86,7 +86,13 @@ class MonkeysignUi(object):
                           help=_('import in normal keyring a local certification'))
         parser.add_option('-k', '--keyserver', dest='keyserver',
                           help=_('keyserver to fetch keys from'))
-        parser.add_option('-s', '--smtp', dest='smtpserver', help=_('SMTP server to use, use a colon to specify the port number if non-standard'))
+        parser.add_option('-s', '--smtp', dest='smtpserver',
+                          help=_('SMTP server to use, use a colon to specify '
+                                 'the port number if non-default (%(port)d). '
+                                 'willl attempt to use STARTTLS to secure the '
+                                 'connexion and fail if unsupported (default: '
+                                 'deliver using the "sendmail -t" command)') %
+                          {'port': smtplib.SMTP_PORT})
         parser.add_option('--smtpuser', dest='smtpuser', help=_('username for the SMTP server (default: no user)'))
         parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
