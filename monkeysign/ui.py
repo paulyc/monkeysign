@@ -359,7 +359,10 @@ Sign all identities? [y/N] \
 expects an EmailFactory email, but will not mail if nomail is set"""
             if self.options.smtpserver is not None and not self.options.nomail:
                 if self.options.dryrun: return True
-                server = smtplib.SMTP()
+                if self.options.tls:
+                    server = smtplib.SMTP_SSL()
+                else:
+                    server = smtplib.SMTP()
                 server.set_debuglevel(self.options.debug)
                 # to be nicer to users, we could catch socket.error exceptions from
                 # server.connect() here and display a meaningful message to stderr.
