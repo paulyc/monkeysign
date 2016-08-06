@@ -361,7 +361,8 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                     server.starttls()
                 except smtplib.SMTPException:
                     self.warn(_('SMTP server does not support STARTTLS'))
-                    if self.options.smtpuser: self.warn(_('authentication credentials will be sent in clear text'))
+                    if self.options.smtpuser:
+                        self.abort(_('aborting authentication as credentials would have been sent in clear text'))
                 if self.options.smtpuser:
                     if not self.options.smtppass:
                         self.options.smtppass = self.prompt_pass(_('enter SMTP password for server %s: ') % self.options.smtpserver)
