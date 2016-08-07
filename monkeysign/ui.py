@@ -106,7 +106,7 @@ class MonkeysignUi(object):
                           % {'port': smtplib.SMTP_SSL_PORT})
         parser.add_option('--smtpuser', dest='smtpuser', help=_('username for the SMTP server (default: no user)'))
         parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
-        parser.add_option('--sendmail', default="sendmail -t",
+        parser.add_option('--mta', default="sendmail -t",
                           help=_('command to use to send mail, recipient is '
                                  'passed on the commandline in the "%(to)s" '
                                  'field, or the command must parse the "To:" '
@@ -399,7 +399,7 @@ expects an EmailFactory email, but will not mail if nomail is set"""
             elif not self.options.nomail:
                 if self.options.dryrun: return True
                 command = [x % {'to': msg.mailto}
-                           for x in shlex.split(self.options.sendmail)]
+                           for x in shlex.split(self.options.mta)]
                 p = subprocess.Popen(command, stdin=subprocess.PIPE)
                 p.communicate(msg.as_string().encode('utf-8'))
                 self.warn(_('sent message to %(destination)s with %(command)s')

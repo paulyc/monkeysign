@@ -199,7 +199,7 @@ this duplicates tests from the gpg code, but is necessary to test later function
         self.ui.options.nomail = False
         self.ui.options.user = 'unittests@localhost'
         self.ui.options.to = 'devnull@localhost'
-        self.ui.options.sendmail = "dd status=none of='" + \
+        self.ui.options.mta = "dd status=none of='" + \
                                    self.ui.keyring.homedir + "/%(to)s'"
         self.assertTrue(self.ui.export_key(), 'fails to send mail')
         filename = '%s/%s' % (self.ui.keyring.homedir, self.ui.options.to)
