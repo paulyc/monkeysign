@@ -175,6 +175,32 @@ this duplicates tests from the gpg code, but is necessary to test later function
                 oldmsg = msg
             self.assertIsNot(oldmsg, None)
 
+    def test_sendmail(self):
+        """see if we can generate a proper commandline to send email"""
+        self.test_sign_key()
+        messages = []
+        # collect messages instead of warning the user
+        self.ui.warn = messages.append
+        self.ui.options.nomail = False
+        self.ui.options.user = 'unittests@localhost'
+        self.ui.options.to = 'devnull@localhost'
+        self.ui.options.sendmail = "dd status=none of='" + \
+                                   self.ui.keyring.homedir + "/%(to)s'"
+        self.assertTrue(self.ui.export_key(), 'fails to send mail')
+        filename = '%s/%s' % (self.ui.keyring.homedir, self.ui.options.to)
+        self.assertGreater(os.path.getsize(filename), 0,
+                           'mail properly created')
+        self.assertIn('sent message to %s with dd' % self.ui.options.to,
+                      messages.pop(),
+                      'missing information to user')
+        self.ui.options.to = 'devnull; touch bad'
+        self.assertTrue(self.ui.export_key(),
+                        'fails to send email to weird address')
+        self.assertIn("; touch bad'", messages.pop(), 'failed to escape')
+        self.assertFalse(os.path.exists('bad'),
+                         'vulnerable to command injection')
+
+
 class EmailFactoryTest(BaseTestCase):
     pattern = '7B75921E'
 

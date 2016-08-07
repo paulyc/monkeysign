@@ -37,6 +37,11 @@ import optparse
 import sys
 import re
 import os
+import shlex
+try:
+    from shlex import quote as cmd_quote
+except ImportError:
+    from pipes import quote as cmd_quote
 import shutil
 import socket
 
@@ -101,8 +106,13 @@ class MonkeysignUi(object):
                           % {'port': smtplib.SMTP_SSL_PORT})
         parser.add_option('--smtpuser', dest='smtpuser', help=_('username for the SMTP server (default: no user)'))
         parser.add_option('--smtppass', dest='smtppass', help=_('password for the SMTP server (default: prompted, if --smtpuser is specified)'))
+        parser.add_option('--sendmail', default="sendmail -t",
+                          help=_('command to use to send mail, recipient is '
+                                 'passed on the commandline in the "%(to)s" '
+                                 'field, or the command must parse the "To:" '
+                                 'header (default: %default)'))
         parser.add_option('--no-mail', dest='nomail', default=False, action='store_true',
-                          help=_('do not send email at all (default: use sendmail)'))
+                          help=_('do not send email at all'))
         parser.add_option('-t', '--to', dest='to', 
                           help=_('override destination email for testing (default: send individually encrypted email to each uid chosen)'))
         return parser
@@ -344,14 +354,14 @@ Sign all identities? [y/N] \
                     except GpgRuntimeError as e:
                         self.warn(_('failed to create email: %s') % e)
                         break
-                    self.sendmail(msg)
+                    return self.sendmail(msg)
             else:
                 try:
                     msg = EmailFactory(self.tmpkeyring.export_data(fpr), fpr, self.chosen_uid, from_user, self.options.to)
                 except GpgRuntimeError as e:
                     self.warn(_('failed to create email: %s') % e)
                     break
-                self.sendmail(msg)
+                return self.sendmail(msg)
 
     def sendmail(self, msg):
             """actually send the email
@@ -388,9 +398,15 @@ expects an EmailFactory email, but will not mail if nomail is set"""
                 return True
             elif not self.options.nomail:
                 if self.options.dryrun: return True
-                p = subprocess.Popen(['/usr/sbin/sendmail', '-t'], stdin=subprocess.PIPE)
+                command = [x % {'to': msg.mailto}
+                           for x in shlex.split(self.options.sendmail)]
+                p = subprocess.Popen(command, stdin=subprocess.PIPE)
                 p.communicate(msg.as_string().encode('utf-8'))
-                self.warn(_('sent message through sendmail to %s') % msg.mailto)
+                self.warn(_('sent message to %(destination)s with %(command)s')
+                          % {'destination': msg.mailto,
+                             'command': " ".join(cmd_quote(s)
+                                                 for s in command)})
+                return p.returncode == 0
             else:
                 # okay, no mail, just dump the exported key then
                 self.warn(_("""\
