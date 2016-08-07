@@ -175,6 +175,21 @@ this duplicates tests from the gpg code, but is necessary to test later function
                 oldmsg = msg
             self.assertIsNot(oldmsg, None)
 
+    def test_export_key(self):
+        """see if we export a properly encrypted key set"""
+        messages = []
+        # collect messages instead of warning the user
+        self.ui.warn = messages.append
+        self.test_sign_key()
+        self.ui.export_key()
+        self.assertIsNone(self.ui.export_key(), 'sends mail?')
+        paste = messages.pop()
+        self.assertNotIn('BEGIN PGP PUBLIC KEY BLOCK', paste,
+                         'message not encrypted')
+        self.assertIn('BEGIN PGP MESSAGE', paste, 'message not encrypted')
+        self.assertNotIn('MIME-Version', paste,
+                         'message to paste has weird MIME headers')
+
     def test_sendmail(self):
         """see if we can generate a proper commandline to send email"""
         self.test_sign_key()

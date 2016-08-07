@@ -410,9 +410,9 @@ expects an EmailFactory email, but will not mail if nomail is set"""
             else:
                 # okay, no mail, just dump the exported key then
                 self.warn(_("""\
-not sending email to %s, as requested, here's the email message:
+not sending email to %s, as requested, here's the encrypted signed public key you can paste in your email client:
 
-%s""") % (msg.mailto, msg.create_mail_from_block()))
+%s""") % (msg.mailto, msg.encrypted()))
 
 
 class EmailFactory:
@@ -491,12 +491,25 @@ mailto: who to send the mail to (usually similar to recipient, but can be used t
             for uid in todelete:
                 self.tmpkeyring.del_uid(fpr, uid)
 
+    def encrypted(self):
+        '''encrypted blob of the MIME multipart message
+
+        this is designed to be attached as the main body of an email,
+        but can also be copy-pasted anywhere, although the decrypted
+        version will look a little ackward because it will include all
+        sorts of MIME stuff
+
+        but if proper headers are added to the message, it should be
+        parsed okay by OpenPGP and MIME-capable clients.'''
+
+        msg = self.create_mail_from_block().as_string()
+        return self.tmpkeyring.encrypt_data(msg, self.keyfpr)
+
     def get_message(self):
         # first layer, seen from within:
         # an encrypted MIME message, made of two parts: the
         # introduction and the signed key material
-        message = self.create_mail_from_block()
-        encrypted = self.tmpkeyring.encrypt_data(message.as_string(), self.keyfpr)
+        encrypted = self.encrypted()
 
         # the second layer up, made of two parts: a version number
         # and the first layer, encrypted
