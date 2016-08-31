@@ -10,7 +10,7 @@ keysigning experience.
 
 No more reciting tedious strings of hexadecimal characters.  And, you
 can build a little rogue's gallery of the people that you have met and
-exchanged keys with!
+exchanged keys with! (Well, not yet, but it's part of the plan.)
 
 Monkeysign was written by Jerome Charaoui and Antoine Beaupré and is
 licensed under GPLv3.
@@ -50,7 +50,7 @@ Caveats
    public forum may leak public or even private key material in some
    circumstances. Special efforts have been made so that private key
    material is never output to the screen, but you can never be too
-   careful.
+   careful: look at the output before you send it.
 
  * The graphical interface isn't as complete as the commandline. A few
    features are missing and it is mostly a proof of concept at this
