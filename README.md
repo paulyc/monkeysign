@@ -8,9 +8,14 @@ The project makes use of cheap digital cameras and the type of bar
 code known as a QRcode to provide a human-friendly yet still-secure
 keysigning experience.
 
-No more reciting tedious strings of hexadecimal characters.  And, you
+No more reciting tedious strings of hexadecimal characters. And, you
 can build a little rogue's gallery of the people that you have met and
 exchanged keys with! (Well, not yet, but it's part of the plan.)
+
+Monkeysign also features a user-friendly commandline tool to sign
+OpenGPG keys following the current best practices. It is like `caff`
+but better: it supports local signatures, SMTP communication, and so
+on.
 
 Monkeysign was written by Jerome Charaoui and Antoine Beaupré and is
 licensed under GPLv3.
