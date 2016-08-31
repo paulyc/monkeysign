@@ -1,1 +1,232 @@
-debian/changelog
+monkeysign (2.0.2) unstable; urgency=medium
+
+  * this patch releases fixes critical issues...
+  * reported in the Debian BTS:
+    * encode prompt properly before prompting (closes: #771032)
+    * try to handle error when import actually works in GTK UI
+      (closes: #770900)
+    * improve debugging by wrapping all writes to gnupg in debug
+    * use the proper index when selecting key to sign
+      (closes: #771034)
+  * reported on the Monkeysphere mailing list:
+    * hotfix: properly verify the image signature file
+    * hotfix: disable scrolling in qrcode window
+    * don't try to remove non-existent video device, and clarify error
+      message
+    * output --version to stdout and don't make it an error
+  * those fix FTBS issues:
+    * fix tests after cd4e18c: guess encoding properly
+    * update zack's key so tests succeed again
+
+  * and this makes sure this package will be easier to support for the
+    lifetime of jessie
+    * improve error handling again: distinguish different failure cases
+      and clearly transmit GPG errors
+
+ -- Antoine Beaupré <anarcat@debian.org>  Mon, 01 Dec 2014 21:03:56 -0500
+
+monkeysign (2.0.1) unstable; urgency=medium
+
+  * hot patch release while we still can before jessie:
+    * fix tests under GnuPG 2.x
+    * improve usage to clarify -u, --cert-level and --to 
+    * fix version number to include patch release
+
+ -- Antoine Beaupré <anarcat@debian.org>  Mon, 20 Oct 2014 22:24:37 -0400
+
+monkeysign (2.0.0) unstable; urgency=medium
+
+  * new features:
+    * implement qrcode image import, to allow people without webcams to
+      import pictures from a trusted camera - the images must be signed with
+      a detached signature on pain of a ugly warning with instructions.
+    * move to bugs-everywhere instead of that crazy TODO file
+    * udate french translation
+  * usability improvements:
+    * interface simplified: only the qrcode and webcam with instructions
+    * all options moved to menus, including the print/save buttons, the
+      video and identity dropdowns
+    * properly handle exceptions in gtk UI
+    * avoid duplicate camera listing and display nicer name (Closes: #718796)
+    * create a set of mockups for a UI redesign and API documentation
+      rendered at http://monkeysign.readthedocs.org/
+  * bug fixes:
+    * fix "Content-description" to be more useful (Closes: #723677)
+    * support monkeysign --version", thanks to Gabriel Fillion (Closes: #725113)
+    * add debugging info from smtp connection, thanks to Gabriel Filion
+      (Closes: #756540)
+    * some improvements were done in the GnuPG library to work around
+      certain GnuPG corner cases and describe problems better
+    * install monkeyscan command as a symlink properly (Closes: #743150)
+  * switch to long term support strategy for the 2.0.x release in
+    preparation for Debian Jessie
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 18 Oct 2014 13:25:54 -0400
+
+monkeysign (1.2) unstable; urgency=medium
+
+  * improve python 3 compatibility, partially (Closes: #725059)
+  * update translation strings
+  * spanish translation, thanks to lilbit
+  * partial french translation
+  * Czech translation, thanks to Michal Čihař
+  * Bug fix: "build_slides fails of two reasons", thanks to Felix Dreissig
+    (Closes: #738731).
+  * Bug fix: "build_manpage only works because of PyGTK encoding changes",
+    thanks to Felix Dreissig (Closes: #738730).
+  * Bug fix: "build_trans fails if called seperately", thanks to Felix
+    Dreissig (Closes: #738732).
+
+ -- Antoine Beaupré <anarcat@debian.org>  Thu, 28 Aug 2014 20:23:57 -0700
+
+monkeysign (1.1) unstable; urgency=low
+
+  [Antoine Beaupré]
+  * improved SMTP support:
+    * SMTP username and passwords can be passed as commandline arguments
+    * SMTP password is prompted if not specified
+    * use STARTTLS if available
+    * enable SMTP debugging only debugging is enabled
+  * show the unencrypted email with --no-mail (Closes: #720049)
+  * warn when gpg-agent is not running or failing (Closes: #723052)
+  * set GPG_TTY if it is missing (Closes: #719908)
+  * bail out on already signed keys (Closes: #720055)
+  * mention monkeyscan in the package description so it can be found more
+    easily
+  * fix python-pkg-resources dependency
+  * don't show backtrace on control-c
+  * add missing files to .gitignore (Closes: #724007)
+  * ship with a neat little slideshow to make presentations
+
+  [Philip Jägenstedt]
+  * fix some typos (Closes: #722964)
+  * add --cert-level option (Closes: #722740)
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 01 Oct 2013 00:22:30 +0200
+
+monkeysign (1.0) unstable; urgency=low
+
+  * stop copying secrets to the temporary keyring
+  * make sure we use the right signing key when specified
+  * signatures on multiple UIDs now get properly sent separately
+    (Closes: #719241)
+  * this includes "deluid" support on the gpg library
+  * significantly refactor email creation
+  * improve unit tests on commandline scripts, invalid (revoked) keys and
+    timeout handling
+  * provide manpages (Closes: #716674)
+  * avoid showing binary garbage on export when debugging
+  * properly fail if password confirmation fails
+  * user interfaces now translatable
+  * accept space-separated key fingerprints
+  * fix single UID key signing
+  * proper formatting of UIDs with comments (removed) and spaces (wrapped)
+    for emails
+
+ -- Antoine Beaupré <anarcat@debian.org>  Wed, 14 Aug 2013 20:51:44 -0400
+
+monkeysign (0.9) unstable; urgency=low
+
+  * refactor unit tests again to optimise UI tests and test mail generation
+  * fix error handling in encryption/decryption (Closes: #717622)
+  * rename msign-cli to monkeysign and msign to monkeyscan (Closes: #717623)
+  * handle interruptions cleanly when choosing user IDs (see: #716675)
+
+ -- Antoine Beaupré <anarcat@debian.org>  Tue, 23 Jul 2013 10:56:50 -0400
+
+monkeysign (0.8) unstable; urgency=low
+
+  * refactor unit test suite to allow testing the commandline tool
+    interactively
+  * don't fail on empty input when choosing uid (Closes: #716675)
+  * we also explain how to refuse signing a key better
+  * optimise network tests so they timeout (so fail) faster
+
+ -- Antoine Beaupré <anarcat@debian.org>  Wed, 17 Jul 2013 22:52:02 -0400
+
+monkeysign (0.7.1) unstable; urgency=low
+
+  * fix binary package dependency on python
+  * update to debhelper 9
+  * update to standards 3.9.4, no change
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sun, 07 Jul 2013 09:58:56 -0400
+
+monkeysign (0.7) unstable; urgency=low
+
+  * fix crash when key not found on keyservers
+  * use a proper message in outgoing emails
+  * unit tests extended to cover user interface
+  * import keys from the local keyring before looking at the keyserver
+  * fix print/save exports (thanks Simon!)
+  * don't depend on a graphical interface
+  * update copyright dates and notices
+  * mark as priority: optional instead of extra
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 06 Jul 2013 01:07:28 -0400
+
+monkeysign (0.6) unstable; urgency=low
+
+  * fix warnings in the graphical interface
+  * make qr-code detection be case-insensitive
+  * fix syntax error
+  * follow executable renames properly
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 06 Oct 2012 16:08:48 +0200
+
+monkeysign (0.5) unstable; urgency=low
+
+  * non-exportable signatures (--local) support
+  * simplify the monkeysign-scan UI
+  * rename monkeysign-scan to msign and monkeysign-cli to msign-cli to
+    avoid tab-completion conflict with monkeysphere executables, at the
+    request of Monkeysphere developers
+  * usability: make sure arguments are case-insensitive
+  * fix email format so it's actually readable
+
+ -- Antoine Beaupré <anarcat@debian.org>  Fri, 05 Oct 2012 11:14:37 +0200
+
+monkeysign (0.4) unstable; urgency=low
+
+  * merge display and scanning of qrcodes
+  * really remove remaining pyme dependency
+  * list key indexes to allow choosing more clearly
+  * copy the gpg.conf in temporary keyring
+  * fix keyserver operation in GUI
+  * implement UID choosing in GUI
+
+ -- Antoine Beaupré <anarcat@debian.org>  Wed, 01 Aug 2012 02:33:29 -0400
+
+monkeysign (0.3) unstable; urgency=low
+
+  * allow keyserver to be enabled while not specified
+  * do not set an empty keyserver, fixing weird keyserver errors on -scan
+  * fix window reference in UI, spotted by dkg
+  * mark this as architecture-independent, spotted by dkg
+  * make setup executable
+  * reference new homepage
+  * API change: functions return false instead of raising exceptions
+  * fix multiple keys listing support
+
+ -- Antoine Beaupré <anarcat@debian.org>  Thu, 26 Jul 2012 12:41:54 -0400
+
+monkeysign (0.2) unstable; urgency=low
+
+  * only load information from private keys when doing key detection
+  * add debugging in key choosing algorithm
+  * import private keyring even in dry-run
+  * properly import re, fixing a crash
+  * add usage for monkeysign-scan
+  * fixup modules list so that the package actually works
+  * make this not crash completely if there's no video
+  * improve short description so that it matches 'key signing'
+  * fix dependencies
+  * fix typo, noticed by micah
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sun, 22 Jul 2012 13:38:00 -0400
+
+monkeysign (0.1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Antoine Beaupré <anarcat@debian.org>  Sat, 21 Jul 2012 12:05:59 -0400
