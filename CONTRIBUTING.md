@@ -1,3 +1,62 @@
+Bug reports
+===========
+
+We want you to report bugs you find in Monkeysign. It's an important
+part of contributing to a project, and all bug reports will be read
+and replied to politely and professionnally.
+
+Bugs used to be tracked with the [bugs-everywhere][] package, but this
+has proven to be too difficult to use and not transparent enough to
+most users, so we are now using [Gitlab][], where new bug reports
+should be sent.
+
+ [bugs-everywhere]: http://bugseverywhere.org/
+ [Gitlab]: https://0xacab.org/monkeysphere/monkeysign/issues
+
+You can also report bugs by email over the [Debian BTS][], even if you
+are not using Debian. Use the `reportbug` package to report a bug if
+you run Debian (or Ubuntu), otherwise send an email to
+`submit@bugs.debian.org`, with content like this:
+
+    To: submit@bugs.debian.org
+    From: you@example.com
+    Subject: fails to frobnicate
+    
+    Package: monkeysign
+    Version: 1.0
+      
+    Monkeysign fails to frobnicate.
+    
+    I tried to do...
+    
+    I was expecting...
+    
+    And instead I had this backtrace...
+    
+    I am running Arch Linux 2013.07.01, Python 2.7.5-1 under a amd64
+    architecture.
+
+See also the [complete instructions][] for more information on how to
+use the Debian bugtracker. You can also
+[browse the existing bug reports][] there.
+
+ [Debian BTS]: http://bugs.debian.org/
+ [complete instructions]: http://www.debian.org/Bugs/Reporting
+ [browse the existing bug reports]: http://bugs.debian.org/monkeysign
+
+Patches
+=======
+
+Patches can be submitted through [merge requests][] on the
+[Gitlab site][].
+
+[Gitlab site]: https://0xacab.org/monkeysphere/monkeysign/
+[merge requests]: https://0xacab.org/monkeysphere/monkeysign/merge_requests
+
+If you prefer old school, offline email systems, you can also use the
+Debian BTS, as described above, or send patches to the mailing list
+for discussion.
+
 Unit tests
 ==========
 
@@ -39,34 +98,3 @@ The 2.0.x branch will be featured in Debian Jessie and will therefore
 be maintained for security fixes for the lifetime of that release. New
 development will then happen on the 3.0 branch, and some features may
 be backported in 2.x point releases.
-
-Bug tracking
-============
-
-Bug tracking happens in this git repository using `be`
-([bugs-everywhere][]). [Full documentation][] is available online, but
-here's a short overview:
-
-    # list bugs
-    be list
-    # new bug
-    be new "here's a summary"
-    # describe / comment on a bug
-    be comment 618/d0d0
-    # register all changes in git
-    be commit
-
-A more convenient HTML view can be served using:
-
-    be html
-
-Use the `--port` option if port 8000 is busy with icecast.
-
- [bugs-everywhere]: http://bugseverywhere.org/
- [Full documentation]: http://docs.bugseverywhere.org/
-
-There are also bugs reported by email over the [Debian BTS][]. See the
-[website][] for more information.
-
- [Debian BTS]: http://bugs.debian.org/monkeysign
- [website]: http://web.monkeysphere.info/monkeysign/#index4h2
