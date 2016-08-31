@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: monkeysign
-Source: git://git.monkeysphere.info/monkeysign
+Source: http://web.monkeysphere.info/monkeysign
 
 Files: *
 Copyright: 2010 Jerome Charaoui

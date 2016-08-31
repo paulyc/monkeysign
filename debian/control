@@ -12,7 +12,8 @@ Build-Depends: debhelper (>= 9)
              , python-docutils
 Standards-Version: 3.9.6
 Homepage: http://web.monkeysphere.info/monkeysign
-Vcs-Git: git://git.monkeysphere.info/monkeysign
+Vcs-Browser: https://0xACAB.org/monkeysphere/monkeysign
+Vcs-Git: https://0xACAB.org/monkeysphere/monkeysign.git
 
 Package: monkeysign
 Architecture: all
