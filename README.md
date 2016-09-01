@@ -151,13 +151,14 @@ Similar projects
  [Guardian project]: https://guardianproject.info/
  [Github project]: https://github.com/guardianproject/gnupg-for-android
 
- * [OpenPGP keychain][], a fork of [APG][], has support for exporting
-   and importing fingerprints in QRcode and NFC. Interoperability also
-   needs to be tested. ([Github project][2])
+ * [OpenKeychain][], a fork of [APG][], has support for exporting and
+   importing fingerprints in QRcode and NFC. It uses similar strings
+   for QRcodes exchanges and is compatible with
+   Monkeysign. ([Github project][2])
 
- [OpenPGP keychain]: http://sufficientlysecure.org/index.php/openpgp-keychain/
+ [OpenKeychain]: https://www.openkeychain.org/
  [APG]: http://www.thialfihar.org/projects/apg/
- [2]: https://github.com/dschuermann/openpgp-keychain
+ [2]: https://github.com/open-keychain/open-keychain
 
  * [Gibberbot][] (also of the [Guardian project][]) can exchange OTR
    fingerprints using QRcodes. ([Github project][3])
