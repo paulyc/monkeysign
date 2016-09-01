@@ -298,6 +298,8 @@ work.
 
         keys = self.tmpkeyring.get_keys(self.pattern)
 
+        # this shouldn't happen unless caller forgot to call copy_secrets
+        assert(keys is not None)
         self.log(_('found %d keys matching your request') % len(keys))
 
         for key in keys:
