@@ -200,7 +200,7 @@ class MonkeysignUi(object):
             # has no gpg.conf (because we are certain the temp homedir
             # exists at this point)
             if e.errno != 2:
-                pass
+                raise
 
     def main(self):
         """
