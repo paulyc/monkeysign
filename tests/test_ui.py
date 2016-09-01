@@ -28,7 +28,7 @@ import re
 sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 from monkeysign.ui import MonkeysignUi, EmailFactory
-from monkeysign.gpg import TempKeyring
+from monkeysign.gpg import TempKeyring, GpgRuntimeError
 
 from test_lib import TestTimeLimit, AlarmException
 
@@ -157,6 +157,29 @@ this duplicates tests from the gpg code, but is necessary to test later function
         self.test_copy_secrets()
         self.ui.sign_key()
         self.assertGreaterEqual(len(self.ui.signed_keys), 1)
+
+    def test_multiple_secrets(self):
+        """test if we pick the right key define in gpg.conf"""
+        # configure gpg to use the second test key as a default key
+        with open(os.path.join(self.ui.keyring.homedir, 'gpg.conf'), 'w') as f:
+            f.write('default-key 323F39BD')
+        # needed because we created a new gpg.conf
+        self.ui.prepare()
+        self.assertTrue(os.path.exists(os.path.join(self.ui.tmpkeyring.homedir, 'gpg.conf')))
+        self.test_copy_secrets()
+        # public key is missing, this should fail
+        with self.assertRaises(GpgRuntimeError):
+            self.ui.sign_key()
+        self.ui.keyring.import_data(open(os.path.dirname(__file__) +
+                                         '/323F39BD.asc').read())
+        self.ui.keyring.import_data(open(os.path.dirname(__file__) +
+                                         '/323F39BD-secret.asc').read())
+        self.test_copy_secrets()
+        self.ui.sign_key()
+        self.ui.tmpkeyring.context.call_command(['list-sigs', '7B75921E'])
+        # this is the primary test key, it shouldn't have signed this
+        self.assertNotIn('sig:::1:86E4E70A96F47C6A:',
+                         self.ui.tmpkeyring.context.stdout)
 
     def test_create_mail_multiple(self):
         """test if exported keys contain the right uid"""

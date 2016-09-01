@@ -271,27 +271,26 @@ this should not interrupt the flow of the program, but must be visible to the us
 we use --secret-keyring instead of copying the secret key material,
 but we still need the public part in the temporary keyring for this to
 work.
-"""
+
+we copy all keys because we do not want to guess which keys gpg will
+chose. it could vary based on default-key, for example, or some weird
+ordering.
+        """
         self.log(_('copying your private key to temporary keyring in %s') % self.tmpkeyring.homedir)
         # detect the proper uid
-        if self.options.user is None:
-            keys = self.keyring.get_keys(None, True, False)
-        else:
-            keys = self.keyring.get_keys(self.options.user, True, False)
+        keys = self.keyring.get_keys(self.options.user, True, False)
 
         for fpr, key in keys.iteritems():
             self.log(_('found secret key: %s') % key)
             if not key.invalid and not key.disabled and not key.expired and not key.revoked:
                 self.signing_key = key
-                break
+                # export public key material associated with all private keys
+                # XXX: we should only do export-minimal here, but passing options down is a pain.
+                if not self.tmpkeyring.import_data(self.keyring.export_data(key.fpr)):
+                    self.warning(_('could not export public key material of private key %s') % key.fpr)
 
         if self.signing_key is None:
-            self.abort(_('no default secret key found, abort!'))
-        self.log(_('signing key chosen: %s') % self.signing_key.fpr)
-
-        # export public key material associated with detected private
-        if not self.tmpkeyring.import_data(self.keyring.export_data(self.signing_key.fpr)):
-            self.abort(_('could not find public key material, do you have an OpenPGP key?'))
+            self.abort(_('could not find public key material for any private key, do you have an OpenPGP key?'))
 
     def sign_key(self):
         """sign the key uids, as specified"""
