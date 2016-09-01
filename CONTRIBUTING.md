@@ -13,6 +13,9 @@ should be sent.
  [bugs-everywhere]: http://bugseverywhere.org/
  [Gitlab]: https://0xacab.org/monkeysphere/monkeysign/issues
 
+Debian BTS
+----------
+
 You can also report bugs by email over the [Debian BTS][], even if you
 are not using Debian. Use the `reportbug` package to report a bug if
 you run Debian (or Ubuntu), otherwise send an email to
@@ -38,11 +41,39 @@ you run Debian (or Ubuntu), otherwise send an email to
 
 See also the [complete instructions][] for more information on how to
 use the Debian bugtracker. You can also
-[browse the existing bug reports][] there.
+browse the existing bug reports in the [Debian BTS for Monkeysign][] there.
 
  [Debian BTS]: http://bugs.debian.org/
  [complete instructions]: http://www.debian.org/Bugs/Reporting
- [browse the existing bug reports]: http://bugs.debian.org/monkeysign
+ [Debian BTS for Monkeysign]: http://bugs.debian.org/monkeysign
+
+Bug triage
+----------
+
+Bug triage is a very useful contribution as well. You can review the
+[issues on 0xACAB][] or in the [Debian BTS for Monkeysign][]. What
+needs to be done is, for every issue:
+
+* try to reproduce the bug, if it is not reproducible, tag it with
+  `unreproducible`
+* if information is missing, tag it with `moreinfo`
+* if a patch is provided, tag it with `patch` and test it
+* if the patch is incomplete, tag it with `help` (this is often the
+  case when unit tests are missing)
+* if the patch is not working, remove the `patch` tag
+* if the patch gets merged into the git repository, tag it with
+  `pending`
+* if the feature request is not within the scope of the project or
+  should be refused for other reasons, use the `wontfix` tag and close
+  the bug (with the `close` command or by CC'ing
+  `NNNN-done@bugs.debian.org`)
+* feature requests should have a `wishlist` severity
+
+Those directives apply mostly to the Debian BTS, but some tags are
+also useful in the 0xACAB site. See also the more
+[complete directives on how to use the Debian BTS](https://www.debian.org/Bugs/Developer).
+
+[issues on 0xACAB]: https://0xacab.org/monkeysphere/monkeysign/issues
 
 Patches
 =======
