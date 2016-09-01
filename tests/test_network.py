@@ -26,7 +26,7 @@ import unittest
 
 import sys, os
 import signal
-sys.path.append(os.path.dirname(__file__) + '/..')
+sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
 from monkeysign.gpg import TempKeyring
 from test_lib import TestTimeLimit, AlarmException
