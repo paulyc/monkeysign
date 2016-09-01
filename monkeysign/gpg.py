@@ -735,7 +735,7 @@ class OpenPGPkey():
         ret += u'    Fingerprint = ' + self.format_fpr() + "\n"
         i = 1
         for uid in self.uidslist:
-            ret += u"uid %d      [%s] %s\n" % (i, uid.get_trust(), uid.uid.decode('utf-8'))
+            ret += u"uid %d      [%s] %s\n" % (i, uid.get_trust(), uid.uid.decode('utf-8', 'replace'))
             i += 1
         for subkey in self.subkeys.values():
             ret += u"sub   " + subkey.length + u"R/" + subkey.keyid(8) + u" " + subkey.creation

@@ -342,6 +342,20 @@ seems like it's a key not respecting standard: http://lists.nongnu.org/archive/h
         self.gpg.context.call_command(['list-sigs', '6D866396'])
         self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
+    def test_broken_encoding(self):
+        """test some key that has a non-standard encoding
+
+        RFC4880 specifies that UIDs should be UTF-8, but someone this
+        one isn't.
+
+        see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=736629
+        """
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) +
+                                                  '/ECAA37C45C7E48CE.asc').read()))
+        key = self.gpg.get_keys('095D9EC8C995AB203DC260FEECAA37C45C7E48CE')
+        foo = key['095D9EC8C995AB203DC260FEECAA37C45C7E48CE'].__str__().encode('utf-8')
+
+
 class TestOpenPGPkey(unittest.TestCase):
     def setUp(self):
         self.key = OpenPGPkey("""tru::1:1343350431:0:3:1:5
