@@ -278,6 +278,9 @@ class MonkeysignScan(gtk.Window):
                 for key in Keyring().get_keys(None, True, False).values():
                         if key.invalid or key.disabled or key.expired or key.revoked:
                                 continue
+                        # weird key without uids, skip (see BTS#723152)
+                        if not key.uidslist:
+                                continue
                         uid = key.uidslist[0].uid
                         self.uimanager.add_ui(self.uimanager.new_merge_id(), '/menu/identity', key.fpr, key.fpr, gtk.UI_MANAGER_AUTO, True)
                         action = gtk.RadioAction(key.fpr, "%s (%s)" % (uid, key.keyid()), str(key), None, i)

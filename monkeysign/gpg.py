@@ -737,7 +737,7 @@ class OpenPGPkey():
                 pass
             else:
                 raise NotImplementedError(_("record type '%s' not implemented") % rectype)
-        if uidslist: self.uidslist = uidslist
+        self.uidslist = uidslist
 
 
     def __str__(self):
