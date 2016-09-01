@@ -332,12 +332,21 @@ class TestKeyringWithAbnormalKeys(TestKeyringBase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
 
     def test_wrongly_place_sigs(self):
-        """this provokes an exception with:
+        """test zack's key
 
-    monkeysign.gpg.GpgProtocolError: [Errno 0] expected "^\[GNUPG:\] GOT_IT", found "gpg: moving a key signature to the correct place"
+        this provokes an exception with:
 
-seems like it's a key not respecting standard: http://lists.nongnu.org/archive/html/sks-devel/2012-07/msg00122.html"""
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/6D866396.asc').read()))
+        monkeysign.gpg.GpgProtocolError: [Errno 0] expected
+        "^\[GNUPG:\] GOT_IT", found "gpg: moving a key signature to
+        the correct place"
+
+        seems like it's a key not respecting standard:
+        http://lists.nongnu.org/archive/html/sks-devel/2012-07/msg00122.html
+
+        see https://bugs.debian.org/736120
+        """
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) +
+                                                  '/6D866396.asc').read()))
         self.assertTrue(self.gpg.sign_key('6D866396', True))
         self.gpg.context.call_command(['list-sigs', '6D866396'])
         self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
