@@ -142,15 +142,6 @@ file for more information about how to file bugs.
 Similar projects
 ----------------
 
- * [GPG for Android][] (of the [Guardian project][]) will import
-   public keys in your device's keyring when they are found in
-   QRcodes, so it should be able to talk with Monkeysign, but this
-   remains to be tested. ([Github project][])
- 
- [GPG for Android]: https://guardianproject.info/code/gnupg/
- [Guardian project]: https://guardianproject.info/
- [Github project]: https://github.com/guardianproject/gnupg-for-android
-
  * [OpenKeychain][], a fork of [APG][], has support for exporting and
    importing fingerprints in QRcode and NFC. It uses similar strings
    for QRcodes exchanges and is compatible with
@@ -159,6 +150,15 @@ Similar projects
  [OpenKeychain]: https://www.openkeychain.org/
  [APG]: http://www.thialfihar.org/projects/apg/
  [2]: https://github.com/open-keychain/open-keychain
+
+ * [GPG for Android][] (of the [Guardian project][]) will import
+   public keys in your device's keyring when they are found in
+   QRcodes, so it should be able to talk with Monkeysign, but this
+   remains to be tested. ([Github project][])
+ 
+ [GPG for Android]: https://guardianproject.info/code/gnupg/
+ [Guardian project]: https://guardianproject.info/
+ [Github project]: https://github.com/guardianproject/gnupg-for-android
 
  * [Gibberbot][] (also of the [Guardian project][]) can exchange OTR
    fingerprints using QRcodes. ([Github project][3])
