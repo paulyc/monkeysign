@@ -345,7 +345,8 @@ Sign all identities? [y/N] \
         else:
             from_user = self.signing_key.uidslist[0].uid
 
-        if len(self.signed_keys) < 1: self.warn(_('no key signed, nothing to export'))
+        if len(self.signed_keys) < 1:
+            self.warn(_('no key signed, nothing to export'))
         
         for fpr, key in self.signed_keys.items():
             if self.chosen_uid is None:
