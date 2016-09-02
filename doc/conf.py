@@ -33,6 +33,18 @@ templates_path = ['_templates']
 # The suffix of source filenames.
 source_suffix = '.rst'
 
+# markdown support: http://blog.readthedocs.com/adding-markdown-support/
+try:
+    from recommonmark.parser import CommonMarkParser
+    source_parsers = {'.md': CommonMarkParser}
+    import sphinx
+    if sphinx.__version__.startswith('1.3'):
+        source_suffix = ['.rst', '.md']
+    else:
+        print "WARNING: can't set source_suffix as you are running an older Sphinx version (< 1.3)"
+except ImportError:
+    print "WARNING: no markdown support found, bits of documentation will be missing"
+
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
