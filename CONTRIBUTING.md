@@ -121,7 +121,11 @@ Unit tests
 ==========
 
 Unit tests should be ran before sending patches. They can be ran with
-`./test.py`.
+`./test.py`. They expect a unicode locale, so if you do not have that
+configured already, do set one like this:
+
+    export LANG=C.UTF-8
+    ./test.py
 
 It is possible that some keys used in the tests expire. The built-in
 keys do not have specific expiry dates, but some keys are provided to
