@@ -120,7 +120,7 @@ class TestKeyringBase(unittest.TestCase):
 
     def tearDown(self):
         """trash the temporary directory we created"""
-        shutil.rmtree(self.tmp)
+        shutil.rmtree(self.tmp, ignore_errors=True)
 
 class TestKeyringBasics(TestKeyringBase):
     """Test the Keyring class base functionality."""
