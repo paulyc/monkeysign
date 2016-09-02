@@ -1,4 +1,0 @@
-the code would be advisory (as the remote implementations could simply
-not respect the setting) - but if it is set, we should avoid keeping a
-picture of the person associated with the qrcode, maybe by blurring
-out the image outside of the qrcode
