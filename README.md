@@ -12,10 +12,8 @@ No more reciting tedious strings of hexadecimal characters. And, you
 can build a little rogue's gallery of the people that you have met and
 exchanged keys with! (Well, not yet, but it's part of the plan.)
 
-Monkeysign also features a user-friendly commandline tool to sign
-OpenGPG keys following the current best practices. It is like `caff`
-but better: it supports local signatures, SMTP communication, and so
-on.
+Monkeysign also features a user-friendly commandline tool, similar to
+`caff`, to sign OpenGPG keys following the current best practices.
 
 Monkeysign was written by Jerome Charaoui and Antoine Beaupré and is
 licensed under GPLv3.
