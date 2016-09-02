@@ -23,6 +23,10 @@ supported branches.
 
 Major, API-changing development will happen on the 3.x branch.
 
+Those [milestones][] are collaboratively tracked on 0xACAB.
+
+ [milestones]: https://0xacab.org/monkeysphere/monkeysign/milestones
+
 Bug reports
 ===========
 
