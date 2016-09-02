@@ -1,9 +1,34 @@
+Support schedule
+================
+
+We adhere to [Semantic Versioning][]:
+
+> Given a version number MAJOR.MINOR.PATCH, increment the:
+> 
+> * MAJOR version when you make incompatible API changes,
+> * MINOR version when you add functionality in a backwards-compatible manner, and
+> * PATCH version when you make backwards-compatible bug fixes.
+> 
+> Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+[Semantic Versioning]: http://semver.org/
+
+The 2.0.x branch is featured in Debian Jessie and Ubuntu Xenial and is
+therefore be maintained for security fixes for the lifetime of those
+releases or of any other distribution that picks it up.
+
+Most development and major bug fixes are done directly in the 2.x
+branch and published as part of minor releases, which in turn become
+supported branches.
+
+Major, API-changing development will happen on the 3.x branch.
+
 Bug reports
 ===========
 
 We want you to report bugs you find in Monkeysign. It's an important
 part of contributing to a project, and all bug reports will be read
-and replied to politely and professionnally.
+and replied to politely and professionally.
 
 Bugs used to be tracked with the [bugs-everywhere][] package, but this
 has proven to be too difficult to use and not transparent enough to
@@ -121,11 +146,3 @@ Release process
  * upload Debian package
  * push commits and tags to the git repository
  * add announcement on website and mailing list <monkeysphere@lists.riseup.net>
-
-Support schedule
-================
-
-The 2.0.x branch will be featured in Debian Jessie and will therefore
-be maintained for security fixes for the lifetime of that release. New
-development will then happen on the 3.0 branch, and some features may
-be backported in 2.x point releases.
