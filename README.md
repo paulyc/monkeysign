@@ -27,9 +27,11 @@ Features
  * key signature done on a separate keyring
  * signature sent in a crypted email to ensure:
    1. the signee controls the signed email
-   2. the signee really controls the key
+   2. the signee controls the private key
+   3. the signee decides what to do with the signature
  * local ("non-exportable") signatures
- * send through local email server or SMTP
+ * send through local email server, arbitrary SMTP server or other
+   programs
 
 Installing
 ----------
