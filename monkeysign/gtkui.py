@@ -233,6 +233,10 @@ class MonkeysignScan(gtk.Window):
                         self.zbar.set_video_device(video_found)
                         self.zbarframe = gtk.Frame()
                         self.zbarframe.add(self.zbar)
+                        # set a normal window size for the webcam, for larger resolutions
+                        # see: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=723154
+                        # 640x480 is mostly arbitrary, based on an old VGA standard
+                        self.zbar.set_size_request(640, 480)
                 else:
                         camframe = gtk.Frame()
                         self.zbarframe = camframe
