@@ -325,6 +325,24 @@ class TestKeyringWithKeys(TestKeyringBase):
         """test verify_file()"""
         self.assertTrue(self.gpg.verify_file(os.path.dirname(__file__) + '/testfile.txt.asc', os.path.dirname(__file__) + '/testfile.txt'))
 
+    def test_sign_revoked_uid(self):
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__)
+                                                  + '/323F39BD.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__)
+                                                  + '/323F39BD-secret.asc').read()))
+        self.gpg.import_data(open(os.path.dirname(__file__)
+                                  + '/96F47C6A-revuid.asc').read())
+        # designate that new key as the signing key
+        self.gpg.context.set_option('local-user', '323F39BD')
+        self.assertTrue(self.gpg.sign_key('3F94240C918E63590B04152E86E4E70A96F47C6A', True))
+
+        self.gpg.context.call_command(['list-sigs', '96F47C6A'])
+        # try to find a revoked uid that is signed
+        for uid in self.gpg.context.stdout.split('uid:'):
+            if 'rev:' in uid:
+                self.assertNotIn('sig:::1:A31E75E4323F39BD', uid)
+
+
 class TestKeyringWithAbnormalKeys(TestKeyringBase):
     """this tests specifically weird keys"""
     def setUp(self):

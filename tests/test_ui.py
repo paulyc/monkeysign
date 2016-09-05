@@ -180,6 +180,10 @@ this duplicates tests from the gpg code, but is necessary to test later function
         # this is the primary test key, it shouldn't have signed this
         self.assertNotIn('sig:::1:86E4E70A96F47C6A:',
                          self.ui.tmpkeyring.context.stdout)
+        # try to find a revoked uid that is signed
+        for uid in self.ui.tmpkeyring.context.stdout.split('uid:'):
+            if 'rev:' in uid:
+                self.assertNotIn('sig:::1:A31E75E4323F39BD', uid)
 
     def test_create_mail_multiple(self):
         """test if exported keys contain the right uid"""
