@@ -186,23 +186,31 @@ class TestKeyringBasics(TestKeyringBase):
         however, gpg returns the wrong exit code here, so we end up at
         looking if there is really no output
         """
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__)
+                                                  + '/96F47C6A-secret.asc').read()))
         with self.assertRaises(GpgRuntimeError):
             self.gpg.sign_key('7B75921E')
 
     def test_failed_revoke(self):
-        self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read())
-        self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-revoke.asc').read())
-        self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read())
+        self.gpg.import_data(open(os.path.dirname(__file__)
+                                  + '/96F47C6A.asc').read())
+        self.gpg.import_data(open(os.path.dirname(__file__)
+                                  + '/96F47C6A-revoke.asc').read())
+        self.gpg.import_data(open(os.path.dirname(__file__)
+                                  + '/7B75921E.asc').read())
         with self.assertRaises(GpgRuntimeError):
             self.gpg.sign_key('7B75921E', True)
+
 
 class TestKeyringWithKeys(TestKeyringBase):
     def setUp(self):
         TestKeyringBase.setUp(self)
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/7B75921E.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A.asc').read()))
-        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) + '/96F47C6A-secret.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__)
+                                                  + '/7B75921E.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__)
+                                                  + '/96F47C6A.asc').read()))
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__)
+                                                  + '/96F47C6A-secret.asc').read()))
 
     def test_get_keys(self):
         """test that we can list the keys after importing them
