@@ -1,6 +1,26 @@
 Contributing to Monkeysign
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Documentation
+=============
+
+We love documentation!
+
+We maintain the documentation in the Git repository, in `RST`_
+format. Documentation can be `edited directly on the website`_ and
+built locally with `Sphinx`_ with::
+
+  cd doc ; make html
+
+The Sphinx project has a `good tutorial`_ on RST online. Documentation
+is `automatically generated on RTD.io`_.
+  
+.. _RST: https://en.wikipedia.org/wiki/ReStructuredText
+.. _edited directly on the website: https://0xacab.org/monkeysphere/monkeysign/tree/HEAD
+.. _Sphinx: http://www.sphinx-doc.org/
+.. _good tutorial: http://www.sphinx-doc.org/en/stable/rest.html
+.. _automatically generated on RTD.io: https://monkeysign.readthedocs.io/
+
 Support schedule
 ================
 
