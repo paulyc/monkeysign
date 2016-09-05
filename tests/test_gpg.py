@@ -389,7 +389,15 @@ class TestKeyringWithAbnormalKeys(TestKeyringBase):
         self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) +
                                                   '/ECAA37C45C7E48CE.asc').read()))
         key = self.gpg.get_keys('095D9EC8C995AB203DC260FEECAA37C45C7E48CE')
-        foo = key['095D9EC8C995AB203DC260FEECAA37C45C7E48CE'].__str__().encode('utf-8')
+        key['095D9EC8C995AB203DC260FEECAA37C45C7E48CE'].__str__().encode('utf-8')
+
+    def test_expired_subkeys(self):
+        """test a key that has an expired subkey"""
+        self.assertTrue(self.gpg.import_data(open(os.path.dirname(__file__) +
+                                                  '/576407A629299233.asc').read()))
+        self.assertTrue(self.gpg.sign_key('576407A629299233', True))
+        self.gpg.context.call_command(['list-sigs', '576407A629299233'])
+        self.assertRegexpMatches(self.gpg.context.stdout, 'sig:::1:86E4E70A96F47C6A:[^:]*::::Second Test Key <unittests@monkeysphere.info>:10x:')
 
 
 class TestOpenPGPkey(unittest.TestCase):
