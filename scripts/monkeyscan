@@ -19,9 +19,9 @@
 import sys
 import os
 
-directory, basename = os.path.split(os.path.realpath(sys.argv[0]))
+directory, basename = os.path.split(sys.argv[0])
 
-path, directory = os.path.split(directory)
+path, directory = os.path.split(os.path.realpath(directory))
 if directory == 'scripts':
     sys.path.insert(0, os.path.dirname(__file__) + '/..')
 
