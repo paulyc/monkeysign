@@ -27,14 +27,6 @@ import sys, os
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.viewcode']
 
-# RTD: show source and link to our site
-show_source = True
-source_url_prefix = 'https://0xacab.org/monkeysphere/monkeysign/blob/HEAD'
-display_github = True
-github_host = 'https://0xacab.org'
-github_user = 'monkeysphere'
-github_repo = 'monkeysign'
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -119,6 +111,12 @@ if not on_rtd:  # only import and set the theme if we're building docs locally
         pass
 # otherwise, readthedocs.org uses their theme by default, so no need
 # to specify it
+
+# RTD: show source and link to our site
+html_context = {
+    'source_url_prefix': "https://0xacab.org/monkeysphere/monkeysign/blob/HEAD/doc/",
+    'source_suffix': '.rst',
+}
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
