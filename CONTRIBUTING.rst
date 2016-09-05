@@ -171,15 +171,44 @@ replace the key, or simply disable that test.
 Release process
 ===============
 
--  make sure tests pass (``./test.py``)
--  update version in ``monkeysign/__init__.py`` and run
-   ``dch -i -D unstable``
--  signed and annotated tag (``git tag -s -u keyid x.y``)
--  build Debian package (``git-buildpackage``)
--  install and test Debian package
-   (``dpkg -i ../build-area/monkeysign_*.deb``)
--  upload Debian package
--  push commits and tags to the git repository
--  add announcement on website and mailing list
-   monkeysphere@lists.riseup.net
+1. make sure tests pass::
 
+     ./test.py
+
+2. update version in ``monkeysign/__init__.py``
+
+3. create release notes with::
+
+     dch -i -D unstable
+
+4. commit the results::
+
+     git commit -m"prepare new release" -a
+
+5. create a signed and annotated tag::
+
+     git tag -s -u keyid x.y
+
+6. build and test Debian package::
+
+     git-buildpackage
+     dpkg -i ../monkeysign_*.deb
+
+7. push commits and tags to the git repository::
+
+     git push
+     git push --tags
+
+8. upload Debian package::
+
+     dput ../monkeysign*.changes
+        
+9. publish on PyPI::
+
+     python setup.py bdist_wheel
+     twine upload dist/*
+
+10. add announcement on website and mailing list:
+    monkeysphere@lists.riseup.net
+
+     
